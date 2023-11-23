@@ -1,0 +1,32 @@
+{
+  "extends": ["next/core-web-vitals", "plugin:prettier/recommended", "airbnb", "airbnb-typescript"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "ignorePatterns": ["*.js"],
+  "rules": {
+    "prettier/prettier": [
+      "error",
+      {
+        "endOfLine": "auto",
+        "printWidth": 120
+      }
+    ],
+    "react/function-component-definition": "off",
+    "react/jsx-props-no-spreading": "off",
+    "react/jsx-one-expression-per-line": "off",
+    "react/jsx-no-useless-fragment": "off",
+    "react/react-in-jsx-scope": "off",
+    "import/prefer-default-export": "off",
+    "import/no-extraneous-dependencies": "off",
+    "operator-linebreak": "off",
+    "object-curly-newline": "off",
+    "no-param-reassign": "off",
+    "quotes": ["error", "double"],
+    "linebreak-style": 0,
+    "@typescript-eslint/quotes": "off",
+    "arrow-body-style": "off",
+    "max-len": "off"
+  }
+}
