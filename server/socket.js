@@ -4,11 +4,12 @@ let existingText = "";
 let editingUser = "";
 const users = new Set();
 
-function setupSocket(server) {
+function setupQuillSocket(server) {
   const io = new Server(server, {
     cors: {
       origin: "*",
     },
+    path: "/quill",
   });
 
   io.on("connection", (socket) => {
@@ -41,4 +42,4 @@ function setupSocket(server) {
   });
 }
 
-module.exports = { setupSocket };
+module.exports = { setupQuillSocket };
