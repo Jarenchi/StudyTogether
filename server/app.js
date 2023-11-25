@@ -5,7 +5,7 @@ const cors = require("cors");
 const server = require("http").createServer(app);
 require("dotenv").config();
 app.use(cors());
-const { setupSocket } = require("./socket");
+const { setupQuillSocket } = require("./socket");
 
 const port = 5000;
 let connectStatus = false;
@@ -39,7 +39,7 @@ app.get("/test", (req, res) => {
   res.send("Ok");
 });
 
-setupSocket(server);
+setupQuillSocket(server);
 
 server.listen(port, () => {
   console.log(`the application is running on localhost:${port}`);

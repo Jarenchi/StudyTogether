@@ -4,15 +4,21 @@ import { useRef, useState, useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
 import "react-quill/dist/quill.snow.css";
 import io, { Socket } from "socket.io-client";
+import debounce from "@/utils/debounce";
 
 const modules = {
-  toolbar: [
-    [{ header: [1, 2, false] }],
-    ["bold", "italic", "underline", "strike", "blockquote"],
-    [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
-    ["link"],
-    ["clean"],
-  ],
+  toolbar: {
+    container: [
+      [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      ["bold", "italic", "underline", "strike"],
+      [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+      ["link", "image"],
+      [{ align: [] }],
+      [{ background: ["rgb(  0,   0,   0)"] }],
+      [{ color: ["rgb( 61,  20,  10)"] }],
+      ["clean"],
+    ],
+  },
 };
 
 const QuillEditor = () => {
@@ -24,7 +30,9 @@ const QuillEditor = () => {
 
   const socketRef = useRef<Socket>();
   useEffect(() => {
-    socketRef.current = io("http://localhost:5000/quill");
+    socketRef.current = io("http://localhost:5000", {
+      path: "/quill",
+    });
     socketRef.current.on("text", (newText: string) => {
       setText(newText);
     });
@@ -42,10 +50,10 @@ const QuillEditor = () => {
     };
   }, []);
 
-  const handleTextChange = (newText: string) => {
+  const handleTextChange = debounce((newText: string) => {
     socketRef.current?.emit("editing", curUser);
     socketRef.current?.emit("text", newText);
-  };
+  });
   const handleBlur = () => {
     setEditingUser("");
     socketRef.current?.emit("editing", "");
@@ -73,7 +81,6 @@ const QuillEditor = () => {
             onChange={handleTextChange}
             onBlur={handleBlur}
             modules={modules}
-            placeholder="在这里开始你的远程协作办公吧"
             preserveWhitespace
           />
         </div>
