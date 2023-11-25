@@ -6,6 +6,7 @@ const server = require("http").createServer(app);
 require("dotenv").config();
 app.use(cors());
 const { setupQuillSocket } = require("./socket");
+const userRouter = require("./routes/user");
 
 const port = 5000;
 let connectStatus = false;
@@ -13,7 +14,7 @@ let connectStatus = false;
 async function connectMongoDB() {
   try {
     await mongoose.connect(process.env.MONGODB).then(() => {
-      console.log("Connected to MongoDB...");
+      console.log("Connected to MongoDB");
     });
     connectStatus = true;
   } catch (error) {
@@ -22,8 +23,6 @@ async function connectMongoDB() {
 }
 
 connectMongoDB();
-
-app.use(express.json());
 
 app.use((req, res, next) => {
   if (connectStatus) {
@@ -35,6 +34,9 @@ app.use((req, res, next) => {
     });
   }
 });
+app.use(express.json());
+
+app.use("/api/1.0/user", userRouter);
 app.get("/test", (req, res) => {
   res.send("Ok");
 });
