@@ -1,8 +1,10 @@
 "use client";
 
+import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -32,18 +34,34 @@ const SignUpForm = () => {
       confirmPassword: "",
     },
   });
-  function onSubmit(values: z.infer<typeof signInSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values);
-  }
+  // const [open, setOpen] = useState(false);
+  // const [message, setMessage] = useState("");
 
+  async function onSubmit(values: z.infer<typeof signInSchema>) {
+    try {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/signup`, {
+        name: values.name,
+        email: values.email,
+        password: values.password,
+      });
+      alert("註冊成功");
+    } catch (error: any) {
+      if (error.response.status === 404) {
+        console.log("此信箱已註冊");
+      }
+      if (error?.response?.status >= 500 && error?.response?.status < 600) {
+        alert("請稍後再試或和我們的技術團隊聯絡");
+      } else {
+        alert(error);
+      }
+    }
+  }
   return (
     <Card>
       <CardContent>
         <CardHeader>
           <CardTitle>Create an account </CardTitle>
-          <CardDescription>Enter your email below to create your account</CardDescription>
+          <CardDescription>Enter your data below to create your account</CardDescription>
         </CardHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
@@ -80,7 +98,7 @@ const SignUpForm = () => {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input type="password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -93,18 +111,19 @@ const SignUpForm = () => {
                 <FormItem>
                   <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
-                    <Input {...field} />
+                    <Input type="password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <Button type="submit">Submit</Button>
+            <Button type="submit" className="dark:text-white">
+              Sign Up
+            </Button>
           </form>
         </Form>
       </CardContent>
     </Card>
   );
 };
-
 export default SignUpForm;

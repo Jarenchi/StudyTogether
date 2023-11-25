@@ -11,7 +11,10 @@ const userSignIn = async (req, res) => {
       return res.status(401).json({ error: "Invalid credentials" });
     }
 
-    const isPasswordValid = await checkValidPassword(password, user.password);
+    const isPasswordValid = checkValidPassword(password, user.password);
+    console.log(password);
+    console.log(user.password);
+    console.log(isPasswordValid);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
