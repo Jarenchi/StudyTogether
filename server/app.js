@@ -1,8 +1,12 @@
-import mongoose from "mongoose";
-import express from "express";
-import "dotenv/config";
-
+const mongoose = require("mongoose");
+const express = require("express");
 const app = express();
+const cors = require("cors");
+const server = require("http").createServer(app);
+require("dotenv").config();
+app.use(cors());
+const { setupSocket } = require("./socket");
+
 const port = 5000;
 let connectStatus = false;
 
@@ -31,10 +35,12 @@ app.use((req, res, next) => {
     });
   }
 });
-app.get("/healthcheck", (req, res) => {
+app.get("/test", (req, res) => {
   res.send("Ok");
 });
 
-app.listen(port, () => {
+setupSocket(server);
+
+server.listen(port, () => {
   console.log(`the application is running on localhost:${port}`);
 });
