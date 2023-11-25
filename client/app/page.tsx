@@ -1,8 +1,10 @@
 import { ModeToggle } from "@/components/ModeToggle";
+import Header from "@/components/Header";
 
 export default function Home() {
   return (
-    <main className="flex flex-col items-center justify-between min-h-screen p-24">
+    <main className="min-h-screen">
+      <Header />
       <ModeToggle />
     </main>
   );
