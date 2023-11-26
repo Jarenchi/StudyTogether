@@ -7,6 +7,7 @@ require("dotenv").config();
 app.use(cors());
 const { setupQuillSocket } = require("./socket");
 const userRouter = require("./routes/user");
+const clubRouter = require("./routes/clubs");
 
 const port = 5000;
 let connectStatus = false;
@@ -37,6 +38,7 @@ app.use((req, res, next) => {
 app.use(express.json());
 
 app.use("/api/1.0/user", userRouter);
+app.use("/api/1.0/clubs", clubRouter);
 app.get("/test", (req, res) => {
   res.send("Ok");
 });
