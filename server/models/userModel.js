@@ -1,6 +1,19 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+const clubSchema = new Schema(
+  {
+    id: {
+      type: Schema.Types.ObjectId,
+      ref: "Club",
+    },
+    name: {
+      type: String,
+    },
+  },
+  { _id: false },
+);
+
 const userSchema = new Schema(
   {
     name: {
@@ -18,6 +31,14 @@ const userSchema = new Schema(
     picture: {
       type: String,
       default: "",
+    },
+    points: {
+      type: Number,
+      default: 0,
+    },
+    clubs: {
+      type: Array,
+      default: [clubSchema],
     },
   },
   { timestamps: true },

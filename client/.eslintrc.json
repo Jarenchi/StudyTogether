@@ -22,6 +22,7 @@
     "import/prefer-default-export": "off",
     "import/no-extraneous-dependencies": "off",
     "operator-linebreak": "off",
+    "no-underscore-dangle": "off",
     "object-curly-newline": "off",
     "no-param-reassign": "off",
     "quotes": ["error", "double"],

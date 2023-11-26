@@ -3,6 +3,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
+import axios from "axios";
+import nookies from "nookies";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -25,7 +27,22 @@ const CreateClubForm = () => {
 
   async function onSubmit(values: z.infer<typeof clubSchema>) {
     try {
-      console.log(values);
+      const userData = {
+        id: nookies.get().user_id,
+        name: nookies.get().user_name,
+        picture: nookies.get().user_picture,
+      };
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/clubs/`,
+        {
+          name: values.clubName,
+          description: values.clubDescription,
+          owner: userData,
+          members: [userData],
+        },
+        { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
+      );
+      console.log(response.data);
     } catch (error: any) {
       if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");
