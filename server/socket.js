@@ -15,10 +15,11 @@ function setupQuillSocket(server) {
   io.on("connection", (socket) => {
     console.log("a user connected");
 
-    users.add(socket.id);
-    socket.emit("connectUser", socket.id);
-    socket.emit("text", existingText);
-    io.emit("users", Array.from(users));
+    socket.on("connectUser", (userName) => {
+      users.add(userName);
+      console.log(`${userName} has connected`);
+      io.emit("users", Array.from(users));
+    });
 
     socket.on("text", (newText) => {
       existingText = newText;
