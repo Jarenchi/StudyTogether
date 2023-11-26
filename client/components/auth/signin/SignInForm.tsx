@@ -44,7 +44,7 @@ const SignInForm = () => {
       router.push("/");
       alert("登入成功");
     } catch (error: any) {
-      if (error.response.status === 401) {
+      if (error?.response?.status === 401) {
         alert("信箱或密碼錯誤");
       }
       if (error?.response?.status >= 500 && error?.response?.status < 600) {

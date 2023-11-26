@@ -2,20 +2,24 @@
 
 import { useRef, useState, useEffect, useMemo } from "react";
 import dynamic from "next/dynamic";
+import nookies from "nookies";
 import "react-quill/dist/quill.snow.css";
 import io, { Socket } from "socket.io-client";
 import debounce from "@/utils/debounce";
+import { Input } from "../ui/input";
 
 const modules = {
   toolbar: {
     container: [
       [{ header: [1, 2, 3, 4, 5, 6, false] }],
+      [{ font: [] }],
       ["bold", "italic", "underline", "strike"],
       [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
+      [{ direction: "rtl" }],
       ["link", "image"],
       [{ align: [] }],
-      [{ background: ["rgb(  0,   0,   0)"] }],
-      [{ color: ["rgb( 61,  20,  10)"] }],
+      [{ color: [] }, { background: [] }],
+      ["blockquote", "code-block"],
       ["clean"],
     ],
   },
@@ -42,6 +46,7 @@ const QuillEditor = () => {
     socketRef.current.on("editing", (userId: string) => {
       setEditingUser(userId);
     });
+    socketRef.current.emit("connectUser", nookies.get().user_name);
     socketRef.current.on("connectUser", (userId: string) => {
       setCurUser(userId);
     });
@@ -60,28 +65,27 @@ const QuillEditor = () => {
   };
 
   return (
-    <div className="app">
-      <div className="header">
-        <h1>共用編輯文件</h1>
-      </div>
+    <div className="flex flex-col">
+      <Input />
       <div className="container">
         <div className="user-list">
           <p>線上用戶:</p>
           <ul>
-            {users.map((user, index) => (
-              <li key={index} className={user === editingUser ? "editing" : ""}>
+            {users.map((user) => (
+              <li key={user} className={user === editingUser ? "editing" : ""}>
                 {user}
               </li>
             ))}
           </ul>
         </div>
-        <div className="editor">
+        <div className="h-[82vh] w-[80%]">
           <ReactQuill
             value={text}
             onChange={handleTextChange}
             onBlur={handleBlur}
             modules={modules}
             preserveWhitespace
+            className="h-[82vh]"
           />
         </div>
       </div>
