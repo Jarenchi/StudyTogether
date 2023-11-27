@@ -7,7 +7,7 @@ const HeaderLeft = () => {
       <Link href="/clubs">
         <Button variant="link">Clubs</Button>
       </Link>
-      <Link href="/my/clubs">
+      <Link href="/myclubs">
         <Button variant="link">My Clubs</Button>
       </Link>
     </div>
