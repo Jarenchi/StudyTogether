@@ -36,10 +36,7 @@ const userSchema = new Schema(
       type: Number,
       default: 0,
     },
-    clubs: {
-      type: Array,
-      default: [clubSchema],
-    },
+    clubs: [clubSchema],
   },
   { timestamps: true },
 );

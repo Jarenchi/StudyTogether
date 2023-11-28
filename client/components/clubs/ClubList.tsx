@@ -35,7 +35,7 @@ const ClubList = () => {
     // router.push("/myclub");
   }
   const clubItems = data?.clubs?.map((club: Club) => (
-    <Card key={club._id}>
+    <Card key={club._id} className="max-w-md">
       <CardHeader>
         <CardTitle>{club.name}</CardTitle>
         <CardDescription>{club.owner.name}</CardDescription>
@@ -49,13 +49,14 @@ const ClubList = () => {
           onClick={() => {
             joinClubHandler(club._id);
           }}
+          disabled={!nookies.get().user_id}
         >
           Join
         </Button>
       </CardFooter>
     </Card>
   ));
-  return <div className="max-w-[900px]">{clubItems}</div>;
+  return <div>{clubItems}</div>;
 };
 
 export default ClubList;

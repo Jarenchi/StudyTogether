@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -9,6 +8,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+
+// TODO:登入後更改TAB處理
+interface SignUpFormProps {
+  tabChange: (value: string) => void;
+}
 
 const signInSchema = z
   .object({
@@ -24,7 +28,7 @@ const signInSchema = z
     message: "密碼不相符",
     path: ["confirmPassword"],
   });
-const SignUpForm = () => {
+const SignUpForm: React.FC<SignUpFormProps> = ({ tabChange }) => {
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -45,6 +49,7 @@ const SignUpForm = () => {
         password: values.password,
       });
       alert("註冊成功");
+      tabChange("signin");
     } catch (error: any) {
       if (error.response.status === 404) {
         console.log("此信箱已註冊");

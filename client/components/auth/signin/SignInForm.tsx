@@ -41,7 +41,7 @@ const SignInForm = () => {
       nookies.set(null, "user_email", userData.user.email, maxAge);
       nookies.set(null, "user_image", userData.user.image, maxAge);
       setUserId(userData.user.id.toString());
-      router.push("/");
+      router.back();
       alert("登入成功");
     } catch (error: any) {
       if (error?.response?.status === 401) {

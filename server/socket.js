@@ -27,13 +27,14 @@ function setupQuillSocket(server) {
     });
 
     socket.on("editing", (userId) => {
+      console.log("Editing event received. User:", userId);
       editingUser = userId;
       io.emit("editing", userId);
     });
 
-    socket.on("disconnect", () => {
-      console.log("user disconnected");
-      users.delete(socket.id);
+    socket.on("disconnect", (userName) => {
+      console.log(`${userName} has disconnected`);
+      users.delete(userName);
       if (editingUser === socket.id) {
         editingUser = "";
         io.emit("editing", "");
