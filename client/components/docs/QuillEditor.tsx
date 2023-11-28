@@ -5,36 +5,50 @@ import dynamic from "next/dynamic";
 import nookies from "nookies";
 import "react-quill/dist/quill.snow.css";
 import io, { Socket } from "socket.io-client";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { usePathname } from "next/navigation";
 import debounce from "@/utils/debounce";
+import quillModules from "@/lib/quill-modules";
 import { Input } from "../ui/input";
-
-const modules = {
-  toolbar: {
-    container: [
-      [{ header: [1, 2, 3, 4, 5, 6, false] }],
-      [{ font: [] }],
-      ["bold", "italic", "underline", "strike"],
-      [{ list: "ordered" }, { list: "bullet" }, { indent: "-1" }, { indent: "+1" }],
-      [{ direction: "rtl" }],
-      ["link", "image"],
-      [{ align: [] }],
-      [{ color: [] }, { background: [] }],
-      ["blockquote", "code-block"],
-      ["clean"],
-    ],
-  },
-};
 
 const QuillEditor = () => {
   const ReactQuill = useMemo(() => dynamic(() => import("react-quill"), { ssr: false }), []);
+
+  const pathname = usePathname();
+  const pathSegments = pathname.split("/");
+  const targetClubId = pathSegments[2];
+  const targetDocId = pathSegments[4];
+  async function getDocById(clubId: string, docId: string) {
+    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/docs/${docId}`, {
+      headers: { Authorization: `Bearer ${nookies.get().access_token}` },
+    });
+    return response.data;
+  }
+  const { data, isLoading, isError } = useQuery({
+    queryFn: () => getDocById(targetClubId, targetDocId),
+    queryKey: ["doc", targetDocId],
+  });
+  const [isEditing, setIsEditing] = useState(false);
+  const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [users, setUsers] = useState<string[]>([]);
   const [editingUser, setEditingUser] = useState("");
   const [curUser, setCurUser] = useState("");
 
+  useEffect(() => {
+    if (data) {
+      setText(data.content);
+      setTitle(data.title);
+      console.log(data.content);
+    }
+  }, [data]);
+
+  // socket.io
   const socketRef = useRef<Socket>();
   useEffect(() => {
-    socketRef.current = io("http://localhost:5000", {
+    const userName = nookies.get().user_name;
+    socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, {
       path: "/quill",
     });
     socketRef.current.on("text", (newText: string) => {
@@ -44,49 +58,115 @@ const QuillEditor = () => {
       setUsers(newUsers);
     });
     socketRef.current.on("editing", (userId: string) => {
+      console.log("Editing event received. User:", userId);
       setEditingUser(userId);
     });
-    socketRef.current.emit("connectUser", nookies.get().user_name);
-    socketRef.current.on("connectUser", (userId: string) => {
-      setCurUser(userId);
-    });
+    socketRef.current.emit("connectUser", userName);
+    setCurUser(userName);
     return () => {
+      socketRef.current?.emit("disconnectUser", userName);
       socketRef.current?.disconnect();
     };
   }, []);
 
   const handleTextChange = debounce((newText: string) => {
+    axios
+      .put(
+        `${process.env.NEXT_PUBLIC_API_URL}/clubs/${targetClubId}/docs/${targetDocId}`,
+        { content: newText },
+        {
+          headers: { Authorization: `Bearer ${nookies.get().access_token}` },
+        },
+      )
+      .then((response) => {
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
     socketRef.current?.emit("editing", curUser);
     socketRef.current?.emit("text", newText);
+    console.log(newText);
   });
   const handleBlur = () => {
     setEditingUser("");
     socketRef.current?.emit("editing", "");
   };
 
+  const handleTitleClick = () => {
+    setIsEditing(true);
+  };
+
+  // title改變
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
+  };
+  async function handleTitleBlur() {
+    try {
+      const response = await axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/clubs/${targetClubId}/docs/${targetDocId}/title`,
+        { title },
+        {
+          headers: { Authorization: `Bearer ${nookies.get().access_token}` },
+        },
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsEditing(false);
+    }
+  }
+  async function handleTitleKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {
+    if (event.key === "Enter") {
+      handleTitleBlur();
+    }
+  }
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>500 Internal Server Error</div>;
+
   return (
     <div className="flex flex-col">
-      <Input />
-      <div className="container">
-        <div className="user-list">
-          <p>線上用戶:</p>
-          <ul>
-            {users.map((user) => (
-              <li key={user} className={user === editingUser ? "editing" : ""}>
-                {user}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="h-[82vh] w-[80%]">
+      <div className="flex items-center justify-center my-2">
+        <span className="mr-2">檔案名稱:</span>
+        {isEditing ? (
+          <Input
+            type="text"
+            value={title}
+            onChange={handleTitleChange}
+            onBlur={handleTitleBlur}
+            onKeyDown={handleTitleKeyDown}
+            autoFocus
+            className="max-w-xs"
+          />
+        ) : (
+          // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
+          <h1 onClick={handleTitleClick} className="py-3 min-w-[5rem]">
+            {title}
+          </h1>
+        )}
+      </div>
+      <div className="flex justify-center items-start h-[86vh]">
+        <div className="h-[82vh]">
           <ReactQuill
             value={text}
             onChange={handleTextChange}
             onBlur={handleBlur}
-            modules={modules}
+            modules={quillModules}
             preserveWhitespace
-            className="h-[82vh]"
+            className="h-[80vh] w-[80vh]"
           />
+        </div>
+        <div className="h-[79vh]">
+          <p>線上用戶:</p>
+          <ul>
+            {users.map((user) => (
+              <li key={user} className="bg-black text-white min-w-[2rem]">
+                {user} {editingUser === user && <span className="text-white">正在編輯</span>}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>

@@ -4,7 +4,7 @@
   "parserOptions": {
     "project": "./tsconfig.json"
   },
-  "ignorePatterns": ["*.js"],
+  "ignorePatterns": ["*.js", "/components/ui/*"],
   "rules": {
     "prettier/prettier": [
       "error",
@@ -19,6 +19,7 @@
     "react/jsx-no-useless-fragment": "off",
     "react/jsx-no-bind": "off",
     "react/react-in-jsx-scope": "off",
+    "react/prop-types": "off",
     "import/prefer-default-export": "off",
     "import/no-extraneous-dependencies": "off",
     "operator-linebreak": "off",

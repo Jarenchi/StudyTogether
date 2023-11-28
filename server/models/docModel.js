@@ -1,40 +1,28 @@
 const mongoose = require("mongoose");
-const docSchema = require("./docModel").schema;
 const Schema = mongoose.Schema;
 
-const memberSchema = new Schema(
+const permissionSchema = new Schema(
   {
-    id: {
+    user: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
-    name: {
+    role: {
       type: String,
-      required: true,
-    },
-    picture: {
-      type: String,
-      default: "",
+      enum: ["read", "write", "owner"],
+      default: "read",
     },
   },
   { _id: false },
 );
 
-const clubSchema = new Schema(
+const docSchema = new Schema(
   {
-    name: {
+    title: {
       type: String,
       required: true,
     },
-    description: {
-      type: String,
-      required: true,
-    },
-    picture: {
-      type: String,
-      default: "",
-    },
-    owner: {
+    creater: {
       id: {
         type: Schema.Types.ObjectId,
         ref: "User",
@@ -48,10 +36,21 @@ const clubSchema = new Schema(
         default: "",
       },
     },
-    members: [memberSchema],
-    docs: [docSchema],
+    status: {
+      type: String,
+      default: "pending",
+    },
+    content: {
+      type: String,
+      default: "",
+    },
+    club: {
+      type: Schema.Types.ObjectId,
+      ref: "Club",
+    },
+    permissions: [permissionSchema],
   },
   { timestamps: true },
 );
 
-module.exports = mongoose.model("Club", clubSchema);
+module.exports = mongoose.model("Doc", docSchema);
