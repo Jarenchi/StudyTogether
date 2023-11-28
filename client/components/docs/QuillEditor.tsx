@@ -7,18 +7,16 @@ import "react-quill/dist/quill.snow.css";
 import io, { Socket } from "socket.io-client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { usePathname } from "next/navigation";
+import { useParams } from "next/navigation";
 import debounce from "@/utils/debounce";
 import quillModules from "@/lib/quill-modules";
 import { Input } from "../ui/input";
 
 const QuillEditor = () => {
   const ReactQuill = useMemo(() => dynamic(() => import("react-quill"), { ssr: false }), []);
-
-  const pathname = usePathname();
-  const pathSegments = pathname.split("/");
-  const targetClubId = pathSegments[2];
-  const targetDocId = pathSegments[4];
+  const params = useParams();
+  const targetClubId = params.club as string;
+  const targetDocId = params.doc as string;
   async function getDocById(clubId: string, docId: string) {
     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/docs/${docId}`, {
       headers: { Authorization: `Bearer ${nookies.get().access_token}` },

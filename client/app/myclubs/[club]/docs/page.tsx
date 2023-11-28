@@ -2,17 +2,15 @@
 
 import CreateDocButton from "@/components/docs/CreateDocButton";
 import { useQuery } from "@tanstack/react-query";
-import { usePathname } from "next/navigation";
+import { useParams } from "next/navigation";
 import { fetchDocs } from "@/utils/api";
 import { DocsTable } from "@/components/docs/docsTable/DocsTable";
 import { DocsColumns } from "@/components/docs/docsTable/columns";
 
 const Page = () => {
-  const pathname = usePathname();
-  const pathSegments = pathname.split("/");
-  const clubId = pathSegments[2];
+  const params = useParams();
   const { data, isLoading, isError } = useQuery({
-    queryFn: () => fetchDocs(clubId),
+    queryFn: () => fetchDocs(params.club as string),
     queryKey: ["docs"],
   });
   if (isLoading) return <div>Loading...</div>;

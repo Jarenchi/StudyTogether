@@ -12,9 +12,6 @@ const userSignIn = async (req, res) => {
     }
 
     const isPasswordValid = checkValidPassword(password, user.password);
-    console.log(password);
-    console.log(user.password);
-    console.log(isPasswordValid);
     if (!isPasswordValid) {
       return res.status(401).json({ error: "Invalid credentials" });
     }
