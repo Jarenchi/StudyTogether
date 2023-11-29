@@ -35,7 +35,7 @@ const ClubList = () => {
     // router.push("/myclub");
   }
   const clubItems = data?.clubs?.map((club: Club) => (
-    <Card key={club._id} className="max-w-md">
+    <Card key={club._id} className="max-w-md mb-2">
       <CardHeader>
         <CardTitle>{club.name}</CardTitle>
         <CardDescription>{club.owner.name}</CardDescription>

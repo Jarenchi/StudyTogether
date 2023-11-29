@@ -3,6 +3,7 @@
 import { ColumnDef } from "@tanstack/react-table";
 import { MoreHorizontal, ArrowUpDown } from "lucide-react";
 import Link from "next/link";
+import nookies from "nookies";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -12,6 +13,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import DeleteDocAlertContent from "./DeleteDocAlertContent";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -40,6 +43,7 @@ export const DocsColumns: ColumnDef<Doc>[] = [
   },
   {
     accessorKey: "creater.name",
+    id: "creater.name",
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
@@ -89,20 +93,27 @@ export const DocsColumns: ColumnDef<Doc>[] = [
     id: "actions",
     cell: ({ row }) => {
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>Rename file</DropdownMenuItem>
-            <DropdownMenuItem>Delete file</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <AlertDialog>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Actions</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>Rename file</DropdownMenuItem>
+              {nookies.get().user_name === row.getValue("creater.name") && (
+                <DropdownMenuItem>
+                  <AlertDialogTrigger>Delete file</AlertDialogTrigger>
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <DeleteDocAlertContent docId={row.getValue("_id")} />
+        </AlertDialog>
       );
     },
   },

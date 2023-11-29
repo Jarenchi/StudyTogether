@@ -1,17 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import axios from "axios";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { formattedTime } from "@/utils/formattedTime";
 import nookies from "nookies";
 import { Button } from "../ui/button";
 
 const CreateDocButton = () => {
   const router = useRouter();
-  const pathname = usePathname();
-  const pathSegments = pathname.split("/");
-  const clubId = pathSegments[2];
+  const params = useParams();
+  const clubId = params.club;
+  const [loading, setLoading] = useState(false);
   async function createDocHandler() {
+    setLoading(true);
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/docs`, {
         title: formattedTime,
@@ -28,9 +30,15 @@ const CreateDocButton = () => {
       if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");
       }
+    } finally {
+      setLoading(false);
     }
   }
-  return <Button onClick={createDocHandler}>Create Doc</Button>;
+  return (
+    <Button onClick={createDocHandler} disabled={loading}>
+      Create Doc
+    </Button>
+  );
 };
 
 export default CreateDocButton;
