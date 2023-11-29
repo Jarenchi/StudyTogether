@@ -42,7 +42,6 @@ const SignInForm = () => {
       nookies.set(null, "user_image", userData.user.image, maxAge);
       setUserId(userData.user.id.toString());
       router.back();
-      alert("登入成功");
     } catch (error: any) {
       if (error?.response?.status === 401) {
         alert("信箱或密碼錯誤");

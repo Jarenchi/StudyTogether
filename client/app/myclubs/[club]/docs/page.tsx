@@ -1,6 +1,5 @@
 "use client";
 
-import CreateDocButton from "@/components/docs/CreateDocButton";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { fetchDocs } from "@/utils/api";
@@ -17,8 +16,7 @@ const Page = () => {
   if (isError) return <div>500 Internal Server Error</div>;
   console.log(data);
   return (
-    <div className="ml-4 mt-2">
-      <CreateDocButton />
+    <div className="mx-auto mt-2">
       <DocsTable columns={DocsColumns} data={data} />
     </div>
   );

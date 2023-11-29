@@ -1,7 +1,7 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-// import { useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import nookies from "nookies";
 import axios from "axios";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,7 +10,7 @@ import { fetchClubList } from "@/utils/api";
 import { Club } from "@/types/clubType";
 
 const ClubList = () => {
-  //   const router = useRouter();
+  const router = useRouter();
   const { data, isLoading, isError } = useQuery({
     queryFn: () => fetchClubList(),
     queryKey: ["clublist"],
@@ -32,7 +32,7 @@ const ClubList = () => {
         alert("請稍後再試或和我們的技術團隊聯絡");
       }
     }
-    // router.push("/myclub");
+    router.push("/myclubs");
   }
   const clubItems = data?.clubs?.map((club: Club) => (
     <Card key={club._id} className="max-w-md mb-2">
@@ -56,7 +56,7 @@ const ClubList = () => {
       </CardFooter>
     </Card>
   ));
-  return <div>{clubItems}</div>;
+  return <>{clubItems}</>;
 };
 
 export default ClubList;
