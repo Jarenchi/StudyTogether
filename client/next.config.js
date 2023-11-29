@@ -11,7 +11,7 @@ const nextConfig = {
   // async redirects() {
   //   return [
   //     {
-  //       source: "/:path((?!login$)(?!api/).*)",
+  //       source: "/:path((?!login$)(?!api/)(?!clubs/).*)",
   //       permanent: false,
   //       missing: [
   //         {

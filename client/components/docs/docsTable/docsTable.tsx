@@ -27,7 +27,6 @@ export function DocsTable<TData, TValue>({ columns, data }: DocsTableProps<TData
   const table = useReactTable({
     data,
     columns,
-    initialState: { columnVisibility: { _id: true } },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
