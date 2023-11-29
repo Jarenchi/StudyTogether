@@ -2,7 +2,7 @@ import QuillEditor from "@/components/docs/QuillEditor";
 
 const Page = () => {
   return (
-    <div>
+    <div className="ml-3">
       <QuillEditor />
     </div>
   );

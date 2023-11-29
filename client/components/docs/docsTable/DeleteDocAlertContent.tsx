@@ -2,6 +2,7 @@
 
 import { FC } from "react";
 import axios from "axios";
+import nookies from "nookies";
 import { useParams } from "next/navigation";
 import {
   AlertDialogAction,
@@ -19,8 +20,10 @@ interface DeleteButtonProps {
 const DeleteDocAlertContent: FC<DeleteButtonProps> = ({ docId }) => {
   const { club } = useParams();
   async function deleteDocHandler() {
-    console.log(club, docId);
-    const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${club}/docs/${docId}`);
+    const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${club}/docs/${docId}`, {
+      headers: { Authorization: `Bearer ${nookies.get().access_token}` },
+    });
+    // TODO:刪除後重新rerender table
     console.log(response.data);
   }
 

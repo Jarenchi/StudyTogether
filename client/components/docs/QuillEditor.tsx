@@ -8,6 +8,7 @@ import io, { Socket } from "socket.io-client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useParams } from "next/navigation";
+import { Badge } from "@/components/ui/badge";
 import debounce from "@/utils/debounce";
 import quillModules from "@/lib/quill-modules";
 import { Input } from "../ui/input";
@@ -140,7 +141,7 @@ const QuillEditor = () => {
           />
         ) : (
           // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
-          <h1 onClick={handleTitleClick} className="py-3 min-w-[5rem]">
+          <h1 onClick={handleTitleClick} className="py-2 px-3 min-w-[320px]">
             {title}
           </h1>
         )}
@@ -153,16 +154,16 @@ const QuillEditor = () => {
             onBlur={handleBlur}
             modules={quillModules}
             preserveWhitespace
-            className="h-[80vh] w-[80vh]"
+            className="h-[80vh] w-[80vw]"
           />
         </div>
-        <div className="h-[79vh]">
-          <p>線上用戶:</p>
+        <div className="h-[79vh] ml-3">
+          <p className="text-lg mb-2">線上用戶:</p>
           <ul>
             {users.map((user) => (
-              <li key={user} className="bg-black text-white min-w-[2rem]">
-                {user} {editingUser === user && <span className="text-white">正在編輯</span>}
-              </li>
+              <Badge key={user} className="text-lg dark:text-white truncate">
+                {user} {editingUser === user && <span> 正在編輯</span>}
+              </Badge>
             ))}
           </ul>
         </div>
