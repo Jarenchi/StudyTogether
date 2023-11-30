@@ -4,7 +4,7 @@ import ClubList from "@/components/clubs/ClubList";
 const Page = () => {
   return (
     <div>
-      <div className="mb-4">
+      <div className="mb-4 ">
         <CreateClubButton />
       </div>
       <ClubList />

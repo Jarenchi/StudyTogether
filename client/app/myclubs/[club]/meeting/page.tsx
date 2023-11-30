@@ -11,16 +11,18 @@ import {
   useTracks,
 } from "@livekit/components-react";
 import { useEffect, useState } from "react";
+import nookies from "nookies";
+import { useParams } from "next/navigation";
 
 export default function Page() {
   // TODO: get user input for room and name
-  const room = "quickstart-room";
-  const name = "quickstart-user";
   const [token, setToken] = useState("");
-
+  const params = useParams();
   useEffect(() => {
     (async () => {
       try {
+        const room = params.club;
+        const name = nookies.get().user_name;
         const resp = await fetch(`/api/get-participant-token?room=${room}&username=${name}`);
         const data = await resp.json();
         setToken(data.token);
@@ -28,7 +30,7 @@ export default function Page() {
         console.error(e);
       }
     })();
-  }, []);
+  }, [params]);
 
   if (token === "") {
     return <div>Getting token...</div>;
@@ -36,8 +38,8 @@ export default function Page() {
 
   return (
     <LiveKitRoom
-      video={true}
-      audio={true}
+      video
+      audio
       token={token}
       serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_URL}
       // Use the default LiveKit theme for nice styles.
@@ -50,7 +52,7 @@ export default function Page() {
       <RoomAudioRenderer />
       {/* Controls for the user to start/stop audio, video, and screen
       share tracks and to leave the room. */}
-      <ControlBar />
+      {/* <ControlBar /> */}
     </LiveKitRoom>
   );
 }
