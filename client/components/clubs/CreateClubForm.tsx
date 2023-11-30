@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import z from "zod";
@@ -14,9 +15,14 @@ import { Textarea } from "../ui/textarea";
 const clubSchema = z.object({
   clubName: z.string().min(1, { message: "Club Name is required" }),
   clubDescription: z.string().min(1, { message: "Club Description is required" }),
+  clubImage: z.string().refine((value) => /\.(jpg|jpeg|png)$/.test(value), {
+    message: "Please upload an image",
+  }),
 });
 
 const CreateClubForm = () => {
+  const fileInputRef = useRef(null);
+
   const form = useForm<z.infer<typeof clubSchema>>({
     resolver: zodResolver(clubSchema),
     defaultValues: {
@@ -32,16 +38,17 @@ const CreateClubForm = () => {
         name: nookies.get().user_name,
         picture: nookies.get().user_picture,
       };
-      const response = await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/clubs/`,
-        {
-          name: values.clubName,
-          description: values.clubDescription,
-          owner: userData,
-          members: [userData],
-        },
-        { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
-      );
+      const formData = new FormData();
+      formData.append("name", values.clubName);
+      formData.append("description", values.clubDescription);
+      formData.append("owner[id]", userData.id);
+      formData.append("owner[name]", userData.name);
+      formData.append("members", JSON.stringify([userData]));
+      const selectedFile = fileInputRef?.current?.files[0];
+      formData.append("image", selectedFile);
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/clubs/`, formData, {
+        headers: { Authorization: `Bearer ${nookies.get().access_token}`, "Content-Type": "multipart/form-data" },
+      });
       console.log(response.data);
     } catch (error: any) {
       if (error?.response?.status >= 500 && error?.response?.status < 600) {
@@ -54,7 +61,7 @@ const CreateClubForm = () => {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8" encType="multipart/form-data">
         <FormField
           control={form.control}
           name="clubName"
@@ -81,6 +88,19 @@ const CreateClubForm = () => {
             </FormItem>
           )}
         /> */}
+        <FormField
+          control={form.control}
+          name="clubImage"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Club Image</FormLabel>
+              <FormControl>
+                <Input type="file" id="clubImage" {...field} ref={fileInputRef} value={field.value ?? ""} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
         <FormField
           control={form.control}
           name="clubDescription"
