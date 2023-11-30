@@ -16,14 +16,10 @@ const clubJoin = async (req, res) => {
     if (isMember) {
       return res.status(400).json({ error: "User is already a member of the club" });
     }
-    club.members.push({
-      id: user._id,
-      name: user.name,
-      picture: user.picture,
-    });
+    club.members.push(userId);
     user.clubs.push({
-      id: club._id,
-      name: club.name,
+      clubId: club._id,
+      clubName: club.name,
     });
     await Promise.all([user.save(), club.save()]);
     res.status(200).json({ message: "User joined the club successfully" });
