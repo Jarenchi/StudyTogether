@@ -82,6 +82,7 @@ const QuillEditor = () => {
       })
       .catch((error) => {
         console.error(error);
+        console.log(error.message);
       });
     socketRef.current?.emit("editing", curUser);
     socketRef.current?.emit("text", newText);
@@ -102,6 +103,8 @@ const QuillEditor = () => {
   };
   async function handleTitleBlur() {
     try {
+      console.log(targetClubId);
+      console.log(targetDocId);
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_API_URL}/clubs/${targetClubId}/docs/${targetDocId}/title`,
         { title },

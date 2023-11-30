@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const permissionSchema = new Schema(
   {
-    user: {
+    userId: {
       type: Schema.Types.ObjectId,
       ref: "User",
     },
@@ -23,7 +23,7 @@ const docSchema = new Schema(
       required: true,
     },
     creater: {
-      id: {
+      userId: {
         type: Schema.Types.ObjectId,
         ref: "User",
       },
@@ -38,13 +38,14 @@ const docSchema = new Schema(
     },
     status: {
       type: String,
+      enum: ["pending", "active", "complete"],
       default: "pending",
     },
     content: {
       type: String,
       default: "",
     },
-    club: {
+    clubId: {
       type: Schema.Types.ObjectId,
       ref: "Club",
     },

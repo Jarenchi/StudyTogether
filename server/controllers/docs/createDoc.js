@@ -14,13 +14,13 @@ const createDoc = async (req, res) => {
         name: creater.name,
         picture: creater.picture,
       },
-      club: clubId,
+      clubId: clubId,
       permissions: [{ user: creater.id, role: "owner" }],
     });
 
     const savedDoc = await newDoc.save();
 
-    await clubModel.findByIdAndUpdate(clubId, { $push: { docs: savedDoc } }, { new: true });
+    await clubModel.findByIdAndUpdate(clubId, { $push: { docs: savedDoc._id } }, { new: true });
 
     res.status(201).json(savedDoc);
   } catch (error) {

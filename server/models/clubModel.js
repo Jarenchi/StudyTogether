@@ -1,24 +1,5 @@
 const mongoose = require("mongoose");
-const docSchema = require("./docModel").schema;
 const Schema = mongoose.Schema;
-
-const memberSchema = new Schema(
-  {
-    id: {
-      type: Schema.Types.ObjectId,
-      ref: "User",
-    },
-    name: {
-      type: String,
-      required: true,
-    },
-    picture: {
-      type: String,
-      default: "",
-    },
-  },
-  { _id: false },
-);
 
 const clubSchema = new Schema(
   {
@@ -35,7 +16,7 @@ const clubSchema = new Schema(
       default: "",
     },
     owner: {
-      id: {
+      userId: {
         type: Schema.Types.ObjectId,
         ref: "User",
       },
@@ -48,8 +29,18 @@ const clubSchema = new Schema(
         default: "",
       },
     },
-    members: [memberSchema],
-    docs: [docSchema],
+    members: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Member",
+      },
+    ],
+    docs: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Doc",
+      },
+    ],
   },
   { timestamps: true },
 );

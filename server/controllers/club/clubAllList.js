@@ -2,7 +2,17 @@ const clubModel = require("../../models/clubModel");
 
 const clubAllList = async (req, res) => {
   try {
-    const allClubs = await clubModel.find();
+    const allClubs = await clubModel.aggregate([
+      {
+        $project: {
+          name: 1,
+          description: 1,
+          picture: 1,
+          owner: 1,
+          memberCount: { $size: "$members" },
+        },
+      },
+    ]);
     res.status(200).json({ clubs: allClubs });
   } catch (error) {
     console.error(error);
