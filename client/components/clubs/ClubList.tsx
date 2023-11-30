@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Button } from "@/components/ui/button";
 import { fetchClubList } from "@/utils/api";
 import { Club } from "@/types/clubType";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const ClubList = () => {
   const router = useRouter();
@@ -41,6 +42,10 @@ const ClubList = () => {
   const clubItems = data?.clubs?.map((club: Club) => (
     <Card key={club._id} className="max-w-md mb-2">
       <CardHeader>
+        <Avatar>
+          <AvatarImage src={club.picture} />
+          <AvatarFallback>{club.name}</AvatarFallback>
+        </Avatar>
         <CardTitle>{club.name}</CardTitle>
         <CardDescription>{club.owner.name}</CardDescription>
       </CardHeader>

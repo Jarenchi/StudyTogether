@@ -1,6 +1,8 @@
 const express = require("express");
 const { checkApplicationJson } = require("../middlewares/checkApplicationJson");
 const { verifyAccessToken } = require("../middlewares/verifyAccessToken");
+const { checkFormData } = require("../middlewares/checkFormData");
+const { uploadImage } = require("../middlewares/uploadImage");
 const { clubCreate } = require("../controllers/club/clubCreate");
 const { clubAllList } = require("../controllers/club/clubAllList");
 const { clubJoin } = require("../controllers/club/clubJoin");
@@ -10,8 +12,9 @@ const { getDocById } = require("../controllers/docs/getDocById");
 const { updateDocTitle } = require("../controllers/docs/updateDocTitle");
 const { updateDocContent } = require("../controllers/docs/updateDocContent");
 const { deleteDoc } = require("../controllers/docs/deleteDoc");
+
 const router = express.Router();
-router.post("/", checkApplicationJson, verifyAccessToken, clubCreate);
+router.post("/", verifyAccessToken, checkFormData, uploadImage, clubCreate);
 router.get("/all", clubAllList);
 router.post("/join", checkApplicationJson, verifyAccessToken, clubJoin);
 

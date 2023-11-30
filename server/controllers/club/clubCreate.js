@@ -1,17 +1,39 @@
-require("../../models/clubModel");
 const userModel = require("../../models/userModel");
 const memberModel = require("../../models/memberModel");
 const clubModel = require("../../models/clubModel");
+const { ImgurClient } = require("imgur");
+
+const uploadImageToImgur = async (file) => {
+  try {
+    const client = new ImgurClient({
+      clientId: process.env.IMGUR_CLIENTID,
+      clientSecret: process.env.IMGUR_CLIENT_SECRET,
+      refreshToken: process.env.IMGUR_REFRESH_TOKEN,
+    });
+    const response = await client.upload({
+      image: file.buffer.toString("base64"),
+      type: "base64",
+      album: process.env.IMGUR_ALBUM_ID,
+    });
+    return response.data.link;
+  } catch (e) {
+    console.error(e);
+    throw new Error("Picture upload error");
+  }
+};
 
 const clubCreate = async (req, res) => {
   try {
-    const { name, description, owner, picture } = req.body;
-
+    const { name, description, owner, image } = req.body;
+    let imageUrl = null;
+    if (req.file) {
+      imageUrl = await uploadImageToImgur(req.file);
+    }
     const newClub = new clubModel({
       name,
       description,
       owner,
-      picture,
+      picture: imageUrl,
     });
 
     const ownerMember = new memberModel({
