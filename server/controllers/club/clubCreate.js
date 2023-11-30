@@ -23,6 +23,7 @@ const clubCreate = async (req, res) => {
     newClub.members.push(ownerMember._id);
 
     const savedClub = await newClub.save();
+    await ownerMember.save();
     await userModel.findByIdAndUpdate(owner.id, {
       $push: { clubs: { id: savedClub._id, name: savedClub.name } },
     });

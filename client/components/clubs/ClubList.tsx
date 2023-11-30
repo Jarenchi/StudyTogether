@@ -20,10 +20,14 @@ const ClubList = () => {
 
   async function joinClubHandler(clubId: string) {
     try {
-      const userId = nookies.get().user_id;
+      const user = {
+        id: nookies.get().user_id,
+        name: nookies.get().user_name,
+        picture: nookies.get().user_picture,
+      };
       const response = await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/clubs/join`,
-        { userId, clubId },
+        { user, clubId },
         { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
       );
       console.log(response.data);

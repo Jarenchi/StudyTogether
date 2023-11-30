@@ -15,7 +15,7 @@ const createDoc = async (req, res) => {
         picture: creater.picture,
       },
       clubId: clubId,
-      permissions: [{ user: creater.id, role: "owner" }],
+      permissions: [{ userId: creater.id, role: "owner" }],
     });
 
     const savedDoc = await newDoc.save();
