@@ -20,7 +20,9 @@ const memberSchema = new Schema(
       default: "",
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+  },
 );
 
 module.exports = mongoose.model("Member", memberSchema);
