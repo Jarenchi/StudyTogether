@@ -49,14 +49,14 @@ const ClubList = () => {
           onClick={() => {
             joinClubHandler(club._id);
           }}
-          disabled={!nookies.get().user_id}
+          disabled={typeof window === "undefined" ? false : !nookies.get().user_id}
         >
           Join
         </Button>
       </CardFooter>
     </Card>
   ));
-  return <>{clubItems}</>;
+  return <div>{clubItems}</div>;
 };
 
 export default ClubList;
