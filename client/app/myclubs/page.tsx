@@ -43,7 +43,12 @@ const Page = () => {
       <div>{club.name}</div>
     </Link>
   ));
-  return <div>{clubItems}</div>;
+  return (
+    <div>
+      <p>社團列表</p>
+      <div>{clubItems}</div>
+    </div>
+  );
 };
 
 export default Page;

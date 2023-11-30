@@ -40,14 +40,23 @@ const ClubList = () => {
     router.push("/myclubs");
   }
   const clubItems = data?.clubs?.map((club: Club) => (
-    <Card key={club._id} className="max-w-md mb-2">
+    <Card key={club._id} className="min-w-[20rem] mb-2">
       <CardHeader>
-        <Avatar>
-          <AvatarImage src={club.picture} />
-          <AvatarFallback>{club.name}</AvatarFallback>
-        </Avatar>
-        <CardTitle>{club.name}</CardTitle>
-        <CardDescription>{club.owner.name}</CardDescription>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Avatar className="mr-4">
+              <AvatarImage src={club.picture} />
+              <AvatarFallback>{club.name}</AvatarFallback>
+            </Avatar>
+            <CardTitle>{club.name}</CardTitle>
+          </div>
+          <div>
+            <CardDescription>
+              創辦人:
+              {club.owner.name}
+            </CardDescription>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <p>{club.description}</p>
@@ -65,7 +74,7 @@ const ClubList = () => {
       </CardFooter>
     </Card>
   ));
-  return <div>{clubItems}</div>;
+  return <div className="flex">{clubItems}</div>;
 };
 
 export default ClubList;
