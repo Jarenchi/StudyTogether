@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/providers/theme-provider";
 import TanstackProvider from "@/providers/tanstackProvider";
 import Header from "@/components/Header";
+import { Toaster } from "@/components/ui/toaster";
 
 export const fontSans = FontSans({
   subsets: ["latin"],
@@ -21,10 +22,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={cn("min-h-screen bg-background font-sans antialiased", fontSans.variable)}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
           <TanstackProvider>
-            <div>
+            <main>
               <Header />
               {children}
-            </div>
+              <Toaster />
+            </main>
           </TanstackProvider>
         </ThemeProvider>
       </body>
