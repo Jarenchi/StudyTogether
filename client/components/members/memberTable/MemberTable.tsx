@@ -15,6 +15,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import AddMemberButton from "../AddMemberButton";
 
 interface DocsTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -46,8 +47,9 @@ export function MemberTable<TData, TValue>({ columns, data }: DocsTableProps<TDa
           placeholder="Filter name"
           value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
           onChange={(event) => table.getColumn("name")?.setFilterValue(event.target.value)}
-          className="max-w-sm"
+          className="max-w-sm mr-2"
         />
+        <AddMemberButton />
       </div>
       <div className="rounded-md border">
         <Table>

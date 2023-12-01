@@ -67,7 +67,6 @@ export const MembersColumns: ColumnDef<Member>[] = [
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Edit file</DropdownMenuItem>
               <DropdownMenuItem>
                 <AlertDialogTrigger>Delete user</AlertDialogTrigger>
               </DropdownMenuItem>
