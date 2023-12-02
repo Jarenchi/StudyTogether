@@ -21,7 +21,7 @@ const clubSchema = z.object({
 });
 
 const CreateClubForm = () => {
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const form = useForm<z.infer<typeof clubSchema>>({
     resolver: zodResolver(clubSchema),
@@ -44,8 +44,10 @@ const CreateClubForm = () => {
       formData.append("owner[id]", userData.id);
       formData.append("owner[name]", userData.name);
       formData.append("members", JSON.stringify([userData]));
-      const selectedFile = fileInputRef?.current?.files[0];
-      formData.append("image", selectedFile);
+      const selectedFile = fileInputRef?.current?.files?.[0];
+      if (selectedFile) {
+        formData.append("image", selectedFile);
+      }
       const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/clubs/`, formData, {
         headers: { Authorization: `Bearer ${nookies.get().access_token}`, "Content-Type": "multipart/form-data" },
       });
