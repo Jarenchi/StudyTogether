@@ -1,5 +1,11 @@
+import CreateEventButton from "@/components/events/CreateEventButton";
+
 const Page = () => {
-  return <div>Page</div>;
+  return (
+    <div>
+      <CreateEventButton />
+    </div>
+  );
 };
 
 export default Page;
