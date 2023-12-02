@@ -24,7 +24,8 @@ const uploadImageToImgur = async (file) => {
 
 const clubCreate = async (req, res) => {
   try {
-    const { name, description, owner, image } = req.body;
+    const { name, description, owner } = req.body;
+    console.log(owner);
     let imageUrl = null;
     if (req.file) {
       imageUrl = await uploadImageToImgur(req.file);

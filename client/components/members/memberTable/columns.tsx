@@ -12,7 +12,8 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { AlertDialog, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import DeleteMemberAlertContent from "./DeleteMemberAlertContent";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -54,7 +55,7 @@ export const MembersColumns: ColumnDef<Member>[] = [
   },
   {
     id: "actions",
-    cell: () => {
+    cell: ({ row }) => {
       return (
         <AlertDialog>
           <DropdownMenu>
@@ -72,6 +73,7 @@ export const MembersColumns: ColumnDef<Member>[] = [
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+          <DeleteMemberAlertContent userId={row.getValue("userId")} />
         </AlertDialog>
       );
     },
