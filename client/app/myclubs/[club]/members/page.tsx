@@ -6,7 +6,6 @@ import nookies from "nookies";
 import axios from "axios";
 import { MemberTable } from "@/components/members/memberTable/MemberTable";
 import { MembersColumns } from "@/components/members/memberTable/columns";
-import { GSSP_NO_RETURNED_VALUE } from "next/dist/lib/constants";
 
 async function fetchMembers(clubId: string) {
   try {

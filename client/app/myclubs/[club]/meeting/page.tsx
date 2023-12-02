@@ -1,21 +1,12 @@
 "use client";
 
 import "@livekit/components-styles";
-import {
-  LiveKitRoom,
-  VideoConference,
-  GridLayout,
-  ParticipantTile,
-  RoomAudioRenderer,
-  ControlBar,
-  useTracks,
-} from "@livekit/components-react";
+import { LiveKitRoom, VideoConference, RoomAudioRenderer } from "@livekit/components-react";
 import { useEffect, useState } from "react";
 import nookies from "nookies";
 import { useParams } from "next/navigation";
 
 export default function Page() {
-  // TODO: get user input for room and name
   const [token, setToken] = useState("");
   const params = useParams();
   useEffect(() => {
