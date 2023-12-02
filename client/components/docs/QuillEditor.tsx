@@ -157,7 +157,7 @@ const QuillEditor = () => {
             onBlur={handleBlur}
             modules={quillModules}
             preserveWhitespace
-            className="h-[70vh] w-[70vw]"
+            className="h-[75vh] w-[70vw]"
           />
         </div>
         <div className="h-[79vh] ml-3">
