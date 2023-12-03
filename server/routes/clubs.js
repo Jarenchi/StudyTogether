@@ -14,6 +14,7 @@ const { updateDocContent } = require("../controllers/docs/updateDocContent");
 const { deleteDoc } = require("../controllers/docs/deleteDoc");
 const { getAllMembers } = require("../controllers/members/getAllMembers");
 const { deleteMember } = require("../controllers/members/deleteMember");
+const { createEvent } = require("../controllers/events/createEvent");
 
 const router = express.Router();
 router.post("/", verifyAccessToken, checkFormData, uploadImage, clubCreate);
@@ -29,5 +30,7 @@ router.delete("/:clubId/docs/:docId", verifyAccessToken, deleteDoc);
 
 router.get("/:clubId/members", verifyAccessToken, getAllMembers);
 router.delete("/:clubId/members/:userId", deleteMember);
+
+router.post("/:clubId/events", createEvent);
 
 module.exports = router;

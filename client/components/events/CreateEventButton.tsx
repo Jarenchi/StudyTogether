@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+import { X } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -12,21 +16,26 @@ import { Button } from "../ui/button";
 import CreateEventForm from "./CreateEventForm";
 
 const CreateEventButton = () => {
+  const [open, setOpen] = useState(false);
   return (
-    <AlertDialog>
+    <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
         <Button>Add Event</Button>
       </AlertDialogTrigger>
-      <AlertDialogContent className="overflow-y-scroll max-h-screen">
+      <AlertDialogContent className="overflow-auto max-h-screen">
+        <Button
+          variant="ghost"
+          size="icon"
+          className="ml-auto"
+          onClick={() => {
+            setOpen(false);
+          }}
+        >
+          <X />
+        </Button>
         <AlertDialogHeader>
-          <AlertDialogDescription>
-            <CreateEventForm />
-          </AlertDialogDescription>
+          <CreateEventForm setOpen={setOpen} />
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction>Continue</AlertDialogAction>
-        </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
   );

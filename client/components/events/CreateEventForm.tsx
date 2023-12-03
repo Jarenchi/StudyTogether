@@ -5,9 +5,12 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
+import { useParams } from "next/navigation";
+import axios from "axios";
+import nookies from "nookies";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
@@ -26,20 +29,65 @@ const eventFormSchema = z.object({
   endTime: z.string(),
   hasSharedFile: z.boolean().default(false).optional(),
   type: z.enum(["online", "offline", "hybrid"]),
-  location: z.string().min(2, { message: "location must be at least 2 characters" }),
-  maxAttendees: z.number().min(1).optional(),
+  location: z.string().optional(),
+  maxPhysicalParticipants: z.string().optional(),
 });
 
-const CreateEventForm = () => {
+interface CreateEventFormProps {
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const CreateEventForm: React.FC<CreateEventFormProps> = ({ setOpen }) => {
+  const params = useParams();
   const form = useForm<z.infer<typeof eventFormSchema>>({
     resolver: zodResolver(eventFormSchema),
     defaultValues: {
+      title: "",
+      startTime: "00:00",
+      endTime: "00:00",
       hasSharedFile: false,
+      location: "",
+      maxPhysicalParticipants: "0",
     },
   });
 
-  function onSubmit(values: z.infer<typeof eventFormSchema>) {
+  async function onSubmit(values: z.infer<typeof eventFormSchema>) {
     console.log(values);
+    try {
+      const clubId = params.club;
+      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/events`, {
+        title: values.title,
+        date: values.date,
+        startTime: values.startTime,
+        endTime: values.endTime,
+        description: values.description,
+        type: values.type,
+        hasSharedFile: values.hasSharedFile,
+        location: values.location,
+        maxPhysicalParticipants: values.maxPhysicalParticipants,
+        creator: {
+          id: nookies.get().user_id,
+          name: nookies.get().user_name,
+          picture: nookies.get().user_image,
+        },
+      });
+      console.log(response.data);
+      if (values.hasSharedFile) {
+        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/docs`, {
+          title: values.title,
+          content: "",
+          creater: {
+            id: nookies.get().user_id,
+            name: nookies.get().user_name,
+            picture: nookies.get().user_image,
+          },
+        });
+        console.log(response.data);
+      }
+      setOpen(false);
+    } catch (error) {
+      console.log(error);
+    }
   }
   return (
     <Form {...form}>
@@ -172,10 +220,10 @@ const CreateEventForm = () => {
         {(form.watch("type") === "offline" || form.watch("type") === "hybrid") && (
           <FormField
             control={form.control}
-            name="maxAttendees"
+            name="maxPhysicalParticipants"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Max Attendees</FormLabel>
+                <FormLabel>Max Physical Attendees</FormLabel>
                 <FormControl>
                   <Input type="number" min={0} {...field} />
                 </FormControl>
