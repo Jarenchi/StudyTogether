@@ -41,6 +41,12 @@ const clubSchema = new Schema(
         ref: "Doc",
       },
     ],
+    events: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Event",
+      },
+    ],
   },
   { timestamps: true },
 );
