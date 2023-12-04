@@ -7,7 +7,7 @@ import axios from "axios";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTrigger } from "@/components/ui/dialog";
 import EventInformation from "@/components/events/event/EventInformation";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { toast } from "@/components/ui/use-toast";
 import EventDescription from "@/components/events/event/EventDescription";
 import { Event } from "@/types/eventType";
 import JoinEventForm from "@/components/events/event/JoinEventForm";
@@ -16,7 +16,6 @@ const Page = () => {
   const params = useParams();
   const clubId = params.club;
   const eventId = params.event;
-  const toast = useToast();
   async function fetchEventList() {
     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/events/${eventId}`);
     return response.data as Event;
@@ -40,6 +39,10 @@ const Page = () => {
         },
         { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
       );
+      console.log(response.data);
+      toast({
+        title: "You joined this event",
+      });
     } catch (error: any) {
       if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");

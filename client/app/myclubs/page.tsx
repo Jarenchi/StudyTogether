@@ -1,13 +1,11 @@
 "use client";
 
-// import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import nookies from "nookies";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { fetchMyClubs } from "@/utils/api";
-// import useClubStore from "@/stores/clubStore";
 
 interface Club {
   id: string;
@@ -19,12 +17,6 @@ const Page = () => {
     queryFn: () => fetchMyClubs(nookies.get().user_id),
     queryKey: ["myclubs"],
   });
-  // const setClubs = useClubStore((state) => state.setClubs);
-  // useEffect(() => {
-  //   if (data) {
-  //     setClubs(data.clubs);
-  //   }
-  // }, [setClubs, data]);
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) {

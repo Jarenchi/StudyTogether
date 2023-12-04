@@ -3,35 +3,10 @@
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import Link from "next/link";
-import nookies from "nookies";
+import { Users, Clock } from "lucide-react";
 import axios from "axios";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-
-interface Event {
-  creator: Creator;
-  _id: string;
-  title: string;
-  description: string;
-  date: string;
-  startTime: string;
-  endTime: string;
-  type: string;
-  location: string;
-  maxPhysicalParticipants: number;
-  clubId: string;
-  physicalParticipants: any[];
-  onlineParticipants: any[];
-  createdAt: string;
-  updatedAt: string;
-  __v: number;
-}
-
-export interface Creator {
-  userId: string;
-  name: string;
-  picture: string;
-}
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Event } from "@/types/eventType";
 
 const EventList = () => {
   const params = useParams();
@@ -65,27 +40,31 @@ const EventList = () => {
             </div>
             <div>
               <CardDescription>
-                建立者:
+                Creator:
                 {event.creator.name}
               </CardDescription>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <p>{formattedDate}</p>
           <div className="flex">
-            <p className="mr-2">時間 :</p>
-            <p>{event.startTime}</p>
-            <span className="mx-2">-</span>
-            <p>{event.endTime}</p>
+            <Clock />
+            <span className="ml-2">{formattedDate}</span>
+            <span className="ml-2">
+              {event.startTime}-{event.endTime}
+            </span>
           </div>
-          <p>參與人數: {participantsNumber}</p>
+          <div className="flex mt-2">
+            <Users />
+            <span className="ml-2">Total Participants :</span>
+            <span className="ml-2">{participantsNumber}</span>
+          </div>
         </CardContent>
       </Card>
     );
   });
 
-  return <div className="flex">{eventItems}</div>;
+  return <div className="flex gap-2 flex-wrap">{eventItems}</div>;
 };
 
 export default EventList;

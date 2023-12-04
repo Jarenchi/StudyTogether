@@ -70,7 +70,7 @@ const ClubList = () => {
       </CardFooter>
     </Card>
   ));
-  return <div className="flex">{clubItems}</div>;
+  return <div className="flex gap-2 flex-wrap">{clubItems}</div>;
 };
 
 export default ClubList;
