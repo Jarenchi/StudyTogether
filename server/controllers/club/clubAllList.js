@@ -9,6 +9,7 @@ const clubAllList = async (req, res) => {
           description: 1,
           picture: 1,
           owner: 1,
+          members: 1,
           memberCount: { $size: "$members" },
         },
       },

@@ -9,17 +9,22 @@ import nookies from "nookies";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/use-toast";
 import { Textarea } from "../ui/textarea";
 // import { FancyMultiSelect } from "../ui/multi-select";
 
 const clubSchema = z.object({
   clubName: z.string().min(1, { message: "Club Name is required" }),
   clubDescription: z.string().min(1, { message: "Club Description is required" }),
-  clubImage: z.string().refine((value) => /\.(jpg|jpeg|png)$/.test(value), {
-    message: "Please upload an image",
-  }),
+  clubImage: z
+    .string()
+    .refine((value) => /\.(jpg|jpeg|png)$/.test(value), {
+      message: "Please upload an image",
+    })
+    .optional(),
 });
 
+// TODO:建立club後更新club資料(react query: useMutation)
 const CreateClubForm = () => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -48,10 +53,15 @@ const CreateClubForm = () => {
       if (selectedFile) {
         formData.append("image", selectedFile);
       }
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/clubs/`, formData, {
+      await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/clubs/`, formData, {
         headers: { Authorization: `Bearer ${nookies.get().access_token}`, "Content-Type": "multipart/form-data" },
       });
-      console.log(response.data);
+      form.reset({
+        clubName: "",
+        clubDescription: "",
+        clubImage: "",
+      });
+      toast({ title: "Club Created" });
     } catch (error: any) {
       if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");
