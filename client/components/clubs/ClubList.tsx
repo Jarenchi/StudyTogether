@@ -35,41 +35,46 @@ const ClubList = () => {
     }
     router.push("/myclubs");
   }
-  const clubItems = data?.clubs?.map((club: Club) => (
-    <Card key={club._id} className="min-w-[20rem] mb-2">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <Avatar className="mr-4">
-              <AvatarImage src={club.picture} />
-              <AvatarFallback>{club.name}</AvatarFallback>
-            </Avatar>
-            <CardTitle>{club.name}</CardTitle>
+  const clubItems = data?.clubs?.map((club: Club) => {
+    const isMember = club?.members?.includes(nookies.get().user_id);
+    return (
+      <Card key={club._id} className="min-w-[20rem] mb-2">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center">
+              <Avatar className="mr-4">
+                <AvatarImage src={club.picture} />
+                <AvatarFallback>{club.name}</AvatarFallback>
+              </Avatar>
+              <CardTitle>{club.name}</CardTitle>
+            </div>
+            <div>
+              <CardDescription>
+                創辦人:
+                {club.owner.name}
+              </CardDescription>
+            </div>
           </div>
-          <div>
-            <CardDescription>
-              創辦人:
-              {club.owner.name}
-            </CardDescription>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <p>{club.description}</p>
-      </CardContent>
-      <CardFooter>
-        <Button
-          type="button"
-          onClick={() => {
-            joinClubHandler(club._id);
-          }}
-          disabled={typeof window === "undefined" ? false : !nookies.get().user_id}
-        >
-          Join
-        </Button>
-      </CardFooter>
-    </Card>
-  ));
+        </CardHeader>
+        <CardContent className="max-w-lg lg:max-w-2xl">
+          <pre className="font-sans break-words whitespace-pre-wrap">{club.description}</pre>
+        </CardContent>
+        <CardFooter>
+          {isMember || (
+            <Button
+              type="button"
+              onClick={() => {
+                joinClubHandler(club._id);
+              }}
+              disabled={typeof window === "undefined" ? false : !nookies.get().user_id}
+            >
+              Join
+            </Button>
+          )}
+        </CardFooter>
+      </Card>
+    );
+  });
   return <div className="flex gap-2 flex-wrap">{clubItems}</div>;
 };
 

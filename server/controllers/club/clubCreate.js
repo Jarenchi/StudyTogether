@@ -43,7 +43,7 @@ const clubCreate = async (req, res) => {
       picture: owner.picture,
       clubId: newClub._id,
     });
-    newClub.members.push(ownerMember._id);
+    newClub.members.push(owner.id);
 
     const savedClub = await newClub.save();
     await ownerMember.save();

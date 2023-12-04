@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/components/ui/use-toast";
 
 // TODO:登入後更改TAB處理
 interface SignUpFormProps {
@@ -38,9 +39,6 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ tabChange }) => {
       confirmPassword: "",
     },
   });
-  // const [open, setOpen] = useState(false);
-  // const [message, setMessage] = useState("");
-
   async function onSubmit(values: z.infer<typeof signInSchema>) {
     try {
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/user/signup`, {
@@ -48,13 +46,18 @@ const SignUpForm: React.FC<SignUpFormProps> = ({ tabChange }) => {
         email: values.email,
         password: values.password,
       });
-      alert("註冊成功");
+      form.reset({
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+      });
+      toast({ title: "Create Account successfully" });
       tabChange("signin");
     } catch (error: any) {
-      if (error.response.status === 404) {
-        console.log("此信箱已註冊");
-      }
-      if (error?.response?.status >= 500 && error?.response?.status < 600) {
+      if (error.response.status === 400) {
+        alert("User already exists");
+      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");
       } else {
         alert(error);
