@@ -8,7 +8,7 @@ const getAllDocs = async (req, res) => {
       return res.status(404).json({ message: "Club not found" });
     }
     const allDocs = club.docs;
-    res.json(allDocs);
+    res.status(200).json(allDocs);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Internal Server Error" });

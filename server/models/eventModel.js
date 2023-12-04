@@ -31,12 +31,12 @@ const eventSchema = new Schema(
       type: String,
     },
     maxPhysicalParticipants: {
-      type: String,
+      type: Number,
     },
     creator: {
       userId: {
         type: Schema.Types.ObjectId,
-        ref: "User", // Make sure you have a User model
+        ref: "User",
       },
       name: {
         type: String,
