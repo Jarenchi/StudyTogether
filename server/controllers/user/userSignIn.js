@@ -6,7 +6,6 @@ const userSignIn = async (req, res) => {
     const { email, password } = req.body;
 
     const user = await userModel.findOne({ email });
-    console.log(user);
     if (!user) {
       return res.status(401).json({ error: "Invalid credentials" });
     }

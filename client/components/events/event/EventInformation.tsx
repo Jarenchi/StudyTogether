@@ -40,14 +40,30 @@ const EventInformation: React.FC<EventInformationProps> = ({ data }) => {
         {data.type !== "online" && (
           <div className="flex mt-2">
             <Users />
-            <span className="ml-2">on-site participants</span>
-            <span className="ml-2">{data.physicalParticipants.length}</span>
+            <span className="ml-2">Physical Participants :</span>
+            <span className="ml-2">
+              {data.physicalParticipants.length} / {data.maxPhysicalParticipants}
+            </span>
+          </div>
+        )}
+        {data.type !== "online" && (
+          <div className="flex mt-2">
+            <Users />
+            <span className="ml-2">Online Participants :</span>
+            <span className="ml-2">{data.onlineParticipants.length} </span>
           </div>
         )}
         {data.location && (
           <div className="flex mt-2">
             <MapPin />
-            <span className="ml-2">{data.location}</span>
+            <Link
+              href={`https://www.google.com/maps/search/?api=1&query=${data.location}`}
+              rel="noopener noreferrer"
+              target="_blank"
+              className="ml-2 hover:text-primary"
+            >
+              {data.location}
+            </Link>
           </div>
         )}
       </CardContent>

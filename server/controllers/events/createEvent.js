@@ -1,5 +1,6 @@
 const clubModel = require("../../models/clubModel");
 const eventModel = require("../../models/eventModel");
+const userModel = require("../../models/userModel");
 
 const createEvent = async (req, res) => {
   try {
@@ -31,6 +32,15 @@ const createEvent = async (req, res) => {
     });
 
     const savedEvent = await newEvent.save();
+
+    await userModel.findOneAndUpdate(
+      { _id: creator.id },
+      {
+        $addToSet: {
+          events: { eventId: savedEvent._id, type: type },
+        },
+      },
+    );
 
     club.events.push(savedEvent._id);
     await club.save();
