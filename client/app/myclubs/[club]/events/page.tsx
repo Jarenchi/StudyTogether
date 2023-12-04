@@ -1,9 +1,11 @@
 import CreateEventButton from "@/components/events/CreateEventButton";
+import EventList from "@/components/events/EventList";
 
 const Page = () => {
   return (
-    <div>
+    <div className="mx-auto">
       <CreateEventButton />
+      <EventList />
     </div>
   );
 };

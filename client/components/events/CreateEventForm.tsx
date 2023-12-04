@@ -55,35 +55,43 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({ setOpen }) => {
     console.log(values);
     try {
       const clubId = params.club;
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/events`, {
-        title: values.title,
-        date: values.date,
-        startTime: values.startTime,
-        endTime: values.endTime,
-        description: values.description,
-        type: values.type,
-        hasSharedFile: values.hasSharedFile,
-        location: values.location,
-        maxPhysicalParticipants: values.maxPhysicalParticipants,
-        creator: {
-          id: nookies.get().user_id,
-          name: nookies.get().user_name,
-          picture: nookies.get().user_image,
-        },
-      });
-      console.log(response.data);
-      if (values.hasSharedFile) {
-        const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/docs`, {
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/events`,
+        {
           title: values.title,
-          content: "",
-          creater: {
+          date: values.date,
+          startTime: values.startTime,
+          endTime: values.endTime,
+          description: values.description,
+          type: values.type,
+          hasSharedFile: values.hasSharedFile,
+          location: values.location,
+          maxPhysicalParticipants: Number(values.maxPhysicalParticipants),
+          creator: {
             id: nookies.get().user_id,
             name: nookies.get().user_name,
             picture: nookies.get().user_image,
           },
-        });
-        console.log(response.data);
+        },
+        { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
+      );
+      console.log(response.data);
+      if (values.hasSharedFile) {
+        await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/docs`,
+          {
+            title: values.title,
+            content: "",
+            creater: {
+              id: nookies.get().user_id,
+              name: nookies.get().user_name,
+              picture: nookies.get().user_image,
+            },
+          },
+          { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
+        );
       }
+      toast({ title: "event created successfully" });
       setOpen(false);
     } catch (error) {
       console.log(error);

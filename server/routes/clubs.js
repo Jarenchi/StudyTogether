@@ -15,13 +15,15 @@ const { deleteDoc } = require("../controllers/docs/deleteDoc");
 const { getAllMembers } = require("../controllers/members/getAllMembers");
 const { deleteMember } = require("../controllers/members/deleteMember");
 const { createEvent } = require("../controllers/events/createEvent");
+const { getAllEvents } = require("../controllers/events/getAllEvents");
+const { getEventById } = require("../controllers/events/getEventById");
 
 const router = express.Router();
 router.post("/", verifyAccessToken, checkFormData, uploadImage, clubCreate);
 router.get("/all", clubAllList);
 router.post("/join", checkApplicationJson, verifyAccessToken, clubJoin);
 
-router.post("/:clubId/docs", createDoc);
+router.post("/:clubId/docs", verifyAccessToken, createDoc);
 router.get("/:clubId/docs", getAllDocs);
 router.get("/:clubId/docs/:docId", verifyAccessToken, getDocById);
 router.put("/:clubId/docs/:docId/title", verifyAccessToken, updateDocTitle);
@@ -31,6 +33,8 @@ router.delete("/:clubId/docs/:docId", verifyAccessToken, deleteDoc);
 router.get("/:clubId/members", verifyAccessToken, getAllMembers);
 router.delete("/:clubId/members/:userId", deleteMember);
 
-router.post("/:clubId/events", createEvent);
+router.post("/:clubId/events", verifyAccessToken, createEvent);
+router.get("/:clubId/events", getAllEvents);
+router.get("/:clubId/events/:eventId", getEventById);
 
 module.exports = router;
