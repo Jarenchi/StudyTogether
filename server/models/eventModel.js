@@ -71,7 +71,7 @@ const eventSchema = new Schema(
     ],
     clubId: {
       type: Schema.Types.ObjectId,
-      ref: "Club", // Make sure you have a Club model
+      ref: "Club",
       required: true,
     },
   },

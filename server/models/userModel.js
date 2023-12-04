@@ -37,6 +37,18 @@ const userSchema = new Schema(
       default: 0,
     },
     clubs: [clubSchema],
+    events: [
+      {
+        eventId: {
+          type: Schema.Types.ObjectId,
+          ref: "Event",
+        },
+        type: {
+          type: String,
+          enum: ["online", "offline", "hybrid"],
+        },
+      },
+    ],
   },
   { timestamps: true },
 );

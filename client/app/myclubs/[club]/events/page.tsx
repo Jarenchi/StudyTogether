@@ -3,8 +3,10 @@ import EventList from "@/components/events/EventList";
 
 const Page = () => {
   return (
-    <div className="mx-auto">
-      <CreateEventButton />
+    <div className="mx-auto mt-2">
+      <div className="mb-2">
+        <CreateEventButton />
+      </div>
       <EventList />
     </div>
   );

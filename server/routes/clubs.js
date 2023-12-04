@@ -17,6 +17,8 @@ const { deleteMember } = require("../controllers/members/deleteMember");
 const { createEvent } = require("../controllers/events/createEvent");
 const { getAllEvents } = require("../controllers/events/getAllEvents");
 const { getEventById } = require("../controllers/events/getEventById");
+const { joinOnlineEvent } = require("../controllers/events/joinOnlineEvent");
+const { joinPhysicalEvent } = require("../controllers/events/joinPhysicalEvent");
 
 const router = express.Router();
 router.post("/", verifyAccessToken, checkFormData, uploadImage, clubCreate);
@@ -36,5 +38,7 @@ router.delete("/:clubId/members/:userId", deleteMember);
 router.post("/:clubId/events", verifyAccessToken, createEvent);
 router.get("/:clubId/events", getAllEvents);
 router.get("/:clubId/events/:eventId", getEventById);
+router.put("/:clubId/events/:eventId/join-online", verifyAccessToken, joinOnlineEvent);
+router.put("/:clubId/events/:eventId/join-physical", verifyAccessToken, joinPhysicalEvent);
 
 module.exports = router;
