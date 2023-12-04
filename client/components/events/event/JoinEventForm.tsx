@@ -37,6 +37,7 @@ const JoinEventForm = () => {
           },
           { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
         );
+        console.log(response.data);
         toast({
           title: "You joined this event",
         });
@@ -53,6 +54,7 @@ const JoinEventForm = () => {
           },
           { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
         );
+        console.log(response.data);
       }
       toast({
         title: "You joined this event",
