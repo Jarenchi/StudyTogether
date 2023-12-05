@@ -3,11 +3,13 @@ const { checkApplicationJson } = require("../middlewares/checkApplicationJson");
 const { verifyAccessToken } = require("../middlewares/verifyAccessToken");
 const { checkFormData } = require("../middlewares/checkFormData");
 const { uploadImage } = require("../middlewares/uploadImage");
+
 const { clubCreate } = require("../controllers/club/clubCreate");
 const { clubAllList } = require("../controllers/club/clubAllList");
 const { clubJoin } = require("../controllers/club/clubJoin");
 const { clubName } = require("../controllers/club/clubName");
 const { getClubById } = require("../controllers/club/getClubById");
+const { updateClubDescription } = require("../controllers/club/updateClubDescription");
 
 const { createDoc } = require("../controllers/docs/createDoc");
 const { getAllDocs } = require("../controllers/docs/getAllDocs");
@@ -31,6 +33,7 @@ router.get("/all", clubAllList);
 router.post("/join", checkApplicationJson, verifyAccessToken, clubJoin);
 router.get("/:clubId/name", clubName);
 router.get("/:clubId", getClubById);
+router.put("/:clubId/description", verifyAccessToken, updateClubDescription);
 
 router.post("/:clubId/docs", verifyAccessToken, createDoc);
 router.get("/:clubId/docs", getAllDocs);
