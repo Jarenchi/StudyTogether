@@ -7,6 +7,7 @@ const { clubCreate } = require("../controllers/club/clubCreate");
 const { clubAllList } = require("../controllers/club/clubAllList");
 const { clubJoin } = require("../controllers/club/clubJoin");
 const { clubName } = require("../controllers/club/clubName");
+const { getClubById } = require("../controllers/club/getClubById");
 
 const { createDoc } = require("../controllers/docs/createDoc");
 const { getAllDocs } = require("../controllers/docs/getAllDocs");
@@ -29,6 +30,7 @@ router.post("/", verifyAccessToken, checkFormData, uploadImage, clubCreate);
 router.get("/all", clubAllList);
 router.post("/join", checkApplicationJson, verifyAccessToken, clubJoin);
 router.get("/:clubId/name", clubName);
+router.get("/:clubId", getClubById);
 
 router.post("/:clubId/docs", verifyAccessToken, createDoc);
 router.get("/:clubId/docs", getAllDocs);
