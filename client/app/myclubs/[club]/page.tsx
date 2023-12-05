@@ -24,7 +24,7 @@ const Page = ({ params }: { params: { club: string } }) => {
   return (
     <div className="mx-auto flex flex-col items-center mt-3">
       <ClubBanner data={data!} />
-      <ClubDescription description={data?.description!} />
+      <ClubDescription description={data?.description!} owner={data?.owner!} club={params.club} />
       <ClubInformation data={data!} />
     </div>
   );
