@@ -1,5 +1,6 @@
 "use client";
 
+import { useQueryClient } from "@tanstack/react-query";
 import { useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -24,8 +25,12 @@ const clubSchema = z.object({
     .optional(),
 });
 
-// TODO:建立club後更新club資料(react query: useMutation)
-const CreateClubForm = () => {
+interface CreateClubFormProps {
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+// TODO:建立club後更新club資料(react query: useMutation,invalidateQueries)
+const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const form = useForm<z.infer<typeof clubSchema>>({
@@ -36,6 +41,7 @@ const CreateClubForm = () => {
     },
   });
 
+  const queryClient = useQueryClient();
   async function onSubmit(values: z.infer<typeof clubSchema>) {
     try {
       const userData = {
@@ -62,6 +68,11 @@ const CreateClubForm = () => {
         clubImage: "",
       });
       toast({ title: "Club Created" });
+
+      // TODO:為甚麼沒有用
+      queryClient.invalidateQueries({ queryKey: ["clublist"] });
+
+      setOpen(false);
     } catch (error: any) {
       if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");

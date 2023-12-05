@@ -50,7 +50,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({ setOpen }) => {
       maxPhysicalParticipants: "0",
     },
   });
-
+  // TODO:建立event後更新event資料(react query: useMutation,invalidateQueries)
   async function onSubmit(values: z.infer<typeof eventFormSchema>) {
     console.log(values);
     try {
