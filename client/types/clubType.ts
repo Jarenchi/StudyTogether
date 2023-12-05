@@ -5,6 +5,8 @@ export interface Club {
   description: string;
   picture: string;
   members: string[];
+  docs: string[];
+  events: string[];
   createdAt: string;
   updatedAt: string;
   __v: number;
