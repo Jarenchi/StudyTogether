@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import nookies from "nookies";
 import axios from "axios";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { fetchClubList } from "@/utils/api";
 import { Club } from "@/types/clubType";
@@ -56,9 +56,9 @@ const ClubList = () => {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="max-w-lg lg:max-w-2xl">
+        {/* <CardContent className="max-w-lg lg:max-w-2xl">
           <pre className="font-sans break-words whitespace-pre-wrap">{club.description}</pre>
-        </CardContent>
+        </CardContent> */}
         <CardFooter>
           {isMember || (
             <Button
