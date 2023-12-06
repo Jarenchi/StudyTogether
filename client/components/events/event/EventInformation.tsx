@@ -1,4 +1,4 @@
-import { Clock, Tag, MapPin, Users } from "lucide-react";
+import { Clock, Tag, MapPin, Users, Video } from "lucide-react";
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -37,7 +37,7 @@ const EventInformation: React.FC<EventInformationProps> = ({ data }) => {
           <span className="ml-2">Total Participants :</span>
           <span className="ml-2">{participantsNumber}</span>
         </div>
-        {data.type !== "online" && (
+        {data.type === "hybrid" && (
           <div className="flex mt-2">
             <Users />
             <span className="ml-2">Physical Participants :</span>
@@ -46,7 +46,7 @@ const EventInformation: React.FC<EventInformationProps> = ({ data }) => {
             </span>
           </div>
         )}
-        {data.type === "online" && (
+        {data.type === "hybrid" && (
           <div className="flex mt-2">
             <Users />
             <span className="ml-2">Online Participants :</span>
@@ -63,6 +63,14 @@ const EventInformation: React.FC<EventInformationProps> = ({ data }) => {
               className="ml-2 hover:text-primary"
             >
               {data.location}
+            </Link>
+          </div>
+        )}
+        {data.type !== "offline" && (
+          <div className="flex mt-2">
+            <Video />
+            <Link href={`${data._id}/meeting`} target="_blank" className="ml-2 text-primary">
+              Meeting Link
             </Link>
           </div>
         )}

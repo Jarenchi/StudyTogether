@@ -2,67 +2,84 @@
 
 import * as React from "react";
 import { X } from "lucide-react";
-
 import { Badge } from "@/components/ui/badge";
 import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
 import { Command as CommandPrimitive } from "cmdk";
 
-type Framework = Record<"value" | "label", string>;
+// Define the type for the topic
+type Topic = Record<"value" | "label", string>;
 
-const FRAMEWORKS = [
+// Common study group topics
+const TOPICS: Topic[] = [
   {
-    value: "next.js",
-    label: "Next.js",
+    value: "javascript",
+    label: "JavaScript",
   },
   {
-    value: "sveltekit",
-    label: "SvelteKit",
+    value: "typescript",
+    label: "TypeScript",
   },
   {
-    value: "nuxt.js",
-    label: "Nuxt.js",
+    value: "react",
+    label: "React",
   },
   {
-    value: "remix",
-    label: "Remix",
+    value: "vue",
+    label: "Vue.js",
   },
   {
-    value: "astro",
-    label: "Astro",
+    value: "angular",
+    label: "Angular",
   },
   {
-    value: "wordpress",
-    label: "WordPress",
+    value: "python",
+    label: "Python",
   },
   {
-    value: "express.js",
-    label: "Express.js",
+    value: "java",
+    label: "Java",
   },
   {
-    value: "nest.js",
-    label: "Nest.js",
+    value: "cplusplus",
+    label: "C++",
   },
-] satisfies Framework[];
+] as Topic[];
 
-export function FancyMultiSelect({ onChange }: { onChange: (selected: Framework[]) => void }) {
+// Define the props for FancyMultiSelect
+interface FancyMultiSelectProps {
+  onChange: (selected: Topic[]) => void;
+}
+
+// FancyMultiSelect component
+export function FancyMultiSelect({ onChange }: FancyMultiSelectProps) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [open, setOpen] = React.useState(false);
-  const [selected, setSelected] = React.useState<Framework[]>([FRAMEWORKS[4]]);
+  const [selected, setSelected] = React.useState<Topic[]>([]);
   const [inputValue, setInputValue] = React.useState("");
 
-  const handleUnselect = React.useCallback((framework: Framework) => {
-    setSelected((prev) => prev.filter((s) => s.value !== framework.value));
+  React.useEffect(() => {
+    onChange(selected);
+  }, [selected, onChange]);
+
+  // Function to handle unselecting a topic
+  const handleUnselect = React.useCallback((topic: Topic) => {
+    setSelected((prev) => prev.filter((s) => s.value !== topic.value));
   }, []);
 
+  // Function to handle selecting a topic
   const handleSelect = React.useCallback(
-    (framework: Framework) => {
+    (topic: Topic) => {
       setInputValue("");
-      setSelected((prev) => [...prev, framework]);
-      onChange([...selected, framework]); // 将选择的值传递给父组件
+      setSelected((prev) => {
+        const newSelected = [...prev, topic];
+        onChange(newSelected);
+        return newSelected;
+      });
     },
-    [selected, onChange],
+    [onChange],
   );
 
+  // Function to handle keyboard events
   const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLDivElement>) => {
     const input = inputRef.current;
     if (input) {
@@ -75,42 +92,42 @@ export function FancyMultiSelect({ onChange }: { onChange: (selected: Framework[
           });
         }
       }
-      // This is not a default behaviour of the <input /> field
+      // This is not a default behavior of the <input /> field
       if (e.key === "Escape") {
         input.blur();
       }
     }
   }, []);
 
-  const selectables = FRAMEWORKS.filter((framework) => !selected.includes(framework));
+  // Filter the topics that are not selected
+  const selectables = TOPICS.filter((topic) => !selected.includes(topic));
 
+  // Render the FancyMultiSelect component
   return (
     <Command onKeyDown={handleKeyDown} className="overflow-visible bg-transparent">
       <div className="group border border-input px-3 py-2 text-sm ring-offset-background rounded-md focus-within:ring-2 focus-within:ring-ring focus-within:ring-offset-2">
         <div className="flex gap-1 flex-wrap">
-          {selected.map((framework) => {
-            return (
-              <Badge key={framework.value} variant="secondary">
-                {framework.label}
-                <button
-                  type="button"
-                  className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      handleUnselect(framework);
-                    }
-                  }}
-                  onMouseDown={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                  }}
-                  onClick={() => handleUnselect(framework)}
-                >
-                  <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
-                </button>
-              </Badge>
-            );
-          })}
+          {selected.map((topic) => (
+            <Badge key={topic.value} variant="secondary">
+              {topic.label}
+              <button
+                type="button"
+                className="ml-1 ring-offset-background rounded-full outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleUnselect(topic);
+                  }
+                }}
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                }}
+                onClick={() => handleUnselect(topic)}
+              >
+                <X className="h-3 w-3 text-muted-foreground hover:text-foreground" />
+              </button>
+            </Badge>
+          ))}
           {/* Avoid having the "Search" Icon */}
           <CommandPrimitive.Input
             ref={inputRef}
@@ -118,7 +135,7 @@ export function FancyMultiSelect({ onChange }: { onChange: (selected: Framework[
             onValueChange={setInputValue}
             onBlur={() => setOpen(false)}
             onFocus={() => setOpen(true)}
-            placeholder="Select frameworks..."
+            placeholder="Select topics..."
             className="ml-2 bg-transparent outline-none placeholder:text-muted-foreground flex-1"
           />
         </div>
@@ -127,21 +144,19 @@ export function FancyMultiSelect({ onChange }: { onChange: (selected: Framework[
         {open && selectables.length > 0 ? (
           <div className="absolute w-full z-10 top-0 rounded-md border bg-popover text-popover-foreground shadow-md outline-none animate-in">
             <CommandGroup className="h-full overflow-auto">
-              {selectables.map((framework) => {
-                return (
-                  <CommandItem
-                    key={framework.value}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
-                    onSelect={(value) => handleSelect(framework)}
-                    className="cursor-pointer"
-                  >
-                    {framework.label}
-                  </CommandItem>
-                );
-              })}
+              {selectables.map((topic) => (
+                <CommandItem
+                  key={topic.value}
+                  onMouseDown={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                  }}
+                  onSelect={() => handleSelect(topic)}
+                  className="cursor-pointer"
+                >
+                  {topic.label}
+                </CommandItem>
+              ))}
             </CommandGroup>
           </div>
         ) : null}

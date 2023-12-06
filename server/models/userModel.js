@@ -14,6 +14,17 @@ const clubSchema = new Schema(
   { _id: false },
 );
 
+const eventSchema = new Schema({
+  eventId: {
+    type: Schema.Types.ObjectId,
+    ref: "Event",
+  },
+  type: {
+    type: String,
+    enum: ["online", "offline"],
+  },
+});
+
 const userSchema = new Schema(
   {
     name: {
@@ -37,18 +48,7 @@ const userSchema = new Schema(
       default: 0,
     },
     clubs: [clubSchema],
-    events: [
-      {
-        eventId: {
-          type: Schema.Types.ObjectId,
-          ref: "Event",
-        },
-        type: {
-          type: String,
-          enum: ["online", "offline", "hybrid"],
-        },
-      },
-    ],
+    events: [eventSchema],
   },
   { timestamps: true },
 );

@@ -107,7 +107,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({ setOpen }) => {
 
   // TODO:建立event後更新event資料(react query: useMutation,invalidateQueries)
   async function onSubmit(values: z.infer<typeof eventFormSchema>) {
-    mutation.mutateAsync(values);
+    await mutation.mutateAsync(values);
   }
   return (
     <Form {...form}>
