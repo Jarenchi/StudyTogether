@@ -13,9 +13,10 @@ interface Club {
 }
 const Page = () => {
   const pathname = usePathname();
+  const userId = nookies.get().user_id;
   const { data, isLoading, isError } = useQuery({
-    queryFn: () => fetchMyClubs(nookies.get().user_id),
-    queryKey: ["myclubs"],
+    queryFn: () => fetchMyClubs(userId),
+    queryKey: ["myclubs", userId],
   });
 
   if (isLoading) return <div>Loading...</div>;
@@ -37,7 +38,7 @@ const Page = () => {
   ));
   return (
     <div>
-      <p>社團列表</p>
+      <p>ClubList</p>
       <div>{clubItems}</div>
     </div>
   );

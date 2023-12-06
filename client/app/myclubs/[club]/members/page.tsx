@@ -23,7 +23,7 @@ const Page = () => {
   const params = useParams();
   const { data, isLoading, isError } = useQuery({
     queryFn: () => fetchMembers(params.club as string),
-    queryKey: ["members"],
+    queryKey: ["members", params.club],
   });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>500 Internal Server Error</div>;

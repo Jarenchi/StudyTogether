@@ -6,6 +6,7 @@ import * as z from "zod";
 import axios from "axios";
 import nookies from "nookies";
 import { useParams } from "next/navigation";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
@@ -27,38 +28,73 @@ const FormSchema = z.object({
 
 const AddMemberButton = () => {
   const params = useParams();
+  const clubId = params.club;
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
+    defaultValues: {
+      userId: "",
+    },
   });
 
-  async function onSubmit(values: z.infer<typeof FormSchema>) {
-    try {
-      const clubId = params.club;
-      const { userId } = values;
-      const response = await axios.post(
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (values: { userId: string }) =>
+      axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/clubs/join`,
-        { userId, clubId },
+        { userId: values.userId, clubId },
         { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
-      );
-      console.log(response.data);
+      ),
+    onSuccess: () => {
       toast({
         title: "user joined",
       });
-    } catch (error: any) {
+      queryClient.invalidateQueries({ queryKey: ["members", clubId] });
+    },
+    onError: (error: any) => {
       if (error?.response?.status === 404) {
         toast({
           title: "Club or user not found",
         });
-      }
-      if (error?.response?.status === 400) {
+      } else if (error?.response?.status === 400) {
         toast({
           title: "User is already in the club",
         });
-      }
-      if (error?.response?.status >= 500 && error?.response?.status < 600) {
+      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");
+      } else {
+        alert(error);
       }
-    }
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof FormSchema>) {
+    mutation.mutateAsync(values);
+    // try {
+    //   const { userId } = values;
+    //   const response = await axios.post(
+    //     `${process.env.NEXT_PUBLIC_API_URL}/clubs/join`,
+    //     { userId, clubId },
+    //     { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
+    //   );
+    //   console.log(response.data);
+    //   toast({
+    //     title: "user joined",
+    //   });
+    // } catch (error: any) {
+    //   if (error?.response?.status === 404) {
+    //     toast({
+    //       title: "Club or user not found",
+    //     });
+    //   }
+    //   if (error?.response?.status === 400) {
+    //     toast({
+    //       title: "User is already in the club",
+    //     });
+    //   }
+    //   if (error?.response?.status >= 500 && error?.response?.status < 600) {
+    //     alert("請稍後再試或和我們的技術團隊聯絡");
+    //   }
+    // }
   }
 
   return (
@@ -69,7 +105,7 @@ const AddMemberButton = () => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle className="mb-3">Add New Member (Enter user id)</DialogTitle>
-          <DialogDescription>
+          <DialogDescription asChild>
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="flex">
                 <FormField

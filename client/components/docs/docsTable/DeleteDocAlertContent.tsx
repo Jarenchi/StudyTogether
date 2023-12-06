@@ -4,6 +4,7 @@ import { FC } from "react";
 import axios from "axios";
 import nookies from "nookies";
 import { useParams } from "next/navigation";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   AlertDialogAction,
   AlertDialogCancel,
@@ -20,17 +21,26 @@ interface DeleteButtonProps {
 }
 const DeleteDocAlertContent: FC<DeleteButtonProps> = ({ docId }) => {
   const { club } = useParams();
-  async function deleteDocHandler() {
-    try {
-      const response = await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${club}/docs/${docId}`, {
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: () =>
+      axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${club}/docs/${docId}`, {
         headers: { Authorization: `Bearer ${nookies.get().access_token}` },
-      });
-      // TODO:刪除後重新rerender table
-      console.log(response.data);
+      }),
+    onSuccess: () => {
       toast({ title: "doc deleted successfully" });
-    } catch (error) {
-      console.log(error);
-    }
+      queryClient.invalidateQueries({ queryKey: ["docs", club] });
+    },
+    onError: (error: any) => {
+      if (error?.response?.status >= 500 && error?.response?.status < 600) {
+        alert("請稍後再試或和我們的技術團隊聯絡");
+      } else {
+        alert(error);
+      }
+    },
+  });
+  async function deleteDocHandler() {
+    await mutation.mutateAsync();
   }
 
   return (

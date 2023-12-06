@@ -15,21 +15,26 @@ const CreateDocButton = () => {
   async function createDocHandler() {
     setLoading(true);
     try {
-      const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/docs`, {
-        title: formattedTime,
-        content: "",
-        creater: {
-          id: nookies.get().user_id,
-          name: nookies.get().user_name,
-          picture: nookies.get().user_image,
+      const response = await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/docs`,
+        {
+          title: formattedTime,
+          content: "",
+          creater: {
+            id: nookies.get().user_id,
+            name: nookies.get().user_name,
+            picture: nookies.get().user_image,
+          },
         },
-      });
+        { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
+      );
       console.log(response);
       router.push(`/myclubs/${clubId}/docs/${response.data._id}`);
     } catch (error: any) {
       if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");
       }
+      console.log(error);
     } finally {
       setLoading(false);
     }

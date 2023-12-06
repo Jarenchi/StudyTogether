@@ -12,7 +12,6 @@ const EventList = () => {
   const params = useParams();
   const clubId = params.club;
   async function fetchEventList() {
-    console.log(clubId);
     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/events`);
     return response.data;
   }
@@ -22,7 +21,6 @@ const EventList = () => {
   });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>500 Internal Server Error</div>;
-  console.log(data);
   const eventItems = data.map((event: Event) => {
     const date = new Date(event.date);
     const formattedDate = date.toLocaleDateString();
