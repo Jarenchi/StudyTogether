@@ -1,21 +1,21 @@
 const eventModel = require("../../models/eventModel");
 const userModel = require("../../models/userModel");
 
-const joinOnlineEvent = async (req, res) => {
+const cancelEventParticipation = async (req, res) => {
   try {
     const { clubId, eventId } = req.params;
-    const { userId, name, picture } = req.body;
+    const { userId } = req.body;
     const event = await eventModel.findOneAndUpdate(
       { _id: eventId, clubId },
       {
-        $addToSet: {
-          onlineParticipants: { userId, name, picture },
+        $pull: {
+          onlineParticipants: { userId },
+          physicalParticipants: { userId },
         },
       },
       { new: true },
     );
     console.log(event);
-
     if (!event) {
       return res.status(404).json({ error: "Event not found" });
     }
@@ -23,8 +23,8 @@ const joinOnlineEvent = async (req, res) => {
     await userModel.findOneAndUpdate(
       { _id: userId },
       {
-        $addToSet: {
-          events: { eventId, type: "online" },
+        $pull: {
+          events: { eventId },
         },
       },
     );
@@ -37,5 +37,5 @@ const joinOnlineEvent = async (req, res) => {
 };
 
 module.exports = {
-  joinOnlineEvent,
+  cancelEventParticipation,
 };

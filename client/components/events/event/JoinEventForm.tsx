@@ -1,5 +1,6 @@
 "use client";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -12,60 +13,49 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { toast } from "@/components/ui/use-toast";
 
 const FormSchema = z.object({
-  type: z.enum(["online", "physical"]),
+  type: z.enum(["online", "offline"]),
 });
 
-const JoinEventForm = () => {
+interface JoinEventFormProps {
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+const JoinEventForm: React.FC<JoinEventFormProps> = ({ setOpen }) => {
   const params = useParams();
   const clubId = params.club;
   const eventId = params.event;
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
   });
-  async function onSubmit(values: z.infer<typeof FormSchema>) {
-    console.log(values.type);
-    try {
-      if (values.type === "online") {
-        const response = await axios.put(
-          `${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/events/${eventId}/join-online`,
-          {
-            params: {
-              userId: nookies.get().user_id,
-              name: nookies.get().user_name,
-              picture: nookies.get().user_picture,
-            },
-          },
-          { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
-        );
-        console.log(response.data);
-        toast({
-          title: "You joined this event",
-        });
-      }
-      if (values.type === "physical") {
-        const response = await axios.put(
-          `${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/events/${eventId}/join-physical`,
-          {
-            params: {
-              userId: nookies.get().user_id,
-              name: nookies.get().user_name,
-              picture: nookies.get().user_picture,
-            },
-          },
-          { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
-        );
-        console.log(response.data);
-      }
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: (values: z.infer<typeof FormSchema>) =>
+      axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/events/${eventId}/join-${values.type}`,
+        {
+          userId: nookies.get().user_id,
+          name: nookies.get().user_name,
+          picture: nookies.get().user_picture,
+        },
+        { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
+      ),
+    onSuccess: () => {
+      setOpen(false);
       toast({
-        title: "You joined this event",
+        title: "You have joined this event",
       });
-    } catch (error: any) {
+      queryClient.invalidateQueries({ queryKey: ["event", clubId, eventId] });
+    },
+    onError: (error: any) => {
       if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");
       } else {
         alert(error);
       }
-    }
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof FormSchema>) {
+    await mutation.mutateAsync(values);
   }
   return (
     <Form {...form}>
@@ -83,7 +73,7 @@ const JoinEventForm = () => {
                 </FormControl>
                 <SelectContent>
                   <SelectItem value="online">Online</SelectItem>
-                  <SelectItem value="physical">Physical</SelectItem>
+                  <SelectItem value="offline">Offline</SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />

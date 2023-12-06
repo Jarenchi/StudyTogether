@@ -1,6 +1,7 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import nookies from "nookies";
 import axios from "axios";
@@ -13,63 +14,100 @@ import { Event } from "@/types/eventType";
 import JoinEventForm from "@/components/events/event/JoinEventForm";
 
 const Page = () => {
+  const [open, setOpen] = useState(false);
   const params = useParams();
   const clubId = params.club;
   const eventId = params.event;
+  const queryClient = useQueryClient();
+
   async function fetchEventList() {
     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/events/${eventId}`);
     return response.data as Event;
   }
   const { data, isLoading, isError } = useQuery({
     queryFn: () => fetchEventList(),
-    queryKey: ["eventList", clubId, eventId],
+    queryKey: ["event", clubId, eventId],
   });
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>500 Internal Server Error</div>;
-  async function joinOnlineEventHandler() {
-    try {
-      const response = await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/events/${eventId}/join-online`,
+
+  const joinEventMutation = useMutation({
+    mutationFn: () =>
+      axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/events/${eventId}/join-${data?.type!}`,
         {
-          params: {
-            userId: nookies.get().user_id,
-            name: nookies.get().user_name,
-            picture: nookies.get().user_picture,
-          },
+          userId: nookies.get().user_id,
+          name: nookies.get().user_name,
+          picture: nookies.get().user_picture,
         },
         { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
-      );
-      console.log(response.data);
+      ),
+    onSuccess: () => {
       toast({
-        title: "You joined this event",
+        title: "You have joined this event",
       });
-    } catch (error: any) {
+      queryClient.invalidateQueries({ queryKey: ["event", clubId, eventId] });
+    },
+    onError: (error: any) => {
       if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");
       } else {
         alert(error);
       }
-    }
+    },
+  });
+  async function joinOnlineEventHandler() {
+    await joinEventMutation.mutateAsync();
   }
-  const isHidden =
-    data?.creator.userId === nookies.get().user_id ||
+
+  const cancelEventParticipationMutation = useMutation({
+    mutationFn: () =>
+      axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/events/${eventId}/cancel`,
+        {
+          userId: nookies.get().user_id,
+        },
+        { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
+      ),
+    onSuccess: () => {
+      toast({
+        title: "You have canceled your participation in this event",
+      });
+      queryClient.invalidateQueries({ queryKey: ["event", clubId, eventId] });
+    },
+    onError: (error: any) => {
+      if (error?.response?.status >= 500 && error?.response?.status < 600) {
+        alert("Please try again later or contact our technical team.");
+      } else {
+        alert(error);
+      }
+    },
+  });
+  async function cancelEventParticipationHandler() {
+    await cancelEventParticipationMutation.mutateAsync();
+  }
+
+  if (isLoading) return <div>Loading...</div>;
+  if (isError) return <div>500 Internal Server Error</div>;
+  const isJoined =
     data?.onlineParticipants.some((participant) => participant.userId === nookies.get().user_id) ||
     data?.physicalParticipants.some((participant) => participant.userId === nookies.get().user_id);
+  const iSNotCreator = data?.creator.userId !== nookies.get().user_id;
+
   const JoinEventButton = <Button onClick={joinOnlineEventHandler}>Join Event</Button>;
   const JoinEventSection = (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button>Join Event</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogDescription>
-            <JoinEventForm />
+          <DialogDescription asChild>
+            <JoinEventForm setOpen={setOpen} />
           </DialogDescription>
         </DialogHeader>
       </DialogContent>
     </Dialog>
   );
+  const CancelParticipationButton = <Button onClick={cancelEventParticipationHandler}>Cancel Participation</Button>;
   return (
     <div className="mx-auto mt-2">
       <h1 className="text-4xl mb-3">{data?.title}</h1>
@@ -77,7 +115,8 @@ const Page = () => {
       <div className="my-2">
         <EventDescription description={data?.description!} />
       </div>
-      {!isHidden && (data?.type === "online" ? JoinEventButton : JoinEventSection)}
+      {iSNotCreator && !isJoined && (data?.type !== "hybrid" ? JoinEventButton : JoinEventSection)}
+      {isJoined && CancelParticipationButton}
     </div>
   );
 };

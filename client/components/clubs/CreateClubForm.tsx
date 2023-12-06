@@ -17,6 +17,7 @@ import { Textarea } from "../ui/textarea";
 const clubSchema = z.object({
   clubName: z.string().min(1, { message: "Club Name is required" }),
   clubDescription: z.string().min(1, { message: "Club Description is required" }),
+  // clubTags: z.array(z.string()),
   clubImage: z
     .string()
     .refine((value) => /\.(jpg|jpeg|png)$/.test(value), {
@@ -29,7 +30,6 @@ interface CreateClubFormProps {
   setOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-// TODO:建立club後更新club資料(react query: useMutation,invalidateQueries)
 const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -38,6 +38,7 @@ const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
     defaultValues: {
       clubName: "",
       clubDescription: "",
+      // clubTags: [],
     },
   });
 
@@ -86,6 +87,9 @@ const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
   async function onSubmit(values: z.infer<typeof clubSchema>) {
     mutation.mutateAsync(values);
   }
+  // const handleTagChange = (selectedTags) => {
+  //   form.setValue("clubTags", selectedTags); // Set the selected tags in the form
+  // };
 
   return (
     <Form {...form}>

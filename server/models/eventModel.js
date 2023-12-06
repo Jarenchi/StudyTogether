@@ -1,6 +1,21 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
+const participantSchema = new Schema(
+  {
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+    name: {
+      type: String,
+    },
+    picture: {
+      type: String,
+    },
+  },
+  { _id: false },
+);
 const eventSchema = new Schema(
   {
     title: {
@@ -47,28 +62,8 @@ const eventSchema = new Schema(
         default: "",
       },
     },
-    physicalParticipants: [
-      {
-        userId: {
-          type: Schema.Types.ObjectId,
-          ref: "User",
-        },
-        name: {
-          type: String,
-        },
-      },
-    ],
-    onlineParticipants: [
-      {
-        userId: {
-          type: Schema.Types.ObjectId,
-          ref: "User",
-        },
-        name: {
-          type: String,
-        },
-      },
-    ],
+    physicalParticipants: [participantSchema],
+    onlineParticipants: [participantSchema],
     clubId: {
       type: Schema.Types.ObjectId,
       ref: "Club",

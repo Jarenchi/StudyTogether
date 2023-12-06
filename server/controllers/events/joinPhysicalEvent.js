@@ -3,7 +3,7 @@ const userModel = require("../../models/userModel");
 
 const joinPhysicalEvent = async (req, res) => {
   try {
-    const { clubId, eventId } = req.params;
+    const { eventId } = req.params;
     const { userId, name, picture } = req.body;
     const event = await eventModel.findById(eventId);
     if (event.maxPhysicalParticipants && event.physicalParticipants.length >= event.maxPhysicalParticipants) {
@@ -20,7 +20,7 @@ const joinPhysicalEvent = async (req, res) => {
       { _id: userId },
       {
         $addToSet: {
-          events: { eventId, type: "physical" },
+          events: { eventId, type: "offline" },
         },
       },
     );
