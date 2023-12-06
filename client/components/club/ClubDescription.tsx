@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import nookies from "nookies";
 import { Owner } from "@/types/clubType";
 import { Pencil } from "lucide-react";
@@ -25,21 +26,23 @@ const FormSchema = z.object({
 const ClubDescription: React.FC<ClubDescriptionProps> = ({ description, owner, club }) => {
   const [edit, setEdit] = useState(false);
   const isAbleToEdit = owner.name === nookies.get().user_name;
+  const queryClient = useQueryClient();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: { description },
   });
 
-  async function descriptionUpdateHandler(values: z.infer<typeof FormSchema>) {
-    try {
-      await axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/clubs/${club}/description`,
-        { description: values.description },
-        { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
-      );
+  const mutation = useMutation({
+    mutationFn: async (values: { description: string }) =>
+      axios.put(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${club}/description`, values, {
+        headers: { Authorization: `Bearer ${nookies.get().access_token}` },
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["club", club] });
       setEdit(false);
-    } catch (error: any) {
+    },
+    onError: (error: any) => {
       if (error?.response?.status === 404) {
         alert("Club not found");
       } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
@@ -47,7 +50,11 @@ const ClubDescription: React.FC<ClubDescriptionProps> = ({ description, owner, c
       } else {
         alert(error);
       }
-    }
+    },
+  });
+
+  async function descriptionUpdateHandler(values: z.infer<typeof FormSchema>) {
+    await mutation.mutateAsync(values);
   }
   return (
     <Card className="my-4">
@@ -60,7 +67,7 @@ const ClubDescription: React.FC<ClubDescriptionProps> = ({ description, owner, c
           </button>
         )}
       </CardHeader>
-      <CardContent className="max-w-5xl">
+      <CardContent className="max-w-5xl lg:w-[64rem]">
         {edit ? (
           <div>
             <Form {...form}>

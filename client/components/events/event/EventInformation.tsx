@@ -46,7 +46,7 @@ const EventInformation: React.FC<EventInformationProps> = ({ data }) => {
             </span>
           </div>
         )}
-        {data.type !== "online" && (
+        {data.type === "online" && (
           <div className="flex mt-2">
             <Users />
             <span className="ml-2">Online Participants :</span>

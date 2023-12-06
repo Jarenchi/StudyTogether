@@ -19,7 +19,6 @@ const Page = ({ params }: { params: { club: string } }) => {
   });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>500 Internal Server Error</div>;
-  console.log(data);
 
   return (
     <div className="mx-auto flex flex-col items-center mt-3">

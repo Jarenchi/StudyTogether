@@ -1,6 +1,6 @@
 "use client";
 
-import { useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { useRef } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -42,8 +42,9 @@ const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
   });
 
   const queryClient = useQueryClient();
-  async function onSubmit(values: z.infer<typeof clubSchema>) {
-    try {
+
+  const mutation = useMutation({
+    mutationFn: async (values: z.infer<typeof clubSchema>) => {
       const userData = {
         id: nookies.get().user_id,
         name: nookies.get().user_name,
@@ -62,24 +63,28 @@ const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
       await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/clubs/`, formData, {
         headers: { Authorization: `Bearer ${nookies.get().access_token}`, "Content-Type": "multipart/form-data" },
       });
+    },
+    onSuccess: () => {
       form.reset({
         clubName: "",
         clubDescription: "",
         clubImage: "",
       });
       toast({ title: "Club Created" });
-
-      // TODO:為甚麼沒有用
       queryClient.invalidateQueries({ queryKey: ["clublist"] });
-
       setOpen(false);
-    } catch (error: any) {
+    },
+    onError: (error: any) => {
       if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");
       } else {
         alert(error);
       }
-    }
+    },
+  });
+
+  async function onSubmit(values: z.infer<typeof clubSchema>) {
+    mutation.mutateAsync(values);
   }
 
   return (

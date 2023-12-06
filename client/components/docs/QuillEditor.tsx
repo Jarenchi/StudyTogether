@@ -103,8 +103,6 @@ const QuillEditor = () => {
   };
   async function handleTitleBlur() {
     try {
-      console.log(targetClubId);
-      console.log(targetDocId);
       const response = await axios.put(
         `${process.env.NEXT_PUBLIC_API_URL}/clubs/${targetClubId}/docs/${targetDocId}/title`,
         { title },
@@ -131,7 +129,7 @@ const QuillEditor = () => {
   return (
     <div className="flex flex-col">
       <div className="flex items-center justify-center my-2">
-        <span className="mr-2">檔案名稱:</span>
+        <span className="mr-2">Title:</span>
         {isEditing ? (
           <Input
             type="text"
@@ -161,11 +159,11 @@ const QuillEditor = () => {
           />
         </div>
         <div className="h-[79vh] ml-3">
-          <p className="text-lg mb-2">線上用戶:</p>
+          <p className="text-lg mb-2">Online Users:</p>
           <ul>
             {users.map((user) => (
-              <Badge key={user} className="text-lg dark:text-white truncate">
-                {user} {editingUser === user && <span> 正在編輯</span>}
+              <Badge key={user} className="text-lg dark:text-white truncate block my-2">
+                {user} {editingUser === user && <span> Editing</span>}
               </Badge>
             ))}
           </ul>

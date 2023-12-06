@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { useParams } from "next/navigation";
@@ -50,12 +51,11 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({ setOpen }) => {
       maxPhysicalParticipants: "0",
     },
   });
-  // TODO:建立event後更新event資料(react query: useMutation,invalidateQueries)
-  async function onSubmit(values: z.infer<typeof eventFormSchema>) {
-    console.log(values);
-    try {
-      const clubId = params.club;
-      const response = await axios.post(
+  const clubId = params.club;
+  const queryClient = useQueryClient();
+  const mutation = useMutation({
+    mutationFn: async (values: z.infer<typeof eventFormSchema>) => {
+      await axios.post(
         `${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/events`,
         {
           title: values.title,
@@ -75,7 +75,6 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({ setOpen }) => {
         },
         { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
       );
-      console.log(response.data);
       if (values.hasSharedFile) {
         await axios.post(
           `${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/docs`,
@@ -91,11 +90,24 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({ setOpen }) => {
           { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
         );
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["eventList", clubId] });
       toast({ title: "event created successfully" });
       setOpen(false);
-    } catch (error) {
-      console.log(error);
-    }
+    },
+    onError: (error: any) => {
+      if (error?.response?.status >= 500 && error?.response?.status < 600) {
+        alert("請稍後再試或和我們的技術團隊聯絡");
+      } else {
+        alert(error);
+      }
+    },
+  });
+
+  // TODO:建立event後更新event資料(react query: useMutation,invalidateQueries)
+  async function onSubmit(values: z.infer<typeof eventFormSchema>) {
+    mutation.mutateAsync(values);
   }
   return (
     <Form {...form}>
