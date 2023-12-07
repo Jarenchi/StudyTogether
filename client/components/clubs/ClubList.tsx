@@ -56,9 +56,6 @@ const ClubList = () => {
             </div>
           </div>
         </CardHeader>
-        {/* <CardContent className="max-w-lg lg:max-w-2xl">
-          <pre className="font-sans break-words whitespace-pre-wrap">{club.description}</pre>
-        </CardContent> */}
         <CardFooter>
           {isMember || (
             <Button

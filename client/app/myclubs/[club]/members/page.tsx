@@ -6,6 +6,7 @@ import nookies from "nookies";
 import axios from "axios";
 import { MemberTable } from "@/components/members/memberTable/MemberTable";
 import { MembersColumns } from "@/components/members/memberTable/columns";
+import Draw from "@/components/members/Draw";
 
 async function fetchMembers(clubId: string) {
   try {
@@ -14,7 +15,7 @@ async function fetchMembers(clubId: string) {
     });
     return response.data.members;
   } catch (error) {
-    console.log("Error fetching docs:", error);
+    console.log("Error fetching members:", error);
     throw error;
   }
 }
@@ -27,9 +28,9 @@ const Page = () => {
   });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>500 Internal Server Error</div>;
-
   return (
     <div className="mx-auto mt-2">
+      <Draw data={data} />
       <MemberTable data={data} columns={MembersColumns} />
     </div>
   );
