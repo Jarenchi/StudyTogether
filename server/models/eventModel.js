@@ -10,9 +10,6 @@ const participantSchema = new Schema(
     name: {
       type: String,
     },
-    picture: {
-      type: String,
-    },
   },
   { _id: false },
 );

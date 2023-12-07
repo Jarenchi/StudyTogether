@@ -4,12 +4,12 @@ const userModel = require("../../models/userModel");
 const joinOnlineEvent = async (req, res) => {
   try {
     const { clubId, eventId } = req.params;
-    const { userId, name, picture } = req.body;
+    const { userId, name } = req.body;
     const event = await eventModel.findOneAndUpdate(
       { _id: eventId, clubId },
       {
         $addToSet: {
-          onlineParticipants: { userId, name, picture },
+          onlineParticipants: { userId, name },
         },
       },
       { new: true },
@@ -24,7 +24,7 @@ const joinOnlineEvent = async (req, res) => {
       { _id: userId },
       {
         $addToSet: {
-          events: { eventId, type: "online" },
+          events: { eventId, type: "online", name: event.title },
         },
       },
     );

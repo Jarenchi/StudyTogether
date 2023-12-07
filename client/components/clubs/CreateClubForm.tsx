@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import axios from "axios";
 import nookies from "nookies";
+import { useRouter } from "next/navigation";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ interface CreateClubFormProps {
 
 const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof clubSchema>>({
     resolver: zodResolver(clubSchema),
@@ -76,7 +78,10 @@ const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
       setOpen(false);
     },
     onError: (error: any) => {
-      if (error?.response?.status >= 500 && error?.response?.status < 600) {
+      if (error?.response?.status === 403) {
+        alert("Account is expired, please Login again");
+        router.push("/login");
+      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");
       } else {
         alert(error);

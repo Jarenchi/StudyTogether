@@ -6,7 +6,7 @@ import * as z from "zod";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 import nookies from "nookies";
 import { cn } from "@/lib/utils";
@@ -40,6 +40,7 @@ interface CreateEventFormProps {
 
 const CreateEventForm: React.FC<CreateEventFormProps> = ({ setOpen }) => {
   const params = useParams();
+  const router = useRouter();
   const form = useForm<z.infer<typeof eventFormSchema>>({
     resolver: zodResolver(eventFormSchema),
     defaultValues: {
@@ -97,15 +98,17 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({ setOpen }) => {
       setOpen(false);
     },
     onError: (error: any) => {
-      if (error?.response?.status >= 500 && error?.response?.status < 600) {
+      if (error?.response?.status === 403) {
+        alert("Account is expired, please Login again");
+        router.push("/login");
+      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");
       } else {
-        alert(error);
+        console.log(error);
       }
     },
   });
 
-  // TODO:建立event後更新event資料(react query: useMutation,invalidateQueries)
   async function onSubmit(values: z.infer<typeof eventFormSchema>) {
     await mutation.mutateAsync(values);
   }

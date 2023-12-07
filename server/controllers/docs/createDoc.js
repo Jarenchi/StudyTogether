@@ -9,7 +9,7 @@ const createDoc = async (req, res) => {
     const newDoc = new docModel({
       title,
       content,
-      creater: {
+      creator: {
         id: creater.id,
         name: creater.name,
         picture: creater.picture,
