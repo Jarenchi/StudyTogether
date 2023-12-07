@@ -4,6 +4,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import nookies from "nookies";
 import axios from "axios";
+import Link from "next/link";
+import { Users } from "lucide-react";
 import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { fetchClubList } from "@/utils/api";
@@ -28,12 +30,17 @@ const ClubList = () => {
         { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
       );
       console.log(response.data);
+      router.push("/myclubs");
     } catch (error: any) {
-      if (error?.response?.status >= 500 && error?.response?.status < 600) {
+      if (error?.response?.status === 403) {
+        alert("Account is expired, please Login again");
+        router.push("/login");
+      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");
+      } else {
+        alert(error);
       }
     }
-    router.push("/myclubs");
   }
   const clubItems = data?.clubs?.map((club: Club) => {
     const isMember = club?.members?.includes(nookies.get().user_id);
@@ -46,12 +53,15 @@ const ClubList = () => {
                 <AvatarImage src={club.picture} />
                 <AvatarFallback>{club.name}</AvatarFallback>
               </Avatar>
-              <CardTitle>{club.name}</CardTitle>
+              <CardTitle>{isMember ? <Link href={`/myclubs/${club._id}`}>{club.name}</Link> : club.name}</CardTitle>
             </div>
             <div>
               <CardDescription>
-                創辦人:
-                {club.owner.name}
+                <p className="text-lg"> Creator:{club.owner.name}</p>
+                <div className="flex items-center gap-3">
+                  <Users />
+                  <p className="text-lg">{club.members.length}</p>
+                </div>
               </CardDescription>
             </div>
           </div>

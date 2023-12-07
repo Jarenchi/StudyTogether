@@ -22,7 +22,7 @@ const docSchema = new Schema(
       type: String,
       required: true,
     },
-    creater: {
+    creator: {
       userId: {
         type: Schema.Types.ObjectId,
         ref: "User",

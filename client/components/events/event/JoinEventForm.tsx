@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import axios from "axios";
 import nookies from "nookies";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -21,6 +21,7 @@ interface JoinEventFormProps {
 }
 const JoinEventForm: React.FC<JoinEventFormProps> = ({ setOpen }) => {
   const params = useParams();
+  const router = useRouter();
   const clubId = params.club;
   const eventId = params.event;
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -34,7 +35,6 @@ const JoinEventForm: React.FC<JoinEventFormProps> = ({ setOpen }) => {
         {
           userId: nookies.get().user_id,
           name: nookies.get().user_name,
-          picture: nookies.get().user_picture,
         },
         { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
       ),
@@ -46,10 +46,13 @@ const JoinEventForm: React.FC<JoinEventFormProps> = ({ setOpen }) => {
       queryClient.invalidateQueries({ queryKey: ["event", clubId, eventId] });
     },
     onError: (error: any) => {
-      if (error?.response?.status >= 500 && error?.response?.status < 600) {
+      if (error?.response?.status === 403) {
+        alert("Account is expired, please Login again");
+        router.push("/login");
+      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");
       } else {
-        alert(error);
+        console.log(error);
       }
     },
   });

@@ -23,6 +23,9 @@ const eventSchema = new Schema({
     type: String,
     enum: ["online", "offline"],
   },
+  name: {
+    type: String,
+  },
 });
 
 const userSchema = new Schema(
@@ -34,6 +37,7 @@ const userSchema = new Schema(
     email: {
       type: String,
       required: true,
+      unique: true,
     },
     password: {
       type: String,

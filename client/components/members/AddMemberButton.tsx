@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import axios from "axios";
 import nookies from "nookies";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   Dialog,
@@ -28,6 +28,7 @@ const FormSchema = z.object({
 
 const AddMemberButton = () => {
   const params = useParams();
+  const router = useRouter();
   const clubId = params.club;
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -51,7 +52,10 @@ const AddMemberButton = () => {
       queryClient.invalidateQueries({ queryKey: ["members", clubId] });
     },
     onError: (error: any) => {
-      if (error?.response?.status === 404) {
+      if (error?.response?.status === 403) {
+        alert("Account is expired, please Login again");
+        router.push("/login");
+      } else if (error?.response?.status === 404) {
         toast({
           title: "Club or user not found",
         });

@@ -7,7 +7,7 @@ import "react-quill/dist/quill.snow.css";
 import io, { Socket } from "socket.io-client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import debounce from "@/utils/debounce";
 import quillModules from "@/lib/quill-modules";
@@ -16,13 +16,26 @@ import { Input } from "../ui/input";
 const QuillEditor = () => {
   const ReactQuill = useMemo(() => dynamic(() => import("react-quill"), { ssr: false }), []);
   const params = useParams();
+  const router = useRouter();
   const targetClubId = params.club as string;
   const targetDocId = params.doc as string;
   async function getDocById(clubId: string, docId: string) {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/docs/${docId}`, {
-      headers: { Authorization: `Bearer ${nookies.get().access_token}` },
-    });
-    return response.data;
+    try {
+      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/docs/${docId}`, {
+        headers: { Authorization: `Bearer ${nookies.get().access_token}` },
+      });
+      return response.data;
+    } catch (error: any) {
+      if (error?.response?.status === 403) {
+        alert("Account is expired, please Login again");
+        router.push("/login");
+      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
+        alert("請稍後再試或和我們的技術團隊聯絡");
+      } else {
+        console.log(error);
+      }
+      throw error;
+    }
   }
   const { data, isLoading, isError } = useQuery({
     queryFn: () => getDocById(targetClubId, targetDocId),
@@ -111,8 +124,15 @@ const QuillEditor = () => {
         },
       );
       console.log(response.data);
-    } catch (error) {
-      console.log(error);
+    } catch (error: any) {
+      if (error?.response?.status === 403) {
+        alert("Account is expired, please Login again");
+        router.push("/login");
+      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
+        alert("請稍後再試或和我們的技術團隊聯絡");
+      } else {
+        console.log(error);
+      }
     } finally {
       setIsEditing(false);
     }

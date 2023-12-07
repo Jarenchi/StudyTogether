@@ -35,9 +35,13 @@ const ClubDescription: React.FC<ClubDescriptionProps> = ({ description, owner, c
 
   const mutation = useMutation({
     mutationFn: async (values: { description: string }) =>
-      axios.put(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${club}/description`, values, {
-        headers: { Authorization: `Bearer ${nookies.get().access_token}` },
-      }),
+      axios.put(
+        `${process.env.NEXT_PUBLIC_API_URL}/clubs/${club}`,
+        { description: values.description },
+        {
+          headers: { Authorization: `Bearer ${nookies.get().access_token}` },
+        },
+      ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["club", club] });
       setEdit(false);
@@ -67,7 +71,7 @@ const ClubDescription: React.FC<ClubDescriptionProps> = ({ description, owner, c
           </button>
         )}
       </CardHeader>
-      <CardContent className="max-w-5xl lg:w-[64rem]">
+      <CardContent className="max-w-5xl w-[64rem]">
         {edit ? (
           <div>
             <Form {...form}>

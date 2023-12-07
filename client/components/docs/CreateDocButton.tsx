@@ -31,8 +31,13 @@ const CreateDocButton = () => {
       console.log(response);
       router.push(`/myclubs/${clubId}/docs/${response.data._id}`);
     } catch (error: any) {
-      if (error?.response?.status >= 500 && error?.response?.status < 600) {
+      if (error?.response?.status === 403) {
+        alert("Account is expired, please Login again");
+        router.push("/login");
+      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
         alert("請稍後再試或和我們的技術團隊聯絡");
+      } else {
+        alert(error);
       }
       console.log(error);
     } finally {
