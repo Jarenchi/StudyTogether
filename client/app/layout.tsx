@@ -4,7 +4,7 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/providers/theme-provider";
 import TanstackProvider from "@/providers/tanstackProvider";
-import Header from "@/components/Header";
+import Header from "@/components/header/Header";
 import { Toaster } from "@/components/ui/toaster";
 
 export const fontSans = FontSans({

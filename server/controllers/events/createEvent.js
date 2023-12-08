@@ -37,7 +37,7 @@ const createEvent = async (req, res) => {
       { _id: creator.id },
       {
         $addToSet: {
-          events: { eventId: savedEvent._id, type: type },
+          events: savedEvent._id,
         },
       },
     );

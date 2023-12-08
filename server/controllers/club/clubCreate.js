@@ -48,7 +48,7 @@ const clubCreate = async (req, res) => {
     const savedClub = await newClub.save();
     await ownerMember.save();
     await userModel.findByIdAndUpdate(owner.id, {
-      $push: { clubs: { id: savedClub._id, name: savedClub.name } },
+      $push: { clubs: savedClub._id },
     });
 
     res.status(201).json({ club: savedClub });

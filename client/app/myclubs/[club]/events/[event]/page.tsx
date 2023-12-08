@@ -12,6 +12,7 @@ import { toast } from "@/components/ui/use-toast";
 import EventDescription from "@/components/events/event/EventDescription";
 import { Event } from "@/types/eventType";
 import JoinEventForm from "@/components/events/event/JoinEventForm";
+import EventMap from "@/components/events/event/EventMap";
 
 const Page = () => {
   const [open, setOpen] = useState(false);
@@ -121,8 +122,13 @@ const Page = () => {
       <div className="my-2">
         <EventDescription description={data?.description!} />
       </div>
-      {iSNotCreator && !isJoined && (data?.type !== "hybrid" ? JoinEventButton : JoinEventSection)}
-      {isJoined && CancelParticipationButton}
+      <div className="my-2">
+        <EventMap place={data?.location!} />
+      </div>
+      <div className="mb-3">
+        {iSNotCreator && !isJoined && (data?.type !== "hybrid" ? JoinEventButton : JoinEventSection)}
+        {isJoined && CancelParticipationButton}
+      </div>
     </div>
   );
 };

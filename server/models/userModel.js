@@ -51,8 +51,18 @@ const userSchema = new Schema(
       type: Number,
       default: 0,
     },
-    clubs: [clubSchema],
-    events: [eventSchema],
+    clubs: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Club",
+      },
+    ],
+    events: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Event",
+      },
+    ],
   },
   { timestamps: true },
 );
