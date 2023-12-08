@@ -27,7 +27,7 @@ const clubJoin = async (req, res) => {
       clubId: clubId,
     });
     club.members.push(userId);
-    findUser.clubs.push({ id: club._id, name: club.name });
+    findUser.clubs.push(club._id);
     await Promise.all([club.save(), newMember.save(), findUser.save()]);
     res.status(200).json({ message: "User joined the club successfully" });
   } catch (error) {

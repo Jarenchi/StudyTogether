@@ -17,16 +17,16 @@ const EventInformation: React.FC<EventInformationProps> = ({ data }) => {
       <CardHeader>
         <CardTitle>Information</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="max-w-5xl lg:w-[64rem]">
         <div className="flex">
           <Clock />
           <span className="ml-2">{formattedDate}</span>
           <span className="ml-2">
             {data.startTime}-{data.endTime}
           </span>
-          <Link href="/" className="text-primary ml-2">
+          {/* <Link href="/" className="text-primary ml-2">
             Add To Calender
-          </Link>
+          </Link> */}
         </div>
         <div className="flex mt-2">
           <Tag />

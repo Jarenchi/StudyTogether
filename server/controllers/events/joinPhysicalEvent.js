@@ -20,7 +20,7 @@ const joinPhysicalEvent = async (req, res) => {
       { _id: userId },
       {
         $addToSet: {
-          events: { eventId, type: "offline", name: event.title },
+          events: event._id,
         },
       },
     );

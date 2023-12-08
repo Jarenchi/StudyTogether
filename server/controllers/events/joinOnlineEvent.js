@@ -24,7 +24,7 @@ const joinOnlineEvent = async (req, res) => {
       { _id: userId },
       {
         $addToSet: {
-          events: { eventId, type: "online", name: event.title },
+          events: event._id,
         },
       },
     );

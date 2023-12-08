@@ -3,23 +3,15 @@
 import { useQuery } from "@tanstack/react-query";
 import nookies from "nookies";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import axios from "axios";
-import { CalendarDays, MenuSquare } from "lucide-react";
+import { CalendarDays, MenuSquare, Users, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-interface Club {
-  id: string;
-  name: string;
-}
-
-interface Event {
-  eventId: string;
-  type: ["online", "offline"];
-}
+import { Card, CardHeader, CardDescription, CardTitle, CardContent } from "@/components/ui/card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Club, Event } from "@/types/userProfileType";
 
 const Page = () => {
-  const pathname = usePathname();
   const router = useRouter();
   const userId = nookies.get().user_id;
 
@@ -57,29 +49,72 @@ const Page = () => {
   }
 
   const clubItems = data?.clubs?.map((club: Club) => (
-    <Link key={club.id} href={`${pathname}/${club.id}`}>
-      <p className="text-primary text-xl">{club.name}</p>
-    </Link>
+    <Card key={club._id} className="min-w-[20rem] mb-2">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Avatar className="mr-4">
+              <AvatarImage src={club.picture} />
+              <AvatarFallback>{club.name}</AvatarFallback>
+            </Avatar>
+            <CardTitle>
+              <Link href={`/myclubs/${club._id}`}>{club.name}</Link>
+            </CardTitle>
+          </div>
+          <CardDescription>
+            <p className="text-lg"> Creator:{club.owner.name}</p>
+            <div className="flex items-center gap-3">
+              <Users />
+              <p className="text-lg">{club.members.length}</p>
+            </div>
+          </CardDescription>
+        </div>
+      </CardHeader>
+    </Card>
   ));
 
-  const eventItems = data.events.map((event: Event) => (
-    <div key={event.eventId}>
-      <div>{event.type}</div>
-      <div>{event.eventId}</div>
-    </div>
-  ));
+  const eventItems = data.events.map((event: Event) => {
+    const date = new Date(event.date);
+    const formattedDate = date.toLocaleDateString();
+    const participantsNumber = event.onlineParticipants.length + event.physicalParticipants.length;
+    return (
+      <Card key={event._id} className="min-w-[20rem] mb-2">
+        <CardHeader>
+          <CardTitle>
+            <Link href={`/myclubs/${event.clubId._id}/events/${event._id}`} className="hover:underline">
+              {event.title}
+            </Link>
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex">
+            <Clock />
+            <span className="ml-2">{formattedDate}</span>
+            <span className="ml-2">
+              {event.startTime}-{event.endTime}
+            </span>
+          </div>
+          <div className="flex mt-2">
+            <Users />
+            <span className="ml-2">Total Participants :</span>
+            <span className="ml-2">{participantsNumber}</span>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  });
   return (
-    <div className="ml-2 mt-2">
+    <div className="mx-20 mt-2">
       <div className="flex gap-3 items-center">
         <MenuSquare />
-        <p className="text-2xl">Clubs</p>
+        <p className="text-2xl py-2">Clubs</p>
       </div>
       <div className="flex gap-3 flex-wrap">{clubItems}</div>
       <div className="mt-3 flex gap-3 items-center">
         <CalendarDays />
-        <p className="text-2xl">Events</p>
+        <p className="text-2xl py-2">Events</p>
       </div>
-      <div>{eventItems}</div>
+      <div className="flex gap-3 flex-wrap">{eventItems}</div>
     </div>
   );
 };

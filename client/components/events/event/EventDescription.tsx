@@ -8,9 +8,9 @@ const EventDescription: React.FC<EventDescriptionProps> = ({ description }) => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle> Description</CardTitle>
+        <CardTitle>Description</CardTitle>
       </CardHeader>
-      <CardContent className="max-w-sm lg:max-w-xl">
+      <CardContent className="w-[24rem] max-w-5xl lg:w-[64rem]">
         <pre className="font-sans break-words whitespace-pre-wrap">{description}</pre>
       </CardContent>
     </Card>

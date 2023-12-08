@@ -1,5 +1,6 @@
 import nookies, { destroyCookie } from "nookies";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -37,6 +38,11 @@ const Options = () => {
         <DropdownMenuContent>
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
+          <DropdownMenuItem>
+            <Button variant="ghost">
+              <Link href="/my/dashboard">Dashboard</Link>
+            </Button>
+          </DropdownMenuItem>
           <DropdownMenuItem>
             <Button variant="ghost" type="button" onClick={logoutHandler}>
               Log out

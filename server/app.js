@@ -4,7 +4,15 @@ const app = express();
 const cors = require("cors");
 const server = require("http").createServer(app);
 require("dotenv").config();
-app.use(cors());
+const { getLatLonForPlace } = require("./controllers/geocode");
+
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true,
+  }),
+);
 const { setupQuillSocket } = require("./socket");
 const userRouter = require("./routes/user");
 const clubRouter = require("./routes/clubs");
@@ -39,6 +47,10 @@ app.use(express.json());
 
 app.use("/api/1.0/user", userRouter);
 app.use("/api/1.0/clubs", clubRouter);
+
+//TODO:把LAT,LON存起來
+app.post("api/geocode", getLatLonForPlace);
+
 app.get("/test", (req, res) => {
   res.send("Ok");
 });

@@ -72,7 +72,7 @@ const Draw: React.FC<DrawProps> = ({ data }) => {
                   <ul>
                     {selectedUsers.map((user) => (
                       <div key={user.userId} className="flex items-center m-4">
-                        <p>{user.name}</p>
+                        <p className="text-xl">{user.name}</p>
                       </div>
                     ))}
                   </ul>
