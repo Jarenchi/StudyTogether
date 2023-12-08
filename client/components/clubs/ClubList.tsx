@@ -53,7 +53,15 @@ const ClubList = () => {
                 <AvatarImage src={club.picture} />
                 <AvatarFallback>{club.name}</AvatarFallback>
               </Avatar>
-              <CardTitle>{isMember ? <Link href={`/myclubs/${club._id}`}>{club.name}</Link> : club.name}</CardTitle>
+              <CardTitle>
+                {isMember ? (
+                  <Link href={`/myclubs/${club._id}`} className="hover:underline">
+                    {club.name}
+                  </Link>
+                ) : (
+                  club.name
+                )}
+              </CardTitle>
             </div>
             <div>
               <CardDescription>

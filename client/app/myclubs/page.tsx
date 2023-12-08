@@ -58,7 +58,9 @@ const Page = () => {
               <AvatarFallback>{club.name}</AvatarFallback>
             </Avatar>
             <CardTitle>
-              <Link href={`/myclubs/${club._id}`}>{club.name}</Link>
+              <Link href={`/myclubs/${club._id}`} className="hover:underline">
+                {club.name}
+              </Link>
             </CardTitle>
           </div>
           <CardDescription>
