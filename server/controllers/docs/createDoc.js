@@ -3,19 +3,19 @@ const clubModel = require("../../models/clubModel");
 
 const createDoc = async (req, res) => {
   try {
-    const { title, content, creater } = req.body;
+    const { title, content, creator } = req.body;
     const clubId = req.params.clubId;
 
     const newDoc = new docModel({
       title,
       content,
       creator: {
-        id: creater.id,
-        name: creater.name,
-        picture: creater.picture,
+        id: creator.id,
+        name: creator.name,
+        picture: creator.picture,
       },
       clubId: clubId,
-      permissions: [{ userId: creater.id, role: "owner" }],
+      permissions: [{ userId: creator.id, role: "owner" }],
     });
 
     const savedDoc = await newDoc.save();

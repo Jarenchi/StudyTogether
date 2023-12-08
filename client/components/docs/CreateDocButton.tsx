@@ -20,7 +20,7 @@ const CreateDocButton = () => {
         {
           title: formattedTime,
           content: "",
-          creater: {
+          creator: {
             id: nookies.get().user_id,
             name: nookies.get().user_name,
             picture: nookies.get().user_image,

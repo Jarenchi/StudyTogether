@@ -22,7 +22,7 @@ export type Doc = {
   _id: string;
   title: string;
   status: "pending" | "processing" | "finished";
-  creater: {
+  creator: {
     id: string;
     name: string;
     picture: string;
@@ -33,6 +33,7 @@ export type Doc = {
 export const DocsColumns: ColumnDef<Doc>[] = [
   {
     accessorKey: "_id",
+    enableHiding: true,
   },
   {
     accessorKey: "title",
@@ -42,12 +43,12 @@ export const DocsColumns: ColumnDef<Doc>[] = [
     },
   },
   {
-    accessorKey: "creater.name",
-    id: "creater.name",
+    accessorKey: "creator.name",
+    id: "creator.name",
     header: ({ column }) => {
       return (
         <Button variant="ghost" onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}>
-          Creater
+          Creator
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
@@ -105,7 +106,7 @@ export const DocsColumns: ColumnDef<Doc>[] = [
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem>Rename file</DropdownMenuItem>
-              {nookies.get().user_name === row.getValue("creater.name") && (
+              {nookies.get().user_name === row.getValue("creator.name") && (
                 <DropdownMenuItem>
                   <AlertDialogTrigger>Delete file</AlertDialogTrigger>
                 </DropdownMenuItem>
