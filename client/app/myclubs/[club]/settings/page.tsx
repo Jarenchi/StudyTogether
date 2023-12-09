@@ -2,8 +2,11 @@ import LeaveClubButton from "@/components/settings/LeaveClubButton";
 
 const Page = () => {
   return (
-    <div>
-      <LeaveClubButton />
+    <div className="mx-auto">
+      <div className="pt-4">
+        <p className="text-2xl mb-2">Leave Club</p>
+        <LeaveClubButton />
+      </div>
     </div>
   );
 };
