@@ -26,7 +26,6 @@ const Page = () => {
         alert("Account is expired, please Login again");
         router.push("/login");
       }
-      console.log("Error fetching myclub list:", error);
       throw error;
     }
   }
@@ -34,7 +33,6 @@ const Page = () => {
     queryFn: () => fetchMyProfile(userId),
     queryKey: ["myclubs", userId],
   });
-  console.log(data);
 
   if (isLoading) return <div>Loading...</div>;
   if (isError) {

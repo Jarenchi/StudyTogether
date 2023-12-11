@@ -2,17 +2,29 @@ const mongoose = require("mongoose");
 const express = require("express");
 const app = express();
 const cors = require("cors");
-const server = require("http").createServer(app);
+const http = require("http");
+const https = require("https");
+const fs = require("fs");
+
+const privateKeyPath = "/etc/nginx/conf.d/dns_ssl/private.key";
+const certificatePath = "/etc/nginx/conf.d/dns_ssl/certificate.crt";
+const caBundlePath = "/etc/nginx/conf.d/dns_ssl/ca_bundle.crt";
+
+const server =
+  process.env.NODE_ENV === "production"
+    ? https.createServer(
+        {
+          key: fs.readFileSync(privateKeyPath),
+          cert: fs.readFileSync(certificatePath),
+          ca: fs.readFileSync(caBundlePath),
+        },
+        app,
+      )
+    : http.createServer(app);
 require("dotenv").config();
 const { getLatLonForPlace } = require("./controllers/geocode");
 
-app.use(
-  cors({
-    origin: "http://localhost:3000",
-    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
-    credentials: true,
-  }),
-);
+app.use(cors());
 const { setupQuillSocket } = require("./socket");
 const userRouter = require("./routes/user");
 const clubRouter = require("./routes/clubs");
