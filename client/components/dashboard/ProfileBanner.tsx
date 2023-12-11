@@ -11,7 +11,7 @@ const ProfileBanner: React.FC<ProfileBannerProps> = ({ data }) => {
   const date = new Date(data?.createdAt);
   const formattedDate = date.toLocaleDateString();
   return (
-    <Card className="w-[64rem] p-6">
+    <Card className="w-[64rem] p-6 mx-auto">
       <div className="flex justify-between items-center">
         <div className="flex items-center">
           <Avatar className="w-36 h-36">

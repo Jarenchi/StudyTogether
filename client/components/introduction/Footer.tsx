@@ -33,7 +33,7 @@ const Footer = () => {
           <Link href="/">
             <Facebook color="white" />
           </Link>
-          <Link href="/">
+          <Link href="https://github.com/Jarenchi/StudyTogether">
             <Github color="white" />
           </Link>
           <Link href="/">
