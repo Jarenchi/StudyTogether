@@ -52,7 +52,6 @@ const QuillEditor = () => {
     if (data) {
       setText(data.content);
       setTitle(data.title);
-      console.log(data.content);
     }
   }, [data]);
 
@@ -60,9 +59,10 @@ const QuillEditor = () => {
   const socketRef = useRef<Socket>();
   useEffect(() => {
     const userName = nookies.get().user_name;
-    socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, {
-      path: "/quill",
-    });
+    // socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, {
+    //   path: "/quill",
+    // });
+    socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`);
     socketRef.current.on("text", (newText: string) => {
       setText(newText);
     });
@@ -99,7 +99,6 @@ const QuillEditor = () => {
       });
     socketRef.current?.emit("editing", curUser);
     socketRef.current?.emit("text", newText);
-    console.log(newText);
   });
   const handleBlur = () => {
     setEditingUser("");

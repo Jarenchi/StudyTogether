@@ -23,7 +23,7 @@ const Page = () => {
       return response.data;
     } catch (error: any) {
       if (error?.response?.status === 403) {
-        alert("Account is expired, please Login again");
+        // alert("Account is expired, please Login again");
         router.push("/login");
       }
       throw error;

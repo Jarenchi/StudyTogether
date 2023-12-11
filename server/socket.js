@@ -9,7 +9,7 @@ function setupQuillSocket(server) {
     cors: {
       origin: "*",
     },
-    path: "/quill",
+    // path: "/quill",
   });
 
   io.on("connection", (socket) => {
