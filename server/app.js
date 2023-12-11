@@ -3,24 +3,26 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const http = require("http");
-const https = require("https");
-const fs = require("fs");
+// const https = require("https");
+// const fs = require("fs");
 
-const privateKeyPath = "/app/private.key";
-const certificatePath = "/app/certificate.crt";
-const caBundlePath = "/app/ca_bundle.crt";
+// const privateKeyPath = "/app/private.key";
+// const certificatePath = "/app/certificate.crt";
+// const caBundlePath = "/app/ca_bundle.crt";
 
-const server =
-  process.env.NODE_ENV === "production"
-    ? https.createServer(
-        {
-          key: fs.readFileSync(privateKeyPath),
-          cert: fs.readFileSync(certificatePath),
-          ca: fs.readFileSync(caBundlePath),
-        },
-        app,
-      )
-    : http.createServer(app);
+// const server =
+//   process.env.NODE_ENV === "production"
+//     ? https.createServer(
+//         {
+//           key: fs.readFileSync(privateKeyPath),
+//           cert: fs.readFileSync(certificatePath),
+//           ca: fs.readFileSync(caBundlePath),
+//           requestCert: false,
+//         },
+//         app,
+//       )
+//     : http.createServer(app);
+const server = http.createServer(app);
 require("dotenv").config();
 const { getLatLonForPlace } = require("./controllers/geocode");
 

@@ -6,8 +6,8 @@ import Footer from "@/components/introduction/Footer";
 export default function Home() {
   return (
     <div>
-      <div className="max-w-7xl mx-auto my-4 ">
-        <div className="flex flex-col items-center py-6">
+      <div className="max-w-7xl mx-auto my-5">
+        <div className="flex flex-col items-center">
           <h1 className="text-4xl mb-6 text-center">Let&apos;s Study Together</h1>
           <Link
             href="/clubs"

@@ -1,33 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const clubSchema = new Schema(
-  {
-    id: {
-      type: Schema.Types.ObjectId,
-      ref: "Club",
-    },
-    name: {
-      type: String,
-    },
-  },
-  { _id: false },
-);
-
-const eventSchema = new Schema({
-  eventId: {
-    type: Schema.Types.ObjectId,
-    ref: "Event",
-  },
-  type: {
-    type: String,
-    enum: ["online", "offline"],
-  },
-  name: {
-    type: String,
-  },
-});
-
 const userSchema = new Schema(
   {
     name: {
