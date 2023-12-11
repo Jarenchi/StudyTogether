@@ -62,7 +62,7 @@ const QuillEditor = () => {
     // socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, {
     //   path: "/quill",
     // });
-    socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`);
+    socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { withCredentials: true });
     socketRef.current.on("text", (newText: string) => {
       setText(newText);
     });
