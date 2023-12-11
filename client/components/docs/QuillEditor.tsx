@@ -63,6 +63,9 @@ const QuillEditor = () => {
     //   path: "/quill",
     // });
     socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, { withCredentials: true });
+    socketRef.current.on("connect_error", (err) => {
+      console.log(`connect_error due to ${err.message}`);
+    });
     socketRef.current.on("text", (newText: string) => {
       setText(newText);
     });

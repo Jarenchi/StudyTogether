@@ -7,7 +7,7 @@ const users = new Set();
 function setupQuillSocket(server) {
   const io = new Server(server, {
     cors: {
-      origin: "https://studytogether.vercel.app/",
+      origin: "https://studytogether.vercel.app",
       methods: ["GET", "POST"],
       credentials: true,
     },
