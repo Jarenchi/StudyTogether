@@ -11,7 +11,7 @@ function setupQuillSocket(server) {
       methods: ["GET", "POST"],
       credentials: true,
     },
-    transports: ["websocket"],
+    transports: ["websocket", "polling"],
     secure: true,
     // path: "/quill",
   });
