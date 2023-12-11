@@ -9,6 +9,8 @@ function setupQuillSocket(server) {
     cors: {
       origin: "*",
     },
+    transports: ["websocket"],
+    secure: true,
     // path: "/quill",
   });
 
