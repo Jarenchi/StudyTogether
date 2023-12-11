@@ -6,9 +6,9 @@ const http = require("http");
 const https = require("https");
 const fs = require("fs");
 
-const privateKeyPath = "/etc/nginx/conf.d/dns_ssl/private.key";
-const certificatePath = "/etc/nginx/conf.d/dns_ssl/certificate.crt";
-const caBundlePath = "/etc/nginx/conf.d/dns_ssl/ca_bundle.crt";
+const privateKeyPath = "/app/private.key";
+const certificatePath = "/app/certificate.crt";
+const caBundlePath = "/app/ca_bundle.crt";
 
 const server =
   process.env.NODE_ENV === "production"
