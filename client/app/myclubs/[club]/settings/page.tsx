@@ -1,4 +1,4 @@
-import LeaveClubButton from "@/components/settings/LeaveClubButton";
+import LeaveClubButton from "@/components/clubSettings/LeaveClubButton";
 
 const Page = () => {
   return (

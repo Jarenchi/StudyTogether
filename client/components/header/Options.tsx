@@ -1,6 +1,8 @@
 import nookies, { destroyCookie } from "nookies";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
+import { buttonVariants, Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -10,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Button } from "@/components/ui/button";
+
 import useUserStore from "@/stores/userStore";
 
 const Options = () => {
@@ -36,12 +38,17 @@ const Options = () => {
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuLabel>My Account</DropdownMenuLabel>
+          <DropdownMenuLabel className="text-center">My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DropdownMenuItem>
-            <Button variant="ghost">
-              <Link href="/my/dashboard">Dashboard</Link>
-            </Button>
+            <Link href="/my/dashboard" className={cn(buttonVariants({ variant: "ghost" }), "justify-start")}>
+              Dashboard
+            </Link>
+          </DropdownMenuItem>
+          <DropdownMenuItem>
+            <Link href="/my/settings" className={cn(buttonVariants({ variant: "ghost" }), "justify-start")}>
+              Settings
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuItem>
             <Button variant="ghost" type="button" onClick={logoutHandler}>

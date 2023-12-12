@@ -4,7 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import nookies from "nookies";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import TimeChart from "@/components/dashboard/TimeChart";
+import TimeChart from "@/components/dashboard/Dashboard";
 import ProfileBanner from "@/components/dashboard/ProfileBanner";
 
 const Page = () => {
