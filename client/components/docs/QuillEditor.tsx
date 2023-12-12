@@ -59,12 +59,10 @@ const QuillEditor = () => {
   const socketRef = useRef<Socket>();
   useEffect(() => {
     const userName = nookies.get().user_name;
-    // socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, {
-    //   path: "/quill",
-    // });
     socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, {
       withCredentials: true,
       transports: ["websocket", "polling"],
+      // path: "/quill",
     });
     socketRef.current.on("connect_error", (err) => {
       console.log(`connect_error due to ${err.message}`);
