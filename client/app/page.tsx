@@ -13,7 +13,7 @@ export default function Home() {
             href="/clubs"
             className="text-lg bg-primary text-white px-5 py-3 rounded-full text-center hover:opacity-75"
           >
-            Start using
+            Start Using
           </Link>
         </div>
         <Features />

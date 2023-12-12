@@ -19,18 +19,19 @@ import {
   Text,
   Title,
   Tracker,
-  ProgressCircle,
   Button,
 } from "@tremor/react";
+import getCurrentWeekDates from "@/utils/getCurrentWeekDate";
+import Achievements from "./Achievements";
 
 const topics = [
   {
     name: "Events",
-    sales: 9800,
+    time: 2700,
   },
   {
     name: "Documents",
-    sales: 4567,
+    time: 4567,
   },
 ];
 interface TrackerType {
@@ -60,29 +61,6 @@ const valueFormatter = (number: number) => {
   const minutes = number % 60;
   return `${hours}h ${minutes}min`;
 };
-
-const achievements = [
-  { value: 5, total: 10, label: "Participated in 10 events." },
-  { value: 0, total: 1, label: "Hosted an event." },
-  { value: 0, total: 1, label: "Hosted a live session (3 hours)." },
-  { value: 20, total: 100, label: "Logged in consecutively for 100 days." },
-];
-const achievementItems = achievements.map((item, index) => (
-  // eslint-disable-next-line react/no-array-index-key
-  <Card key={index} className="max-w-sm mx-auto">
-    <Flex className="space-x-5" justifyContent="center">
-      <ProgressCircle value={(item.value / item.total) * 100} size="md">
-        <span className="text-xs text-gray-700 font-medium">{`${(item.value / item.total) * 100}%`}</span>
-      </ProgressCircle>
-      <div className="w-3/4">
-        <Text className="font-medium text-gray-700">
-          {`${item.value}/${item.total} (${(item.value / item.total) * 100}%)`}
-        </Text>
-        <Text className="whitespace-pre-line">{item.label}</Text>
-      </div>
-    </Flex>
-  </Card>
-));
 
 const chartdata = [
   {
@@ -114,20 +92,6 @@ const chartdata = [
     Minutes: 320,
   },
 ];
-
-const getCurrentWeekDates = () => {
-  const today = new Date();
-  const currentDay = today.getDay(); // 0 is Sunday, 1 is Monday, ..., 6 is Saturday
-  const startOfWeek = new Date(today);
-  const endOfWeek = new Date(today);
-  startOfWeek.setDate(today.getDate() - ((currentDay + 6) % 7)); // Set to the first day (Monday) of the current week
-  endOfWeek.setDate(today.getDate() + (6 - currentDay)); // Set to the last day (Sunday) of the current week
-
-  const startDateString = `${startOfWeek.getMonth() + 1}/${startOfWeek.getDate()}`;
-  const endDateString = `${endOfWeek.getMonth() + 1}/${endOfWeek.getDate()}`;
-
-  return `${startDateString}-${endDateString}`;
-};
 
 export default function Dashboard() {
   const [attendanceData, setAttendanceData] = useState<TrackerType[]>([]);
@@ -198,7 +162,7 @@ export default function Dashboard() {
                 <DonutChart
                   className="mt-6"
                   data={topics}
-                  category="sales"
+                  category="time"
                   index="name"
                   valueFormatter={valueFormatter}
                   colors={["slate", "violet", "indigo", "rose", "cyan", "amber"]}
@@ -233,9 +197,7 @@ export default function Dashboard() {
           </TabPanel>
           <TabPanel>
             <div className="mt-6">
-              <Grid numItemsMd={2} numItemsLg={3} className="mt-6 gap-6">
-                {achievementItems}
-              </Grid>
+              <Achievements />
             </div>
           </TabPanel>
         </TabPanels>
