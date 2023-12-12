@@ -5,10 +5,55 @@ import { LiveKitRoom, VideoConference, RoomAudioRenderer } from "@livekit/compon
 import { useEffect, useState } from "react";
 import nookies from "nookies";
 import { useParams } from "next/navigation";
+import axios from "axios";
 
 export default function Page() {
   const [token, setToken] = useState("");
   const params = useParams();
+  const [usageTime, setUsageTime] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setUsageTime((prevTime) => prevTime + 1);
+    }, 60000);
+
+    return () => {
+      clearInterval(interval);
+      const recordUsage = async () => {
+        const userId = nookies.get().user_id;
+        try {
+          const today = new Date().toISOString().split("T")[0];
+          const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/${userId}/usages`, {
+            headers: { Authorization: `Bearer ${nookies.get().access_token}` },
+            params: {
+              date: today,
+            },
+          });
+          console.log(response.data);
+          if (response.data.exists) {
+            await axios.put(
+              `${process.env.NEXT_PUBLIC_API_URL}/user/${userId}/usages/${response.data.logId}`,
+              {
+                minutes: usageTime + response.data.logMinutes,
+              },
+              { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
+            );
+          } else {
+            await axios.post(
+              `${process.env.NEXT_PUBLIC_API_URL}/user/${userId}/usages`,
+              {
+                minutes: usageTime,
+              },
+              { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
+            );
+          }
+        } catch (error: any) {
+          console.log("Error recording usage:", error.message);
+        }
+      };
+      recordUsage();
+    };
+  }, []);
   useEffect(() => {
     (async () => {
       try {
