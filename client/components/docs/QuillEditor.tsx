@@ -98,7 +98,6 @@ const QuillEditor = () => {
         console.log(response.data);
       })
       .catch((error) => {
-        console.error(error);
         console.log(error.message);
       });
     socketRef.current?.emit("editing", curUser);
@@ -170,7 +169,7 @@ const QuillEditor = () => {
           </h1>
         )}
       </div>
-      <div className="flex justify-center items-start h-[86vh]">
+      <div className="flex justify-center items-start h-[86vh] flex-col-reverse lg:flex-row">
         <div className="h-[82vh]">
           <ReactQuill
             value={text}
@@ -181,12 +180,12 @@ const QuillEditor = () => {
             className="h-[75vh] w-[70vw]"
           />
         </div>
-        <div className="h-[79vh] ml-3">
+        <div className="lg:h-[79vh] lg:ml-3 my-5 lg:my-0">
           <p className="text-lg mb-2">Online Users:</p>
-          <ul>
+          <ul className="flex lg:flex-col gap-2">
             {users.map((user) => (
-              <Badge key={user} className="text-lg dark:text-white truncate block my-2">
-                {user} {editingUser === user && <span> Editing</span>}
+              <Badge key={user} className="text-lg dark:text-white truncate block">
+                {user} {editingUser === user && <span>(Editing)</span>}
               </Badge>
             ))}
           </ul>

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { CheckCircleIcon, ExclamationIcon } from "@heroicons/react/solid";
 import { MinusIcon, PlusIcon } from "lucide-react";
 import {
   Callout,
   Card,
+  Color,
   BarChart,
-  DonutChart,
   Flex,
   Grid,
   Metric,
@@ -24,87 +24,189 @@ import {
 import getCurrentWeekDates from "@/utils/getCurrentWeekDate";
 import Achievements from "./Achievements";
 
-const topics = [
-  {
-    name: "Events",
-    time: 2700,
-  },
-  {
-    name: "Documents",
-    time: 4567,
-  },
-];
-interface TrackerType {
-  color: "emerald" | "rose" | "gray";
+// const data = {
+//   _id: "6578396bb6c0a264c0aaa140",
+//   userId: "6572728d76f107fea7a7e1a3",
+//   targetTime: 0,
+//   logs: [
+//     {
+//       date: "2023-12-01",
+//       minutes: 233,
+//       _id: "657833c078bbd47b8edd88eb",
+//     },
+//     {
+//       date: "2023-12-02",
+//       minutes: 200,
+//       _id: "657833c078bbd47b8edd88ed",
+//     },
+//     {
+//       date: "2023-12-04",
+//       minutes: 301,
+//       _id: "657833c078bbd47b8edd88f1",
+//     },
+//     {
+//       date: "2023-12-05",
+//       minutes: 61,
+//       _id: "657833c078bbd47b8edd88f3",
+//     },
+//     {
+//       date: "2023-12-06",
+//       minutes: 313,
+//       _id: "657833c078bbd47b8edd88f5",
+//     },
+//     {
+//       date: "2023-12-07",
+//       minutes: 2,
+//       _id: "657833c078bbd47b8edd88f7",
+//     },
+//     {
+//       date: "2023-12-08",
+//       minutes: 46,
+//       _id: "657833c078bbd47b8edd88f9",
+//     },
+//     {
+//       date: "2023-12-09",
+//       minutes: 278,
+//       _id: "657833c078bbd47b8edd88fb",
+//     },
+//     {
+//       date: "2023-12-10",
+//       minutes: 41,
+//       _id: "657833c078bbd47b8edd88fd",
+//     },
+//     {
+//       date: "2023-12-11",
+//       minutes: 221,
+//       _id: "657833c078bbd47b8edd88ff",
+//     },
+//     {
+//       date: "2023-12-12",
+//       minutes: 364,
+//       _id: "657833c078bbd47b8edd8901",
+//     },
+//   ],
+//   __v: 0,
+// };
+interface Log {
+  date: string;
+  minutes: number;
+  _id: string;
+}
+
+interface DashboardData {
+  _id: string;
+  userId: string;
+  targetTime: number;
+  logs: Log[];
+  __v: number;
+}
+
+interface AttendanceItem {
+  color: Color;
   tooltip: string;
 }
 
-const getAttendanceData = (): TrackerType[] => {
-  const currentDate = new Date();
-  const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate();
+const getAttendanceData = (dashboardData: DashboardData): AttendanceItem[] => {
+  const today: Date = new Date();
+  const thisMonth: number = today.getMonth() + 1;
+  const thisYear: number = today.getFullYear();
+  const attendanceData: AttendanceItem[] = [];
 
-  const attendanceData: TrackerType[] = Array.from({ length: daysInMonth }, (_, day) => {
-    const date = new Date(currentDate.getFullYear(), currentDate.getMonth(), day + 1);
-    const isFutureDate = date > currentDate;
+  const lastDayOfMonth = new Date(thisYear, thisMonth, 0).getDate();
 
-    return {
-      color: isFutureDate ? "gray" : "emerald",
-      tooltip: date.toLocaleDateString(),
-    };
-  });
+  for (let day = 1; day <= lastDayOfMonth; day += 1) {
+    const currentDate = new Date(thisYear, thisMonth - 1, day);
+    const formattedDate = `${thisYear}/${(thisMonth < 10 ? "0" : "") + thisMonth}/${(day < 10 ? "0" : "") + day}`;
+
+    if (currentDate > today) {
+      attendanceData.push({
+        color: "gray",
+        tooltip: formattedDate,
+      });
+    } else {
+      const hasLog = dashboardData.logs.find((log) => new Date(log.date).getDate() === day);
+      if (hasLog) {
+        attendanceData.push({
+          color: "emerald",
+          tooltip: formattedDate,
+        });
+      } else {
+        attendanceData.push({
+          color: "rose",
+          tooltip: formattedDate,
+        });
+      }
+    }
+  }
 
   return attendanceData;
 };
-
 const valueFormatter = (number: number) => {
   const hours = Math.floor(number / 60);
   const minutes = number % 60;
   return `${hours}h ${minutes}min`;
 };
+interface DashboardProps {
+  data: DashboardData;
+}
+const Dashboard: React.FC<DashboardProps> = ({ data }) => {
+  const [targetTime, setTargetTime] = useState(data.targetTime);
+  const attendanceData: AttendanceItem[] = getAttendanceData(data);
+  function getTotalTime() {
+    const totalMinutes = data.logs.reduce((total, log) => total + log.minutes, 0);
+    const totalHours = Math.floor(totalMinutes / 60);
+    const remainingMinutes = totalMinutes % 60;
+    return `${totalHours} h ${remainingMinutes} min`;
+  }
 
-const chartdata = [
-  {
-    name: "Monday",
-    Minutes: 170,
-  },
-  {
-    name: "Tuesday",
-    Minutes: 0,
-  },
-  {
-    name: "Wednesday",
-    Minutes: 320,
-  },
-  {
-    name: "Thursday",
-    Minutes: 256,
-  },
-  {
-    name: "Friday",
-    Minutes: 320,
-  },
-  {
-    name: "Saturday",
-    Minutes: 128,
-  },
-  {
-    name: "Sunday",
-    Minutes: 320,
-  },
-];
+  function getThisWeekData() {
+    const today = new Date();
+    const currentDay = today.getDay();
+    const startOfWeek = new Date(today);
+    const endOfWeek = new Date(today);
 
-export default function Dashboard() {
-  const [attendanceData, setAttendanceData] = useState<TrackerType[]>([]);
-  const [targetTime, setTargetTime] = useState(360);
-  useEffect(() => {
-    const data = getAttendanceData();
-    setAttendanceData(data);
-  }, []);
+    startOfWeek.setDate(today.getDate() - ((currentDay + 6) % 7)); // Set to the first day (Monday) of the current week
+    endOfWeek.setDate(today.getDate() + (6 - currentDay)); // Set time to end of day
+
+    console.log(startOfWeek.toLocaleDateString(), endOfWeek.toLocaleDateString());
+
+    const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+    const thisWeekLogs = daysOfWeek.map((day, index) => {
+      const logForDay = data.logs.find((log) => {
+        const logDate = new Date(log.date);
+        logDate.setHours(0, 0, 0, 0);
+        return (
+          logDate.getTime() ===
+          new Date(startOfWeek.getFullYear(), startOfWeek.getMonth(), startOfWeek.getDate() + index).getTime()
+        );
+      });
+
+      return {
+        name: day,
+        date: new Date(
+          startOfWeek.getFullYear(),
+          startOfWeek.getMonth(),
+          startOfWeek.getDate() + index,
+        ).toLocaleDateString(),
+        minutes: logForDay ? logForDay.minutes : 0,
+      };
+    });
+
+    const thisWeekTotalTime = thisWeekLogs.reduce((total, log) => total + log.minutes, 0);
+
+    return { thisWeekLogs, thisWeekTotalTime };
+  }
+  const { thisWeekLogs, thisWeekTotalTime } = getThisWeekData();
+  // TODO:customTooltip
+
+  const totalTime = getTotalTime();
   const totalDays = attendanceData.length;
   const attendedDays = attendanceData.filter((item) => item.color === "emerald").length;
   const thisWeekDates = getCurrentWeekDates();
-  const value = 400;
-
+  const today = new Date();
+  const currentYear = today.getFullYear();
+  const currentMonth = today.toLocaleString("default", { month: "long" });
   return (
     <main>
       <TabGroup className="mt-6">
@@ -116,7 +218,7 @@ export default function Dashboard() {
           <TabPanel>
             <Grid numItemsMd={2} numItemsLg={3} className="mt-6 gap-6">
               <Card className="max-w-md">
-                {value >= targetTime ? (
+                {thisWeekTotalTime >= targetTime ? (
                   <Callout
                     title="Congratulations! You have reached the target hours this week!"
                     icon={CheckCircleIcon}
@@ -130,13 +232,13 @@ export default function Dashboard() {
                   />
                 )}
                 <Text className="mt-4">This Week Usage Time</Text>
-                <Metric>{value} mins</Metric>
+                <Metric>{thisWeekTotalTime} mins</Metric>
                 <div className="flex flex-col">
                   <div className="flex items-center justify-center space-x-2 mt-4">
                     <button
                       type="button"
                       className="font-bold p-2 rounded-full border"
-                      onClick={() => setTargetTime((prev) => prev - 30)}
+                      onClick={() => setTargetTime((prev) => Math.max(prev - 30, 0))}
                     >
                       <MinusIcon size={15} />
                       <span className="sr-only">Decrease</span>
@@ -159,23 +261,17 @@ export default function Dashboard() {
               </Card>
               <Card className="max-w-md">
                 <Title>Total Time</Title>
-                <DonutChart
-                  className="mt-6"
-                  data={topics}
-                  category="time"
-                  index="name"
-                  valueFormatter={valueFormatter}
-                  colors={["slate", "violet", "indigo", "rose", "cyan", "amber"]}
-                />
+                <p className="text-center text-6xl my-16">{totalTime}</p>
               </Card>
               <Card className="max-w-md">
                 <Title>Attendance</Title>
-                <Text>Dec 2023</Text>
                 <Text>
-                  {attendedDays} / {totalDays}
+                  {currentYear} {currentMonth}
                 </Text>
                 <Flex justifyContent="end" className="mt-4">
-                  <Text>{`${((attendedDays / totalDays) * 100).toFixed(2)}%`}</Text>
+                  <Text>
+                    {`${((attendedDays / totalDays) * 100).toFixed(2)}%`} ({attendedDays} / {totalDays})
+                  </Text>
                 </Flex>
                 <Tracker data={attendanceData} className="mt-2" />
               </Card>
@@ -185,9 +281,9 @@ export default function Dashboard() {
                 <Title>Week 2 ({thisWeekDates})</Title>
                 <BarChart
                   className="mt-6"
-                  data={chartdata}
+                  data={thisWeekLogs}
                   index="name"
-                  categories={["Minutes"]}
+                  categories={["minutes"]}
                   colors={["blue"]}
                   valueFormatter={valueFormatter}
                   yAxisWidth={60}
@@ -204,4 +300,5 @@ export default function Dashboard() {
       </TabGroup>
     </main>
   );
-}
+};
+export default Dashboard;

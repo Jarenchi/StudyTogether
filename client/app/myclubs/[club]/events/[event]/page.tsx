@@ -117,7 +117,7 @@ const Page = () => {
   const CancelParticipationButton = <Button onClick={cancelEventParticipationHandler}>Cancel Participation</Button>;
   return (
     <div className="mx-auto mt-2">
-      <h1 className="text-4xl mb-3">{data?.title}</h1>
+      <h1 className="text-4xl my-3 text-center">{data?.title}</h1>
       <EventInformation data={data!} />
       <div className="my-2">
         <EventDescription description={data?.description!} />

@@ -26,7 +26,7 @@ const EventList = () => {
     const formattedDate = date.toLocaleDateString();
     const participantsNumber = event.onlineParticipants.length + event.physicalParticipants.length;
     return (
-      <Card key={event._id} className="min-w-[20rem] mb-2">
+      <Card key={event._id} className="min-w-[25rem] mb-2">
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center">
