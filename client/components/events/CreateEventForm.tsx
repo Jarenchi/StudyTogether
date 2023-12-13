@@ -82,7 +82,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({ setOpen }) => {
           {
             title: values.title,
             content: "",
-            creater: {
+            creator: {
               id: nookies.get().user_id,
               name: nookies.get().user_name,
               picture: nookies.get().user_image,

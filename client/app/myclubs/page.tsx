@@ -6,7 +6,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { CalendarDays, MenuSquare, Users, Clock } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardDescription, CardTitle, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Club, Event } from "@/types/userProfileType";
@@ -23,7 +22,6 @@ const Page = () => {
       return response.data;
     } catch (error: any) {
       if (error?.response?.status === 403) {
-        // alert("Account is expired, please Login again");
         router.push("/login");
       }
       throw error;
@@ -35,16 +33,7 @@ const Page = () => {
   });
 
   if (isLoading) return <div>Loading...</div>;
-  if (isError) {
-    return (
-      <div className="flex items-center">
-        <p>請先登入帳號</p>
-        <Button>
-          <Link href="/login">Login</Link>
-        </Button>
-      </div>
-    );
-  }
+  if (isError) return <div>500 Internal Server Error</div>;
 
   const clubItems = data?.clubs?.map((club: Club) => (
     <Card key={club._id} className="min-w-[20rem] mb-2">
@@ -104,7 +93,7 @@ const Page = () => {
     );
   });
   return (
-    <div className="mx-20 mt-2">
+    <div className="lg:mx-20 mx-5 mt-2">
       <div className="flex gap-3 items-center">
         <MenuSquare />
         <p className="text-2xl py-2">Clubs</p>

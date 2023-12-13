@@ -10,7 +10,6 @@ import ClubBanner from "@/components/club/ClubBanner";
 const Page = ({ params }: { params: { club: string } }) => {
   async function fetchClub() {
     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${params.club}`);
-    console.log(response.data);
     return response.data as Club;
   }
   const { data, isLoading, isError } = useQuery({
@@ -21,7 +20,7 @@ const Page = ({ params }: { params: { club: string } }) => {
   if (isError) return <div>500 Internal Server Error</div>;
 
   return (
-    <div className="mx-auto flex flex-col items-center mt-3">
+    <div className="mx-auto flex flex-col items-center p-3">
       <ClubBanner data={data!} />
       <ClubDescription description={data?.description!} owner={data?.owner!} club={params.club} />
       <ClubInformation data={data!} />

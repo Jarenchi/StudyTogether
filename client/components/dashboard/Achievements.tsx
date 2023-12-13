@@ -11,12 +11,10 @@ const achievementItems = achievements.map((item, index) => (
   <Card key={index} className="max-w-sm mx-auto">
     <Flex className="space-x-5" justifyContent="center">
       <ProgressCircle value={(item.value / item.total) * 100} size="md">
-        <span className="text-xs text-gray-700 font-medium">{`${(item.value / item.total) * 100}%`}</span>
+        <span className="text-xl font-medium">{`${(item.value / item.total) * 100}%`}</span>
       </ProgressCircle>
       <div className="w-3/4">
-        <Text className="font-medium text-gray-700">
-          {`${item.value}/${item.total} (${(item.value / item.total) * 100}%)`}
-        </Text>
+        <Text className="font-medium">{`${item.value}/${item.total} (${(item.value / item.total) * 100}%)`}</Text>
         <Text className="whitespace-pre-line">{item.label}</Text>
       </div>
     </Flex>
