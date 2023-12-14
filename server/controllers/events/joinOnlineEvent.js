@@ -1,5 +1,6 @@
 const eventModel = require("../../models/eventModel");
 const userModel = require("../../models/userModel");
+const sendMail = require("../../nodemailer");
 
 const joinOnlineEvent = async (req, res) => {
   try {
@@ -14,7 +15,6 @@ const joinOnlineEvent = async (req, res) => {
       },
       { new: true },
     );
-    console.log(event);
 
     if (!event) {
       return res.status(404).json({ error: "Event not found" });
@@ -28,6 +28,7 @@ const joinOnlineEvent = async (req, res) => {
         },
       },
     );
+    await sendMail(req, res);
 
     res.status(200).json(event);
   } catch (error) {

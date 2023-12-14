@@ -12,6 +12,24 @@
 
 ## Features
 
+#### Clubs
+
+Users can create or join clubs
+
+#### Events
+
+Users can join or host events
+
+#### Documents
+
+Users can
+
+#### Mettings
+
+#### Members
+
+#### Dashboard
+
 ## Demo Account
 
 - Account: test@test.com
@@ -19,9 +37,9 @@
 
 ## RequirementS
 
-Node.js version: 20.9.0
-Frontend: Node.js
-Backend: Node.js, MongoDB Altas
+- Node.js version: 20.9.0
+- Frontend: Node.js
+- Backend: Node.js, MongoDB Altas
 
 ## Installation
 

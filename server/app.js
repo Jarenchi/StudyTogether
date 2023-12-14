@@ -30,6 +30,7 @@ app.use(cors());
 const { setupQuillSocket } = require("./socket");
 const userRouter = require("./routes/user");
 const clubRouter = require("./routes/clubs");
+const sendMail = require("./nodemailer");
 
 const port = 5000;
 let connectStatus = false;
@@ -63,11 +64,12 @@ app.use("/api/1.0/user", userRouter);
 app.use("/api/1.0/clubs", clubRouter);
 
 //TODO:把LAT,LON存起來
-app.post("api/geocode", getLatLonForPlace);
+app.post("api/1.0/geocode", getLatLonForPlace);
 
 app.get("/test", (req, res) => {
   res.send("Ok");
 });
+app.post("/api/1.0/sendmail", sendMail);
 
 setupQuillSocket(server);
 

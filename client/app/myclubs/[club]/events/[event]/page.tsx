@@ -24,6 +24,7 @@ const Page = () => {
 
   async function fetchEventList() {
     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/events/${eventId}`);
+    console.log(response.data);
     return response.data as Event;
   }
   const { data, isLoading, isError } = useQuery({
@@ -38,6 +39,7 @@ const Page = () => {
         {
           userId: nookies.get().user_id,
           name: nookies.get().user_name,
+          email: nookies.get().user_email,
         },
         { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
       ),
@@ -122,9 +124,9 @@ const Page = () => {
       <div className="my-2">
         <EventDescription description={data?.description!} />
       </div>
-      <div className="my-2">
+      {/* <div className="my-2">
         <EventMap place={data?.location!} />
-      </div>
+      </div> */}
       <div className="mb-3">
         {iSNotCreator && !isJoined && (data?.type !== "hybrid" ? JoinEventButton : JoinEventSection)}
         {isJoined && CancelParticipationButton}
