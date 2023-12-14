@@ -6,7 +6,7 @@ import nookies from "nookies";
 import axios from "axios";
 import Link from "next/link";
 import { Users } from "lucide-react";
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { fetchClubList } from "@/utils/api";
 import { Club } from "@/types/clubType";
@@ -45,35 +45,31 @@ const ClubList = () => {
   const clubItems = data?.clubs?.map((club: Club) => {
     const isMember = club?.members?.includes(nookies.get().user_id);
     return (
-      <Card key={club._id} className="min-w-[20rem] mb-2">
+      <Card key={club._id} className="w-[20rem] mb-2">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Avatar className="mr-4">
-                <AvatarImage src={club.picture} />
-                <AvatarFallback>{club.name}</AvatarFallback>
-              </Avatar>
-              <CardTitle>
-                {isMember ? (
-                  <Link href={`/myclubs/${club._id}`} className="hover:underline">
-                    {club.name}
-                  </Link>
-                ) : (
-                  club.name
-                )}
-              </CardTitle>
-            </div>
-            <div>
-              <CardDescription>
-                <p className="text-lg"> Creator:{club.owner.name}</p>
-                <div className="flex items-center gap-3">
-                  <Users />
-                  <p className="text-lg">{club.members.length}</p>
-                </div>
-              </CardDescription>
-            </div>
+          <div className="flex items-center">
+            <Avatar className="mr-4">
+              <AvatarImage src={club.picture} />
+              <AvatarFallback>{club.name}</AvatarFallback>
+            </Avatar>
+            <CardTitle className="overflow-hidden break-words leading-8">
+              {isMember ? (
+                <Link href={`/myclubs/${club._id}`} className="hover:underline">
+                  {club.name}
+                </Link>
+              ) : (
+                club.name
+              )}
+            </CardTitle>
           </div>
         </CardHeader>
+        <CardContent>
+          <p className="text-lg"> Creator:{club.owner.name}</p>
+          <div className="flex items-center gap-3">
+            <Users />
+            <p className="text-lg">{club.members.length}</p>
+          </div>
+        </CardContent>
         <CardFooter>
           {isMember || (
             <Button
