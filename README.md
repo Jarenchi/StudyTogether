@@ -35,7 +35,7 @@ Users can
 - Account: test@test.com
 - Password: Aa123456
 
-## RequirementS
+## Requirements
 
 - Node.js version: 20.9.0
 - Frontend: Node.js

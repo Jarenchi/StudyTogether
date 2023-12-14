@@ -7,7 +7,7 @@ const clubSearch = async (req, res) => {
     const searchResults = await clubModel.aggregate([
       {
         $match: {
-          $or: [{ name: { $regex: regex } }, { description: { $regex: regex } }, { owner: { $regex: regex } }],
+          $or: [{ name: { $regex: regex } }, { "owner.name": { $regex: regex } }],
         },
       },
       {
