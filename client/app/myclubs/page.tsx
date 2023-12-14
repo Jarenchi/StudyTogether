@@ -38,26 +38,24 @@ const Page = () => {
   const clubItems = data?.clubs?.map((club: Club) => (
     <Card key={club._id} className="min-w-[20rem] mb-2">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <Avatar className="mr-4">
-              <AvatarImage src={club.picture} />
-              <AvatarFallback>{club.name}</AvatarFallback>
-            </Avatar>
-            <CardTitle>
-              <Link href={`/myclubs/${club._id}`} className="hover:underline">
-                {club.name}
-              </Link>
-            </CardTitle>
-          </div>
-          <CardDescription>
-            <p className="text-lg"> Creator:{club.owner.name}</p>
-            <div className="flex items-center gap-3">
-              <Users />
-              <p className="text-lg">{club.members.length}</p>
-            </div>
-          </CardDescription>
+        <div className="flex items-center">
+          <Avatar className="mr-4">
+            <AvatarImage src={club.picture} />
+            <AvatarFallback>{club.name}</AvatarFallback>
+          </Avatar>
+          <CardTitle className="overflow-hidden break-words leading-8">
+            <Link href={`/myclubs/${club._id}`} className="hover:underline">
+              {club.name}
+            </Link>
+          </CardTitle>
         </div>
+        <CardDescription className="mt-3">
+          <p className="text-lg"> Creator:{club.owner.name}</p>
+          <div className="flex items-center gap-3">
+            <Users />
+            <p className="text-lg">{club.members.length}</p>
+          </div>
+        </CardDescription>
       </CardHeader>
     </Card>
   ));

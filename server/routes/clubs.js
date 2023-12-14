@@ -8,6 +8,7 @@ const { clubCreate } = require("../controllers/club/clubCreate");
 const { clubAllList } = require("../controllers/club/clubAllList");
 const { clubJoin } = require("../controllers/club/clubJoin");
 const { clubName } = require("../controllers/club/clubName");
+const { clubSearch } = require("../controllers/club/clubSearch");
 const { getClubById } = require("../controllers/club/getClubById");
 const { updateClub } = require("../controllers/club/updateClub");
 
@@ -30,6 +31,7 @@ const { cancelEventParticipation } = require("../controllers/events/cancelEventP
 
 const router = express.Router();
 router.post("/", verifyAccessToken, checkFormData, uploadImage, clubCreate);
+router.get("/search", clubSearch);
 router.get("/all", clubAllList);
 router.post("/join", checkApplicationJson, verifyAccessToken, clubJoin);
 router.get("/:clubId/name", clubName);

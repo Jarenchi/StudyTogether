@@ -12,13 +12,18 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
+// import { Tag, TagInput } from "@/components/ui/tag-input";
 import { Textarea } from "../ui/textarea";
-// import { FancyMultiSelect } from "../ui/multi-select";
 
 const clubSchema = z.object({
   clubName: z.string().min(1, { message: "Club Name is required" }),
   clubDescription: z.string().min(1, { message: "Club Description is required" }),
-  // clubTags: z.array(z.string()),
+  // clubTags: z.array(
+  //   z.object({
+  //     id: z.string(),
+  //     text: z.string(),
+  //   }),
+  // ),
   clubImage: z
     .string()
     .refine((value) => /\.(jpg|jpeg|png)$/.test(value), {
@@ -32,6 +37,7 @@ interface CreateClubFormProps {
 }
 
 const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
+  // const [tags, setTags] = useState<Tag[]>([]);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
 
@@ -43,6 +49,7 @@ const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
       // clubTags: [],
     },
   });
+  // const { setValue } = form;
 
   const queryClient = useQueryClient();
 
@@ -92,9 +99,6 @@ const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
   async function onSubmit(values: z.infer<typeof clubSchema>) {
     mutation.mutateAsync(values);
   }
-  // const handleTagChange = (selectedTags) => {
-  //   form.setValue("clubTags", selectedTags); // Set the selected tags in the form
-  // };
 
   return (
     <Form {...form}>
@@ -115,11 +119,20 @@ const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
         {/* <FormField
           control={form.control}
           name="clubTags"
-          render={() => (
-            <FormItem>
-              <FormLabel>clubTags</FormLabel>
+          render={({ field }) => (
+            <FormItem className="flex flex-col items-start">
+              <FormLabel className="text-left">Club Tags</FormLabel>
               <FormControl>
-                <FancyMultiSelect onChange={handleTagChange} />
+                <TagInput
+                  {...field}
+                  placeholder="Enter a topic"
+                  tags={tags}
+                  className="sm:min-w-[450px]"
+                  setTags={(newTags) => {
+                    setTags(newTags);
+                    setValue("clubTags", newTags as [Tag, ...Tag[]]);
+                  }}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
