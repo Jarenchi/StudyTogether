@@ -45,7 +45,7 @@ const QuillEditor = () => {
   const [title, setTitle] = useState("");
   const [text, setText] = useState("");
   const [users, setUsers] = useState<string[]>([]);
-  const [editingUser, setEditingUser] = useState("");
+  const [editingUsers, setEditingUsers] = useState<string[]>([]);
   const [curUser, setCurUser] = useState("");
 
   useEffect(() => {
@@ -62,8 +62,10 @@ const QuillEditor = () => {
     socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, {
       withCredentials: true,
       transports: ["websocket", "polling"],
-      // path: "/quill",
+      path: "/quill",
     });
+    socketRef.current.emit("connectUser", userName, targetDocId);
+    setCurUser(userName);
     socketRef.current.on("connect_error", (err) => {
       console.log(`connect_error due to ${err.message}`);
     });
@@ -73,14 +75,12 @@ const QuillEditor = () => {
     socketRef.current.on("users", (newUsers: string[]) => {
       setUsers(newUsers);
     });
-    socketRef.current.on("editing", (userId: string) => {
-      console.log("Editing event received. User:", userId);
-      setEditingUser(userId);
+    socketRef.current.on("editing", (newEditingUsers: string[]) => {
+      console.log("Editing event received. Users:", newEditingUsers);
+      setEditingUsers(newEditingUsers);
     });
-    socketRef.current.emit("connectUser", userName);
-    setCurUser(userName);
     return () => {
-      socketRef.current?.emit("disconnectUser", userName);
+      socketRef.current?.emit("disconnectUser", userName, targetDocId);
       socketRef.current?.disconnect();
     };
   }, []);
@@ -100,12 +100,13 @@ const QuillEditor = () => {
       .catch((error) => {
         console.log(error.message);
       });
-    socketRef.current?.emit("editing", curUser);
-    socketRef.current?.emit("text", newText);
+    socketRef.current?.emit("editing", curUser, targetDocId);
+    socketRef.current?.emit("text", newText, targetDocId);
   });
   const handleBlur = () => {
-    setEditingUser("");
-    socketRef.current?.emit("editing", "");
+    const updatedEditingUsers = editingUsers.filter((user) => user !== curUser);
+    setEditingUsers(updatedEditingUsers);
+    socketRef.current?.emit("stopEditing", curUser, targetDocId);
   };
 
   const handleTitleClick = () => {
@@ -185,7 +186,7 @@ const QuillEditor = () => {
           <ul className="flex lg:flex-col gap-2">
             {users.map((user) => (
               <Badge key={user} className="text-lg dark:text-white truncate block">
-                {user} {editingUser === user && <span>(Editing)</span>}
+                {user} {editingUsers.includes(user) && <span>(Editing)</span>}
               </Badge>
             ))}
           </ul>

@@ -34,7 +34,7 @@ const SignInForm = () => {
         password: values.password,
       });
       const userData = response.data.data;
-      const maxAge = { maxAge: 3600 }; // 1hr
+      const maxAge = { maxAge: 3600 * 6 }; // 6hr
       nookies.set(null, "access_token", userData.access_token, maxAge);
       nookies.set(null, "user_id", userData.user.id.toString(), maxAge);
       nookies.set(null, "user_name", userData.user.name, maxAge);

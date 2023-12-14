@@ -1,49 +1,62 @@
 const { Server } = require("socket.io");
 
-let existingText = "";
-let editingUser = "";
-const users = new Set();
+const rooms = {};
 
 function setupQuillSocket(server) {
   const io = new Server(server, {
     cors: {
-      origin: "https://studytogether.vercel.app",
+      origin: process.env.FRONTEND_URL,
       methods: ["GET", "POST"],
       credentials: true,
     },
     transports: ["websocket", "polling"],
     secure: true,
-    // path: "/quill",
+    path: "/quill",
   });
 
   io.on("connection", (socket) => {
     console.log("a user connected");
 
-    socket.on("connectUser", (userName) => {
-      users.add(userName);
-      console.log(`${userName} has connected`);
-      io.emit("users", Array.from(users));
-    });
-
-    socket.on("text", (newText) => {
-      existingText = newText;
-      io.emit("text", newText);
-    });
-
-    socket.on("editing", (userId) => {
-      console.log("Editing event received. User:", userId);
-      editingUser = userId;
-      io.emit("editing", userId);
-    });
-
-    socket.on("disconnect", (userName) => {
-      console.log(`${userName} has disconnected`);
-      users.delete(userName);
-      if (editingUser === socket.id) {
-        editingUser = "";
-        io.emit("editing", "");
+    socket.on("connectUser", (userName, room) => {
+      socket.join(room);
+      if (!rooms[room]) {
+        rooms[room] = { existingText: "", editingUsers: [], users: new Set() };
       }
-      io.emit("users", Array.from(users));
+      rooms[room].users.add(userName);
+      console.log(`${userName} has connected to room ${room}`);
+      io.to(room).emit("users", Array.from(rooms[room].users));
+    });
+
+    socket.on("text", (newText, room) => {
+      rooms[room].existingText = newText;
+      io.to(room).emit("text", newText);
+    });
+
+    socket.on("editing", (userId, room) => {
+      console.log(`Editing event received in room ${room}. User: ${userId}`);
+      if (!rooms[room].editingUsers.includes(userId)) {
+        rooms[room].editingUsers.push(userId);
+      }
+      io.to(room).emit("editing", rooms[room].editingUsers);
+    });
+
+    socket.on("stopEditing", (userId, room) => {
+      console.log(`Stop Editing event received in room ${room}. User: ${userId}`);
+      console.log(rooms[room]);
+      if (rooms[room].editingUsers.includes(userId)) {
+        rooms[room].editingUsers = rooms[room].editingUsers.filter((user) => user !== userId);
+      }
+      io.to(room).emit("editing", rooms[room].editingUsers);
+    });
+
+    socket.on("disconnectUser", (userName, room) => {
+      console.log(`${userName} has disconnected from room ${room}`);
+      rooms[room].users.delete(userName);
+      if (rooms[room].editingUsers.includes(userName)) {
+        rooms[room].editingUsers = rooms[room].editingUsers.filter((user) => user !== userName);
+        io.to(room).emit("editing", rooms[room].editingUsers);
+      }
+      io.to(room).emit("users", Array.from(rooms[room].users));
     });
   });
 }
