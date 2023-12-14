@@ -124,9 +124,9 @@ const Page = () => {
       <div className="my-2">
         <EventDescription description={data?.description!} />
       </div>
-      {/* <div className="my-2">
+      <div className="my-2">
         <EventMap place={data?.location!} />
-      </div> */}
+      </div>
       <div className="mb-3">
         {iSNotCreator && !isJoined && (data?.type !== "hybrid" ? JoinEventButton : JoinEventSection)}
         {isJoined && CancelParticipationButton}
