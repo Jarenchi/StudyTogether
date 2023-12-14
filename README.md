@@ -4,10 +4,11 @@
 
 - [Features](#features)
 - [Demo Account](#demo-account)
-- [Features](#features)
+- [Requirements](#requirements)
 - [Installation](#installation)
 - [Environment Variables](#environment-variables)
-- [Third Party Services](#third-party-services)
+- [Architecture](#architecture)
+- [Tech Stack](#tech-stack)
 - [Contact](#contact)
 
 ## Features
@@ -97,6 +98,7 @@ FRONTEND_URL= # YOUR FRONTEND URL
 ```
 
 ## Architecture
+ ![studyTogether drawio](https://github.com/Jarenchi/StudyTogether/assets/107235245/c00635ce-d3be-4484-adf0-eaf4675b45be)
 
 ## Tech Stack
 
@@ -108,7 +110,7 @@ FRONTEND_URL= # YOUR FRONTEND URL
 - Data fetching : [TanStack Query](https://tanstack.com/query/latest)
 - State management : [Zustand](https://zustand-demo.pmnd.rs/)
 - Table : [TanStack Table](https://tanstack.com/table/v8)
-- Text Editor : [ReactQuill](https://github.com/zenoamaro/react-quill), Socket.io
+- Text Editor : [ReactQuill](https://github.com/zenoamaro/react-quill) , [Socket.io](https://socket.io/)
 - Streaming : [LiveKit](https://livekit.io/)
 - Dashboard : [Tremor](https://www.tremor.so/)
 
@@ -117,7 +119,7 @@ FRONTEND_URL= # YOUR FRONTEND URL
 - Backend: [Express JS](https://expressjs.com/)
 - Database: [MongoDB Altas](https://www.mongodb.com/cloud/atlas)
 - ODM : [Moongoose](https://mongoosejs.com/)
-- Socket.io
+- [Socket.io](https://socket.io/)
 - [NodeMailer](https://nodemailer.com/)
 
 ## Contact
