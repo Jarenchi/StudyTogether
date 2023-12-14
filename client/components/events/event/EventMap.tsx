@@ -18,7 +18,6 @@ const MapContainer: FC<MapContainerProps> = ({ place }) => {
       const geocodeUrl = `https://maps.google.com/maps/api/geocode/json?address=${place}&key=${process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}`;
       const geoCodeResponse = await fetch(geocodeUrl);
       const geocodeData = await geoCodeResponse.json();
-      console.log(geocodeData);
       const { lat, lng } = geocodeData.results[0].geometry.location;
       setLocation({ lat, lng });
     }

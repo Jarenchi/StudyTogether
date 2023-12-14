@@ -1,17 +1,21 @@
+const mongoose = require("mongoose");
 const eventModel = require("../../models/eventModel");
 const userModel = require("../../models/userModel");
+const sendMail = require("../../nodemailer");
 
 const joinPhysicalEvent = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const { eventId } = req.params;
     const { userId, name } = req.body;
     const event = await eventModel.findById(eventId);
-    if (event.maxPhysicalParticipants && event.physicalParticipants.length >= event.maxPhysicalParticipants) {
-      return res.status(400).json({ error: "Maximum participants reached" });
+    if (!event) {
+      throw new Error("Event not found");
     }
 
-    if (!event) {
-      return res.status(404).json({ error: "Event not found" });
+    if (event.maxPhysicalParticipants && event.physicalParticipants.length >= event.maxPhysicalParticipants) {
+      throw new Error("Maximum participants reached");
     }
     event.physicalParticipants.push({ userId, name });
     await event.save();
@@ -23,11 +27,16 @@ const joinPhysicalEvent = async (req, res) => {
           events: event._id,
         },
       },
+      { session },
     );
-
-    res.status(200).json(event);
+    await sendMail(req, res);
+    await session.commitTransaction();
+    session.endSession();
+    return res.status(200).json(event);
   } catch (error) {
     console.error(error);
+    await session.abortTransaction();
+    session.endSession();
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
