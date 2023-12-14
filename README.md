@@ -18,28 +18,32 @@ Users can create or join clubs
 
 #### Events
 
-Users can join or host events
+Users can join or host diverse events, whether they are online meetups or in-person gatherings,
 
 #### Documents
 
-Users can
+Facilitating collaboration, users can edit documents collectively with fellow club members, enabling seamless teamwork and information sharing.
 
 #### Mettings
 
+Utilizing liveKit, StudyTogether enables users to conduct engaging online activities. This includes interactive chat rooms and screen sharing features, enhancing the overall experience of virtual meetings and events.
+
 #### Members
 
+Empowering administrators, StudyTogether allows for the effective management of users within a club. Additionally, a draw function is available, bringing an element of fun and randomness to user interactions.
+
 #### Dashboard
+
+The dashboard provides users with a comprehensive overview of their weekly usage statistics and tracking records.
 
 ## Demo Account
 
 - Account: test@test.com
 - Password: Aa123456
 
-## RequirementS
+## Requirements
 
 - Node.js version: 20.9.0
-- Frontend: Node.js
-- Backend: Node.js, MongoDB Altas
 
 ## Installation
 
@@ -92,31 +96,29 @@ EMAIL_PASS= # YOUR EMAIL PASSWORD
 FRONTEND_URL= # YOUR FRONTEND URL
 ```
 
-## Stack
+## Architecture
+
+## Tech Stack
 
 ### Frontend
 
-- Language: TypeScript
-- Framework: Next.js 14 (App Router)
-- UI: Tailwind CSS , Shadcn UI
-- Form : React Hook Form , Zod
-- Data fetching: TanStack Query
-- State management: Zustand
-- Table: TanStack Table
-- Text Editor: ReactQuill, Socket.io
-- Stream: LiveKit
-- Dashboard: Tremor
+- Framework: [Next.js 14](https://nextjs.org/) (App Router)
+- UI: [Tailwind CSS](https://tailwindcss.com/) , [Shadcn UI](https://ui.shadcn.com/)
+- Form : [React Hook Form](https://react-hook-form.com/) , [Zod](https://zod.dev/)
+- Data fetching : [TanStack Query](https://tanstack.com/query/latest)
+- State management : [Zustand](https://zustand-demo.pmnd.rs/)
+- Table : [TanStack Table](https://tanstack.com/table/v8)
+- Text Editor : [ReactQuill](https://github.com/zenoamaro/react-quill), Socket.io
+- Streaming : [LiveKit](https://livekit.io/)
+- Dashboard : [Tremor](https://www.tremor.so/)
 
 ### Backend
 
-- Backend: Express JS, Socket.io
-- Database: MongoDB (moongoose)
-
-## Third party services
-
-- Imgur
-- Google Maps API
-- LiveKit
+- Backend: [Express JS](https://expressjs.com/)
+- Database: [MongoDB Altas](https://www.mongodb.com/cloud/atlas)
+- ODM : [Moongoose](https://mongoosejs.com/)
+- Socket.io
+- [NodeMailer](https://nodemailer.com/)
 
 ## Contact
 
