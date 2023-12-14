@@ -1,15 +1,6 @@
 import axios from "axios";
 import nookies from "nookies";
 
-export async function fetchClubList() {
-  try {
-    const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clubs/all`);
-    return response.data;
-  } catch (error) {
-    console.log("Error fetching club list:", error);
-    throw error;
-  }
-}
 export async function fetchMyClubs(userId: string) {
   try {
     const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/user/${userId}/clubs`, {

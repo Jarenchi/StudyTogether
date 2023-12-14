@@ -1,26 +1,45 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import nookies from "nookies";
 import axios from "axios";
 import Link from "next/link";
 import { Users } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { fetchClubList } from "@/utils/api";
 import { Club } from "@/types/clubType";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const ClubList = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const keyword = searchParams.get("keyword");
+  async function fetchClubList() {
+    try {
+      let response;
+      if (keyword !== null) {
+        response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clubs/search`, {
+          params: { keyword },
+        });
+      } else {
+        response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clubs/all`);
+      }
+      return response.data.clubs;
+    } catch (error) {
+      console.error("Error fetching club list:", error);
+      throw error;
+    }
+  }
   const { data, isLoading, isError } = useQuery({
     queryFn: () => fetchClubList(),
-    queryKey: ["clublist"],
+    queryKey: ["clublist", keyword],
   });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>500 Internal Server Error</div>;
-
+  if (data.length === 0) {
+    return <div className="text-center">No Data</div>;
+  }
   async function joinClubHandler(clubId: string) {
     try {
       const userId = nookies.get().user_id;
@@ -42,7 +61,7 @@ const ClubList = () => {
       }
     }
   }
-  const clubItems = data?.clubs?.map((club: Club) => {
+  const clubItems = data?.map((club: Club) => {
     const isMember = club?.members?.includes(nookies.get().user_id);
     return (
       <Card key={club._id} className="w-[20rem] mb-2">
