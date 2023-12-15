@@ -16,6 +16,7 @@ import EventMap from "@/components/events/event/EventMap";
 
 const Page = () => {
   const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
   const params = useParams();
   const router = useRouter();
   const clubId = params.club;
@@ -61,7 +62,9 @@ const Page = () => {
     },
   });
   async function joinOnlineEventHandler() {
+    setLoading(true);
     await joinEventMutation.mutateAsync();
+    setLoading(false);
   }
 
   const cancelEventParticipationMutation = useMutation({
@@ -101,7 +104,11 @@ const Page = () => {
     data?.physicalParticipants.some((participant) => participant.userId === nookies.get().user_id);
   const iSNotCreator = data?.creator.userId !== nookies.get().user_id;
 
-  const JoinEventButton = <Button onClick={joinOnlineEventHandler}>Join Event</Button>;
+  const JoinEventButton = (
+    <Button onClick={joinOnlineEventHandler} disabled={loading}>
+      Join Event
+    </Button>
+  );
   const JoinEventSection = (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
