@@ -9,7 +9,7 @@ export function Sidebar({ id, name }: { id: string; name: string }) {
         <ChevronsLeft />
       </Button> */}
       <div className="px-3 py-2">
-        <Link href={`/myclubs/${id}`} className="mb-2 px-4 text-lg font-semibold tracking-tight break-words">
+        <Link href={`/myclubs/${id}`} className="mb-4 text-lg font-semibold tracking-tight break-words">
           {name}
         </Link>
         <div className="space-y-1">
