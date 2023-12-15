@@ -6,8 +6,8 @@ const Features = () => {
     <div className="flex flex-wrap gap-6 mt-7 items-center justify-center">
       <Card className="max-w-md min-w-[25rem]">
         <CardHeader className="flex-col items-center">
-          <div className="bg-primary rounded-full w-36 h-36 flex items-center justify-center mb-4">
-            <UsersIcon size={80} color="white" />
+          <div className="bg-primary rounded-full w-24 h-24 flex items-center justify-center mb-4">
+            <UsersIcon size={40} color="white" />
           </div>
           <p className="text-2xl my-6 font-bold">與他人一起學習</p>
         </CardHeader>
@@ -17,8 +17,8 @@ const Features = () => {
       </Card>
       <Card className="max-w-md min-w-[25rem]">
         <CardHeader className="flex-col items-center">
-          <div className="bg-primary rounded-full w-36 h-36 flex items-center justify-center mb-4">
-            <CalendarCheck size={80} color="white" />
+          <div className="bg-primary rounded-full w-24 h-24 flex items-center justify-center mb-4">
+            <CalendarCheck size={40} color="white" />
           </div>
           <p className="text-2xl my-6 font-bold">舉辦學習活動</p>
         </CardHeader>
@@ -30,8 +30,8 @@ const Features = () => {
       </Card>
       <Card className="max-w-md min-w-[25rem]">
         <CardHeader className="flex-col items-center">
-          <div className="bg-primary rounded-full w-36 h-36 flex items-center justify-center mb-4">
-            <BookCopy size={80} color="white" />
+          <div className="bg-primary rounded-full w-24 h-24 flex items-center justify-center mb-4">
+            <BookCopy size={40} color="white" />
           </div>
           <p className="text-2xl my-6 font-bold">互動學習功能</p>
         </CardHeader>
@@ -43,8 +43,8 @@ const Features = () => {
       </Card>
       <Card className="max-w-md min-w-[25rem]">
         <CardHeader className="flex-col items-center">
-          <div className="bg-primary rounded-full w-36 h-36 flex items-center justify-center mb-4">
-            <PieChart size={80} color="white" />
+          <div className="bg-primary rounded-full w-24 h-24 flex items-center justify-center mb-4">
+            <PieChart size={40} color="white" />
           </div>
           <p className="text-2xl my-6 font-bold">學習分析</p>
         </CardHeader>
