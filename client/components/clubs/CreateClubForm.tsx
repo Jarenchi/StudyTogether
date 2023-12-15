@@ -33,6 +33,7 @@ interface CreateClubFormProps {
 
 const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const form = useForm<z.infer<typeof clubSchema>>({
@@ -48,6 +49,7 @@ const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
 
   const mutation = useMutation({
     mutationFn: async (values: z.infer<typeof clubSchema>) => {
+      setLoading(true);
       const userData = {
         id: nookies.get().user_id,
         name: nookies.get().user_name,
@@ -73,6 +75,7 @@ const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
         clubDescription: "",
         clubImage: "",
       });
+      setLoading(false);
       toast({ title: "Club Created" });
       queryClient.invalidateQueries({ queryKey: ["clublist"] });
       setOpen(false);
@@ -151,7 +154,7 @@ const CreateClubForm: React.FC<CreateClubFormProps> = ({ setOpen }) => {
             </FormItem>
           )}
         />
-        <Button type="submit" className="dark:text-white">
+        <Button type="submit" className="dark:text-white" disabled={loading}>
           Create Club
         </Button>
       </form>
