@@ -17,6 +17,7 @@ const ClubList = () => {
   const { data, isLoading, isError } = useQuery({
     queryFn: () => fetchClubList(),
     queryKey: ["clublist"],
+    staleTime: 60 * 1000,
   });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>500 Internal Server Error</div>;
