@@ -1,14 +1,13 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { useRouter, useSearchParams } from "next/navigation";
-import nookies from "nookies";
-import axios from "axios";
-import Link from "next/link";
-import { Users } from "lucide-react";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Club } from "@/types/clubType";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import nookies from "nookies";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 const ClubList = () => {
@@ -33,7 +32,8 @@ const ClubList = () => {
   }
   const { data, isLoading, isError } = useQuery({
     queryFn: () => fetchClubList(),
-    queryKey: ["clublist", keyword],
+    queryKey: ["clublist"],
+    staleTime: 60 * 1000,
   });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>500 Internal Server Error</div>;
