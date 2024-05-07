@@ -168,8 +168,6 @@ const Dashboard: React.FC<DashboardProps> = ({ data }) => {
     startOfWeek.setDate(today.getDate() - ((currentDay + 6) % 7)); // Set to the first day (Monday) of the current week
     endOfWeek.setDate(today.getDate() + (6 - currentDay)); // Set time to end of day
 
-    console.log(startOfWeek.toLocaleDateString(), endOfWeek.toLocaleDateString());
-
     const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
     const thisWeekLogs = daysOfWeek.map((day, index) => {
