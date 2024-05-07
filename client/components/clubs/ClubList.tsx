@@ -6,7 +6,8 @@ import { Club } from "@/types/clubType";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Users } from "lucide-react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import nookies from "nookies";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
