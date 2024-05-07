@@ -76,7 +76,7 @@ export function FancyMultiSelect({ onChange }: FancyMultiSelectProps) {
         return newSelected;
       });
     },
-    [onChange],
+    [onChange]
   );
 
   // Function to handle keyboard events
