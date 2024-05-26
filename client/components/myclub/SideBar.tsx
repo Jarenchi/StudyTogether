@@ -1,50 +1,52 @@
-import { File, Tv, Settings, Users, CalendarDays } from "lucide-react";
+import { AlignLeft, CalendarDays, File, Settings, Tv, Users } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { Button } from "../ui/button";
 
-export function Sidebar({ id, name }: { id: string; name: string }) {
+const links = [
+  { href: "events", icon: <CalendarDays />, label: "Events" },
+  { href: "docs", icon: <File />, label: "Docs" },
+  { href: "meeting", icon: <Tv />, label: "Meeting" },
+  { href: "members", icon: <Users />, label: "Members" },
+  { href: "settings", icon: <Settings />, label: "Settings" },
+];
+
+const ClubLinks = ({ id, isOpen }: { id: string; isOpen: boolean }) => {
   return (
-    <div className="max-w-[13rem] min-h-[calc(100vh_-_74px)] h-auto border-r space-y-4 py-4 z-10">
-      {/* <Button variant="ghost" className="float-right mr-3">
-        <ChevronsLeft />
-      </Button> */}
-      <div className="px-3 py-2">
-        <Link href={`/myclubs/${id}`} className="mb-4 text-lg font-semibold tracking-tight break-words">
+    <div>
+      {links.map(({ href, icon, label }) => (
+        <Link key={href} href={`/myclubs/${id}/${href}`}>
+          {isOpen ? (
+            <Button variant="ghost" className="w-full justify-start flex">
+              {icon}
+              <span className="ml-2">{label}</span>
+            </Button>
+          ) : (
+            <Button variant="ghost" className="block">
+              {icon}
+            </Button>
+          )}
+        </Link>
+      ))}
+    </div>
+  );
+};
+
+export function Sidebar({ id, name }: { id: string; name: string }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="max-w-[13rem] min-h-[calc(100vh_-_74px)] h-auto border-r py-4 z-10 break-words truncate">
+      <button type="button" onClick={() => setIsOpen(!isOpen)} className="p-2 border rounded-lg mx-2 block">
+        <span className="sr-only">Open sidebar</span>
+        <AlignLeft />
+      </button>
+      {isOpen && (
+        <Link href={`/myclubs/${id}`} className="max-w-[13rem] text-lg font-semibold tracking-tight px-2">
           {name}
         </Link>
-        <div className="space-y-1">
-          <Link href={`/myclubs/${id}/events`}>
-            <Button variant="ghost" className="w-full justify-start">
-              <CalendarDays />
-              <span className="ml-2">Events</span>
-            </Button>
-          </Link>
-          <Link href={`/myclubs/${id}/docs`}>
-            <Button variant="ghost" className="w-full justify-start">
-              <File />
-              <span className="ml-2">Docs</span>
-            </Button>
-          </Link>
-          <Link href={`/myclubs/${id}/meeting`}>
-            <Button variant="ghost" className="w-full justify-start">
-              <Tv />
-              <span className="ml-2">Meeting</span>
-            </Button>
-          </Link>
-          <Link href={`/myclubs/${id}/members`}>
-            <Button variant="ghost" className="w-full justify-start">
-              <Users />
-              <span className="ml-2">Members</span>
-            </Button>
-          </Link>
-          <Link href={`/myclubs/${id}/settings`}>
-            <Button variant="ghost" className="w-full justify-start">
-              <Settings />
-              <span className="ml-2">Settings</span>
-            </Button>
-          </Link>
-        </div>
-      </div>
+      )}
+      <ClubLinks id={id} isOpen={isOpen} />
     </div>
   );
 }
