@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
-import axios from "axios";
 import { Sidebar } from "@/components/myclub/SideBar";
+import axios from "axios";
+import { useEffect, useMemo, useState } from "react";
 
 export default function ClubLayout({ children, params }: { children: React.ReactNode; params: { club: string } }) {
   const [clubName, setClubName] = useState<string | null>(null);
