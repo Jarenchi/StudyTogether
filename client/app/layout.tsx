@@ -1,11 +1,11 @@
-import { Inter as FontSans } from "next/font/google";
-import type { Metadata } from "next";
-import "./globals.css";
-import { cn } from "@/lib/utils";
-import { ThemeProvider } from "@/providers/theme-provider";
-import TanstackProvider from "@/providers/tanstackProvider";
 import Header from "@/components/header/Header";
 import { Toaster } from "@/components/ui/toaster";
+import { cn } from "@/lib/utils";
+import TanstackProvider from "@/providers/tanstackProvider";
+import { ThemeProvider } from "@/providers/theme-provider";
+import type { Metadata } from "next";
+import { Inter as FontSans } from "next/font/google";
+import "./globals.css";
 
 export const fontSans = FontSans({
   subsets: ["latin"],

@@ -1,18 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
-import nookies from "nookies";
-import { Owner } from "@/types/clubType";
-import { Pencil } from "lucide-react";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
-import * as z from "zod";
-import axios from "axios";
-import { Card, CardHeader, CardContent, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { Owner } from "@/types/clubType";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { Pencil } from "lucide-react";
+import nookies from "nookies";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 
 interface ClubDescriptionProps {
   description: string;
@@ -61,12 +61,12 @@ const ClubDescription: React.FC<ClubDescriptionProps> = ({ description, owner, c
     await mutation.mutateAsync(values);
   }
   return (
-    <Card className="my-4">
+    <Card className="my-2 w-5/6">
       <CardHeader className="relative">
-        <CardTitle> Description</CardTitle>
+        <CardTitle className="lg:text-xl text-base"> Description</CardTitle>
         {isAbleToEdit && (
-          // eslint-disable-next-line jsx-a11y/control-has-associated-label
           <button type="button" onClick={() => setEdit(true)} className="absolute top-3 right-3">
+            <span className="sr-only">Edit</span>
             <Pencil size={20} color="#2563eb" />
           </button>
         )}
@@ -98,7 +98,7 @@ const ClubDescription: React.FC<ClubDescriptionProps> = ({ description, owner, c
             </Form>
           </div>
         ) : (
-          <pre className="font-sans break-words whitespace-pre-wrap">{description}</pre>
+          <pre className="font-sans break-words whitespace-pre-wrap md:text-base text-sm">{description}</pre>
         )}
       </CardContent>
     </Card>
