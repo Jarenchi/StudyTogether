@@ -3,8 +3,8 @@ import { Card, CardHeader, CardContent } from "@/components/ui/card";
 
 const Features = () => {
   return (
-    <div className="flex flex-wrap gap-6 mt-7 items-center justify-center">
-      <Card className="max-w-md min-w-[25rem]">
+    <div className="flex flex-wrap gap-6 mt-7 items-center justify-center px-4">
+      <Card className="w-full sm:max-w-md">
         <CardHeader className="flex-col items-center">
           <div className="bg-primary rounded-full w-24 h-24 flex items-center justify-center mb-4">
             <UsersIcon size={40} color="white" />
@@ -15,7 +15,7 @@ const Features = () => {
           <p>透過加入或建立讀書會，投入一個充滿活力的學習社群。與志同道合的人建立聯繫，分享知識，參與協同學習體驗。</p>
         </CardContent>
       </Card>
-      <Card className="max-w-md min-w-[25rem]">
+      <Card className="w-full sm:max-w-md">
         <CardHeader className="flex-col items-center">
           <div className="bg-primary rounded-full w-24 h-24 flex items-center justify-center mb-4">
             <CalendarCheck size={40} color="white" />
@@ -28,7 +28,7 @@ const Features = () => {
           </p>
         </CardContent>
       </Card>
-      <Card className="max-w-md min-w-[25rem]">
+      <Card className="w-full sm:max-w-md">
         <CardHeader className="flex-col items-center">
           <div className="bg-primary rounded-full w-24 h-24 flex items-center justify-center mb-4">
             <BookCopy size={40} color="white" />
@@ -41,7 +41,7 @@ const Features = () => {
           </p>
         </CardContent>
       </Card>
-      <Card className="max-w-md min-w-[25rem]">
+      <Card className="w-full sm:max-w-md">
         <CardHeader className="flex-col items-center">
           <div className="bg-primary rounded-full w-24 h-24 flex items-center justify-center mb-4">
             <PieChart size={40} color="white" />
