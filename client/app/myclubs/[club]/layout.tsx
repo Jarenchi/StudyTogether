@@ -2,7 +2,7 @@
 
 import { Sidebar } from "@/components/myclub/SideBar";
 import axios from "axios";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AlignLeft } from "lucide-react";
 
 export default function ClubLayout({
@@ -31,20 +31,20 @@ export default function ClubLayout({
   }, [params.club]);
 
   useEffect(() => {
-    localStorage.setItem(params.club, clubName || "");
+    if (clubName) localStorage.setItem(params.club, clubName);
   }, [params.club, clubName]);
 
-  const memoizedSidebar = useMemo(
-    () => (
-      <Sidebar
-        id={params.club}
-        name={clubName!}
-        isOpen={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
-    ),
-    [params.club, clubName, sidebarOpen],
-  );
+  // Close the drawer on Escape key
+  useEffect(() => {
+    if (!sidebarOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSidebarOpen(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [sidebarOpen]);
+
+  const handleClose = useCallback(() => setSidebarOpen(false), []);
 
   return (
     <section className="flex">
@@ -52,12 +52,17 @@ export default function ClubLayout({
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-20 bg-black/50 md:hidden"
-          onClick={() => setSidebarOpen(false)}
+          onClick={handleClose}
           aria-hidden="true"
         />
       )}
 
-      {memoizedSidebar}
+      <Sidebar
+        id={params.club}
+        name={clubName ?? ""}
+        isOpen={sidebarOpen}
+        onClose={handleClose}
+      />
 
       <div className="flex-1 min-w-0">
         {/* Mobile hamburger — inside content flow, below the Header */}
