@@ -62,6 +62,7 @@ function setupQuillSocket(server) {
           }
         } catch (err) {
           console.error(`[socket] Failed to load doc ${docId}:`, err);
+          room.loaded = false; // allow retry on next connection
         }
       }
 
@@ -109,10 +110,11 @@ function setupQuillSocket(server) {
           if (room) {
             if (room.saveTimer) {
               clearTimeout(room.saveTimer);
-              const stateBytes = Buffer.from(Y.encodeStateAsUpdate(room.ydoc));
-              Doc.findByIdAndUpdate(docId, { yjsState: stateBytes })
-                .catch((err) => console.error(`[socket] Final save failed for ${docId}:`, err));
+              room.saveTimer = null;
             }
+            const stateBytes = Buffer.from(Y.encodeStateAsUpdate(room.ydoc));
+            Doc.findByIdAndUpdate(docId, { yjsState: stateBytes })
+              .catch((err) => console.error(`[socket] Final save failed for ${docId}:`, err));
             room.ydoc.destroy();
             ydocs.delete(docId);
           }
