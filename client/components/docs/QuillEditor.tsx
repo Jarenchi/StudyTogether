@@ -65,8 +65,12 @@ const QuillEditor = () => {
   // pendingSyncRef / pendingInitContentRef: store server data that arrives before
   // ReactQuill has finished its dynamic import and mounted
   const socketRef = useRef<Socket>();
-  const ydocRef = useRef(new Y.Doc());
+  const ydocRef = useRef<Y.Doc | null>(null);
+  if (!ydocRef.current) {
+    ydocRef.current = new Y.Doc();
+  }
   const bindingRef = useRef<QuillBinding | null>(null);
+  const quillInstanceRef = useRef<any>(null);
   const pendingSyncRef = useRef<number[] | null>(null);
   const pendingInitContentRef = useRef<string | null>(null);
 
@@ -77,18 +81,21 @@ const QuillEditor = () => {
     if (!instance) {
       bindingRef.current?.destroy();
       bindingRef.current = null;
+      quillInstanceRef.current = null;
       return;
     }
     const quill = instance.getEditor();
-    const ytext = ydocRef.current.getText("quill");
+    quillInstanceRef.current = quill;
+    const ytext = ydocRef.current!.getText("quill");
+
+    // Create binding BEFORE applying pending state so the binding can observe changes
+    bindingRef.current = new QuillBinding(ytext, quill);
 
     // Apply any Yjs state that arrived before the editor mounted
     if (pendingSyncRef.current) {
-      Y.applyUpdate(ydocRef.current, new Uint8Array(pendingSyncRef.current));
+      Y.applyUpdate(ydocRef.current!, new Uint8Array(pendingSyncRef.current), "remote");
       pendingSyncRef.current = null;
     }
-
-    bindingRef.current = new QuillBinding(ytext, quill);
 
     // Initialize from DB HTML if ydoc was empty when this room was created
     if (pendingInitContentRef.current) {
@@ -101,7 +108,7 @@ const QuillEditor = () => {
 
   useEffect(() => {
     const userName = nookies.get().user_name;
-    const ydoc = ydocRef.current;
+    const ydoc = ydocRef.current!;
 
     socketRef.current = io(`${process.env.NEXT_PUBLIC_SOCKET_URL}`, {
       withCredentials: true,
@@ -116,9 +123,9 @@ const QuillEditor = () => {
 
     // Server sends initial HTML when this is the first user and ydoc was empty
     socketRef.current.on("y-init-content", (html: string) => {
-      if (bindingRef.current) {
+      const quill = quillInstanceRef.current;
+      if (quill && bindingRef.current) {
         // Editor already mounted — initialize immediately
-        const { quill } = bindingRef.current as any;
         const delta = quill.clipboard.convert({ html });
         quill.setContents(delta);
       } else {
@@ -130,7 +137,7 @@ const QuillEditor = () => {
     // Server sends current Yjs state for subsequent users
     socketRef.current.on("y-sync", (state: number[]) => {
       if (bindingRef.current) {
-        Y.applyUpdate(ydoc, new Uint8Array(state));
+        Y.applyUpdate(ydoc, new Uint8Array(state), "remote");
       } else {
         pendingSyncRef.current = state;
       }
@@ -138,11 +145,12 @@ const QuillEditor = () => {
 
     // Receive remote updates from other users
     socketRef.current.on("y-update", (update: number[]) => {
-      Y.applyUpdate(ydoc, new Uint8Array(update));
+      Y.applyUpdate(ydoc, new Uint8Array(update), "remote");
     });
 
-    // Send local ydoc updates to server
-    ydoc.on("update", (update: Uint8Array) => {
+    // Send local ydoc updates to server — skip updates that originated remotely
+    ydoc.on("update", (update: Uint8Array, origin: unknown) => {
+      if (origin === "remote") return;
       socketRef.current?.emit("y-update", Array.from(update), targetDocId);
     });
 
@@ -158,7 +166,8 @@ const QuillEditor = () => {
       socketRef.current?.emit("disconnectUser", userName, targetDocId);
       socketRef.current?.disconnect();
       bindingRef.current?.destroy();
-      ydoc.destroy();
+      bindingRef.current = null;
+      ydoc?.destroy();
     };
   }, [targetDocId]);
 
