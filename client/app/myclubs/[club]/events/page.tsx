@@ -3,8 +3,8 @@ import EventList from "@/components/events/EventList";
 
 const Page = () => {
   return (
-    <div>
-      <div className="mb-2">
+    <div className="space-y-4">
+      <div className="flex justify-end">
         <CreateEventButton />
       </div>
       <EventList />

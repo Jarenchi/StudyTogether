@@ -7,36 +7,40 @@ import axios from "axios";
 import { MemberTable } from "@/components/members/memberTable/MemberTable";
 import { MembersColumns } from "@/components/members/memberTable/columns";
 import Draw from "@/components/members/Draw";
+import { Skeleton } from "@/components/ui/skeleton";
+import ErrorState from "@/components/ui/ErrorState";
+import { handleApiError } from "@/utils/handleApiError";
 
 const Page = () => {
   const params = useParams();
   const router = useRouter();
 
-  async function fetchMembers(clubId: string) {
-    try {
-      const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}/members`, {
-        headers: { Authorization: `Bearer ${nookies.get().access_token}` },
-      });
-      return response.data.members;
-    } catch (error: any) {
-      if (error?.response?.status === 403) {
-        alert("Account is expired, please Login again");
-        router.push("/login");
-      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
-        alert("請稍後再試或和我們的技術團隊聯絡");
-      } else {
-        alert(error);
+  const { data, isLoading, isError, refetch } = useQuery({
+    queryFn: async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${params.club}/members`, {
+          headers: { Authorization: `Bearer ${nookies.get().access_token}` },
+        });
+        return response.data.members;
+      } catch (error: any) {
+        handleApiError(error, router);
+        throw error;
       }
-      console.log("Error fetching members:", error);
-      throw error;
-    }
-  }
-  const { data, isLoading, isError } = useQuery({
-    queryFn: () => fetchMembers(params.club as string),
+    },
     queryKey: ["members", params.club],
   });
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>500 Internal Server Error</div>;
+
+  if (isLoading)
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-10 w-full rounded-xl" />
+        <Skeleton className="h-64 w-full rounded-xl" />
+      </div>
+    );
+
+  if (isError)
+    return <ErrorState title="無法載入成員列表" description="請確認網路連線後再試。" onRetry={() => refetch()} />;
+
   return (
     <div className="space-y-4">
       <Draw data={data} />

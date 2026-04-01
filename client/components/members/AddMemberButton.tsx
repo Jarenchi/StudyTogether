@@ -10,7 +10,6 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -19,11 +18,10 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { Button } from "../ui/button";
+import { handleApiError } from "@/utils/handleApiError";
 
 const FormSchema = z.object({
-  userId: z.string().min(2, {
-    message: "UserId must be at least 2 characters.",
-  }),
+  userId: z.string().min(2, { message: "UserId must be at least 2 characters." }),
 });
 
 const AddMemberButton = () => {
@@ -32,9 +30,7 @@ const AddMemberButton = () => {
   const clubId = params.club;
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      userId: "",
-    },
+    defaultValues: { userId: "" },
   });
 
   const queryClient = useQueryClient();
@@ -46,65 +42,43 @@ const AddMemberButton = () => {
         { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
       ),
     onSuccess: () => {
-      toast({
-        title: "user joined",
-      });
+      toast({ title: "成員已加入" });
       queryClient.invalidateQueries({ queryKey: ["members", clubId] });
     },
     onError: (error: any) => {
-      if (error?.response?.status === 403) {
-        alert("Account is expired, please Login again");
-        router.push("/login");
-      } else if (error?.response?.status === 404) {
-        toast({
-          title: "Club or user not found",
-        });
-      } else if (error?.response?.status === 400) {
-        toast({
-          title: "User is already in the club",
-        });
-      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
-        alert("請稍後再試或和我們的技術團隊聯絡");
-      } else {
-        alert(error);
-      }
+      const status = error?.response?.status;
+      if (status === 404) toast({ title: "找不到社團或使用者", variant: "destructive" });
+      else if (status === 400) toast({ title: "使用者已在社團中", variant: "destructive" });
+      else handleApiError(error, router);
     },
   });
-
-  async function onSubmit(values: z.infer<typeof FormSchema>) {
-    mutation.mutateAsync(values);
-  }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button>Add Member</Button>
+        <Button>新增成員</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="mb-3">Add New Member (Enter user id)</DialogTitle>
-          <DialogDescription asChild>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="flex">
-                <FormField
-                  control={form.control}
-                  name="userId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input type="text" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="ml-2">
-                  Add
-                </Button>
-              </form>
-            </Form>
-          </DialogDescription>
+          <DialogTitle className="mb-3">輸入使用者 ID</DialogTitle>
         </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit((v) => mutation.mutate(v))} className="flex gap-2">
+            <FormField
+              control={form.control}
+              name="userId"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormControl>
+                    <Input type="text" placeholder="User ID" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" disabled={mutation.isPending}>新增</Button>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

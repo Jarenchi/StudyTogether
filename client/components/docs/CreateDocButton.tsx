@@ -6,12 +6,15 @@ import { useRouter, useParams } from "next/navigation";
 import { formattedTime } from "@/utils/formattedTime";
 import nookies from "nookies";
 import { Button } from "../ui/button";
+import { toast } from "@/components/ui/use-toast";
+import { handleApiError } from "@/utils/handleApiError";
 
 const CreateDocButton = () => {
   const router = useRouter();
   const params = useParams();
   const clubId = params.club;
   const [loading, setLoading] = useState(false);
+
   async function createDocHandler() {
     setLoading(true);
     try {
@@ -28,25 +31,17 @@ const CreateDocButton = () => {
         },
         { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
       );
-      console.log(response);
       router.push(`/myclubs/${clubId}/docs/${response.data._id}`);
     } catch (error: any) {
-      if (error?.response?.status === 403) {
-        alert("Account is expired, please Login again");
-        router.push("/login");
-      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
-        alert("請稍後再試或和我們的技術團隊聯絡");
-      } else {
-        alert(error);
-      }
-      console.log(error);
+      handleApiError(error, router);
     } finally {
       setLoading(false);
     }
   }
+
   return (
     <Button onClick={createDocHandler} disabled={loading}>
-      Create Doc
+      {loading ? "建立中..." : "建立文件"}
     </Button>
   );
 };

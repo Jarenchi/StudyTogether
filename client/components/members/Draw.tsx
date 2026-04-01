@@ -35,7 +35,6 @@ const Draw: React.FC<DrawProps> = ({ data }) => {
     }
     const selected = shuffledData.slice(0, numberOfDraws);
     setSelectedUsers(selected);
-    console.log("抽籤結果:", selected);
   };
   return (
     <Dialog>

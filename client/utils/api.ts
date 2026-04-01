@@ -8,7 +8,6 @@ export async function fetchMyClubs(userId: string) {
     });
     return response.data;
   } catch (error) {
-    console.log("Error fetching myclub list:", error);
     throw error;
   }
 }
@@ -20,7 +19,6 @@ export async function fetchDocs(clubId: string) {
     });
     return response.data;
   } catch (error) {
-    console.log("Error fetching docs:", error);
     throw error;
   }
 }

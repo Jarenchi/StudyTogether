@@ -19,6 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/use-toast";
 import { Textarea } from "../ui/textarea";
+import { handleApiError } from "@/utils/handleApiError";
 
 const eventFormSchema = z.object({
   title: z.string().min(2, {
@@ -97,16 +98,7 @@ const CreateEventForm: React.FC<CreateEventFormProps> = ({ setOpen }) => {
       toast({ title: "event created successfully" });
       setOpen(false);
     },
-    onError: (error: any) => {
-      if (error?.response?.status === 403) {
-        alert("Account is expired, please Login again");
-        router.push("/login");
-      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
-        alert("請稍後再試或和我們的技術團隊聯絡");
-      } else {
-        console.log(error);
-      }
-    },
+    onError: (error: any) => handleApiError(error, router),
   });
 
   async function onSubmit(values: z.infer<typeof eventFormSchema>) {

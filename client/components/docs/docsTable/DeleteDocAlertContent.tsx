@@ -15,50 +15,38 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { toast } from "@/components/ui/use-toast";
+import { handleApiError } from "@/utils/handleApiError";
 
 interface DeleteButtonProps {
   docId: string;
 }
+
 const DeleteDocAlertContent: FC<DeleteButtonProps> = ({ docId }) => {
   const { club } = useParams();
   const router = useRouter();
   const queryClient = useQueryClient();
+
   const mutation = useMutation({
     mutationFn: () =>
       axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${club}/docs/${docId}`, {
         headers: { Authorization: `Bearer ${nookies.get().access_token}` },
       }),
     onSuccess: () => {
-      toast({ title: "doc deleted successfully" });
+      toast({ title: "文件已刪除" });
       queryClient.invalidateQueries({ queryKey: ["docs", club] });
     },
-    onError: (error: any) => {
-      if (error?.response?.status === 403) {
-        alert("Account is expired, please Login again");
-        router.push("/login");
-      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
-        alert("請稍後再試或和我們的技術團隊聯絡");
-      } else {
-        console.log(error);
-      }
-    },
+    onError: (error: any) => handleApiError(error, router),
   });
-  async function deleteDocHandler() {
-    await mutation.mutateAsync();
-  }
 
   return (
     <AlertDialogContent>
       <AlertDialogHeader>
-        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-        <AlertDialogDescription>
-          This action cannot be undone. This will permanently delete your document and remove your data from our
-          servers.
-        </AlertDialogDescription>
+        <AlertDialogTitle>確定要刪除此文件？</AlertDialogTitle>
+        <AlertDialogDescription>此操作無法復原，文件內容將永久刪除。</AlertDialogDescription>
       </AlertDialogHeader>
       <AlertDialogFooter>
-        <AlertDialogCancel>Cancel</AlertDialogCancel>
-        <AlertDialogAction onClick={deleteDocHandler}>Continue</AlertDialogAction>
+        <AlertDialogCancel>取消</AlertDialogCancel>
+        <AlertDialogAction onClick={() => mutation.mutate()}>確認刪除</AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
   );
