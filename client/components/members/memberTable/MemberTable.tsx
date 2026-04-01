@@ -36,7 +36,7 @@ export function MemberTable<TData, TValue>({ columns, data }: MemberTableProps<T
     getSortedRowModel: getSortedRowModel(),
     onColumnFiltersChange: setColumnFilters,
     getFilteredRowModel: getFilteredRowModel(),
-    initialState: { pagination: { pageSize: 10 } },
+    initialState: { pagination: { pageSize: 10 }, columnVisibility: { userId: false } },
     state: { sorting, columnFilters },
   });
 

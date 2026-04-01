@@ -14,11 +14,7 @@ const Page = () => {
   });
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>500 Internal Server Error</div>;
-  return (
-    <div className="mx-auto mt-2">
-      <DocsTable columns={DocsColumns} data={data} />
-    </div>
-  );
+  return <DocsTable columns={DocsColumns} data={data} />;
 };
 
 export default Page;

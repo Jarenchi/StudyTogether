@@ -39,7 +39,7 @@ export function DocsTable<TData, TValue>({ columns, data }: DocsTableProps<TData
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     getFilteredRowModel: getFilteredRowModel(),
-    initialState: { pagination: { pageSize: 10 } },
+    initialState: { pagination: { pageSize: 10 }, columnVisibility: { _id: false } },
     state: { sorting, columnFilters, columnVisibility },
   });
 

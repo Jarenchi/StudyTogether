@@ -38,7 +38,7 @@ const Page = () => {
   if (isLoading) return <div>Loading...</div>;
   if (isError) return <div>500 Internal Server Error</div>;
   return (
-    <div className="mx-auto mt-2">
+    <div className="space-y-4">
       <Draw data={data} />
       <MemberTable data={data} columns={MembersColumns} />
     </div>
