@@ -13,5 +13,8 @@ const quillModules = {
       ["clean"],
     ],
   },
+  history: {
+    userOnly: true,
+  },
 };
 export default quillModules;
