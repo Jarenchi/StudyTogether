@@ -45,6 +45,10 @@ const docSchema = new Schema(
       type: String,
       default: "",
     },
+    yjsState: {
+      type: Buffer,
+      default: null,
+    },
     clubId: {
       type: Schema.Types.ObjectId,
       ref: "Club",

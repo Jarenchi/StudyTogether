@@ -1,23 +1,25 @@
 const { Server } = require("socket.io");
 const Y = require("yjs");
+const mongoose = require("mongoose");
 const Doc = require("./models/docModel");
 
-const ydocs = new Map(); // docId → { ydoc: Y.Doc, saveTimer: NodeJS.Timeout | null }
+const ydocs = new Map(); // docId → { ydoc, saveTimer, loaded }
 
 function getOrCreateRoom(docId) {
   if (!ydocs.has(docId)) {
-    ydocs.set(docId, { ydoc: new Y.Doc(), saveTimer: null });
+    ydocs.set(docId, { ydoc: new Y.Doc(), saveTimer: null, loaded: false });
   }
   return ydocs.get(docId);
 }
 
-function scheduleSave(docId, ytext) {
+function scheduleSave(docId, ydoc) {
   const room = ydocs.get(docId);
   if (!room) return;
   if (room.saveTimer) clearTimeout(room.saveTimer);
-  room.saveTimer = setTimeout(async () => {
-    const html = ytext.toString();
-    await Doc.findByIdAndUpdate(docId, { content: html });
+  room.saveTimer = setTimeout(() => {
+    const stateBytes = Buffer.from(Y.encodeStateAsUpdate(ydoc));
+    Doc.findByIdAndUpdate(docId, { yjsState: stateBytes })
+      .catch((err) => console.error(`[socket] DB save failed for ${docId}:`, err));
     room.saveTimer = null;
   }, 500);
 }
@@ -37,44 +39,52 @@ function setupQuillSocket(server) {
   io.on("connection", (socket) => {
     console.log("a user connected");
 
-    // Client joins a document room and requests current state
     socket.on("y-sync-request", async (docId) => {
+      if (!mongoose.isValidObjectId(docId)) {
+        console.warn(`[socket] Invalid docId from ${socket.id}: ${docId}`);
+        return;
+      }
       socket.join(docId);
       const room = getOrCreateRoom(docId);
       const { ydoc } = room;
-      const ytext = ydoc.getText("quill");
 
-      // If this is the first user, load content from DB
-      if (ytext.toString() === "") {
+      if (!room.loaded) {
+        room.loaded = true;
         try {
-          const doc = await Doc.findById(docId).select("content");
-          if (doc && doc.content) {
-            // Send the raw HTML to client so it can initialize Quill
-            socket.emit("y-init-content", doc.content);
-            return; // client will send back a y-update after initializing
+          const doc = await Doc.findById(docId).select("content yjsState");
+          if (doc) {
+            if (doc.yjsState) {
+              Y.applyUpdate(ydoc, new Uint8Array(doc.yjsState));
+            } else if (doc.content) {
+              socket.emit("y-init-content", doc.content);
+              return;
+            }
           }
         } catch (err) {
-          console.error("Failed to load doc from DB:", err);
+          console.error(`[socket] Failed to load doc ${docId}:`, err);
         }
       }
 
-      // Send current Yjs state to the newly connected client
       const state = Y.encodeStateAsUpdate(ydoc);
       socket.emit("y-sync", Array.from(state));
     });
 
-    // Relay Yjs update to all other clients; apply to server ydoc; schedule DB save
     socket.on("y-update", (update, docId) => {
+      if (!mongoose.isValidObjectId(docId)) return;
       const room = ydocs.get(docId);
       if (!room) return;
       const { ydoc } = room;
       const updateBytes = new Uint8Array(update);
-      Y.applyUpdate(ydoc, updateBytes);
+      try {
+        Y.applyUpdate(ydoc, updateBytes);
+      } catch (err) {
+        console.error(`[socket] Invalid y-update from ${socket.id} for doc ${docId}:`, err);
+        return;
+      }
       socket.to(docId).emit("y-update", update);
-      scheduleSave(docId, ydoc.getText("quill"));
+      scheduleSave(docId, ydoc);
     });
 
-    // Online users list (kept from existing implementation)
     socket.on("connectUser", (userName, docId) => {
       if (!socket.rooms.has(docId)) socket.join(docId);
       socket.data.userName = userName;
@@ -93,6 +103,20 @@ function setupQuillSocket(server) {
       if (userName && docId) {
         const usersInRoom = getUsersInRoom(io, docId).filter((u) => u !== userName);
         io.to(docId).emit("users", usersInRoom);
+
+        if (usersInRoom.length === 0) {
+          const room = ydocs.get(docId);
+          if (room) {
+            if (room.saveTimer) {
+              clearTimeout(room.saveTimer);
+              const stateBytes = Buffer.from(Y.encodeStateAsUpdate(room.ydoc));
+              Doc.findByIdAndUpdate(docId, { yjsState: stateBytes })
+                .catch((err) => console.error(`[socket] Final save failed for ${docId}:`, err));
+            }
+            room.ydoc.destroy();
+            ydocs.delete(docId);
+          }
+        }
       }
     });
   });
