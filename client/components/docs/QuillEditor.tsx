@@ -9,11 +9,11 @@ import io, { Socket } from "socket.io-client";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { useParams, useRouter } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
 import quillModules from "@/lib/quill-modules";
 import * as Y from "yjs";
 import { QuillBinding } from "y-quill";
 import { Input } from "../ui/input";
+import PresenceBar, { PresenceUser } from "./PresenceBar";
 
 /* eslint-disable @typescript-eslint/indent, prettier/prettier */
 type ReactQuillWithRef = React.ForwardRefExoticComponent<
@@ -55,7 +55,7 @@ const QuillEditor = () => {
 
   const [isEditing, setIsEditing] = useState(false);
   const [title, setTitle] = useState("");
-  const [users, setUsers] = useState<string[]>([]);
+  const [users, setUsers] = useState<PresenceUser[]>([]);
 
   useEffect(() => {
     if (data) setTitle(data.title);
@@ -116,9 +116,12 @@ const QuillEditor = () => {
       path: "/quill",
     });
 
+    const userPicture = nookies.get().user_picture ?? "";
+    const userObj: PresenceUser = { name: userName, picture: userPicture };
+
     socketRef.current.on("connect", () => {
       socketRef.current!.emit("y-sync-request", targetDocId);
-      socketRef.current!.emit("connectUser", userName, targetDocId);
+      socketRef.current!.emit("connectUser", userObj, targetDocId);
     });
 
     // Server sends initial HTML when this is the first user and ydoc was empty
@@ -154,7 +157,7 @@ const QuillEditor = () => {
       socketRef.current?.emit("y-update", Array.from(update), targetDocId);
     });
 
-    socketRef.current.on("users", (newUsers: string[]) => {
+    socketRef.current.on("users", (newUsers: PresenceUser[]) => {
       setUsers(newUsers);
     });
 
@@ -163,7 +166,7 @@ const QuillEditor = () => {
     });
 
     return () => {
-      socketRef.current?.emit("disconnectUser", userName, targetDocId);
+      socketRef.current?.emit("disconnectUser", { name: userName }, targetDocId);
       socketRef.current?.disconnect();
       bindingRef.current?.destroy();
       bindingRef.current = null;
@@ -200,49 +203,59 @@ const QuillEditor = () => {
     if (event.key === "Enter") handleTitleBlur();
   }
 
-  if (isLoading) return <div>Loading...</div>;
-  if (isError) return <div>500 Internal Server Error</div>;
+  if (isLoading)
+    return (
+      <div className="flex flex-col gap-3 px-4 mt-4">
+        <div className="h-8 w-64 bg-muted animate-pulse rounded-md" />
+        <div className="h-[calc(100vh_-_14rem)] bg-muted animate-pulse rounded-xl" />
+      </div>
+    );
+
+  if (isError)
+    return (
+      <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
+        <p className="text-lg font-semibold mb-2">無法載入文件</p>
+        <p className="text-sm">請重新整理頁面，或確認您的存取權限。</p>
+      </div>
+    );
 
   return (
     <div className="flex flex-col">
-      <div className="flex items-center justify-center my-2">
-        <span className="mr-2">Title:</span>
-        {isEditing ? (
-          <Input
-            type="text"
-            value={title}
-            onChange={handleTitleChange}
-            onBlur={handleTitleBlur}
-            onKeyDown={handleTitleKeyDown}
-            autoFocus
-            className="max-w-xs"
-          />
-        ) : (
-          // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
-          <h1 onClick={handleTitleClick} className="py-2 px-3 min-w-[320px]">
-            {title}
-          </h1>
-        )}
+      {/* Title row + Presence bar */}
+      <div className="flex items-center justify-between px-4 my-2 gap-4">
+        <div className="flex items-center gap-2 flex-1">
+          <span className="text-sm text-muted-foreground shrink-0">Title:</span>
+          {isEditing ? (
+            <Input
+              type="text"
+              value={title}
+              onChange={handleTitleChange}
+              onBlur={handleTitleBlur}
+              onKeyDown={handleTitleKeyDown}
+              autoFocus
+              className="max-w-xs"
+            />
+          ) : (
+            // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-noninteractive-element-interactions
+            <h1
+              onClick={handleTitleClick}
+              className="py-1 px-2 rounded-md hover:bg-muted cursor-text font-display font-semibold text-lg min-w-[200px]"
+            >
+              {title}
+            </h1>
+          )}
+        </div>
+        <PresenceBar users={users} />
       </div>
-      <div className="flex justify-center items-start flex-col lg:flex-row gap-4 px-4">
-        <div className="w-full lg:flex-1">
-          <ReactQuill
-            ref={quillCallback}
-            modules={quillModules}
-            preserveWhitespace
-            className="h-[calc(100vh_-_14rem)] w-full"
-          />
-        </div>
-        <div className="lg:h-[calc(100vh_-_14rem)] lg:ml-3 lg:w-48">
-          <p className="text-lg mb-2">Online Users:</p>
-          <ul className="flex lg:flex-col gap-2">
-            {users.map((user) => (
-              <Badge key={user} className="text-lg dark:text-white truncate block">
-                {user}
-              </Badge>
-            ))}
-          </ul>
-        </div>
+
+      {/* Editor */}
+      <div className="px-4">
+        <ReactQuill
+          ref={quillCallback}
+          modules={quillModules}
+          preserveWhitespace
+          className="h-[calc(100vh_-_14rem)] w-full"
+        />
       </div>
     </div>
   );

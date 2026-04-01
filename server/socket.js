@@ -86,23 +86,26 @@ function setupQuillSocket(server) {
       scheduleSave(docId, ydoc);
     });
 
-    socket.on("connectUser", (userName, docId) => {
+    socket.on("connectUser", (user, docId) => {
+      // Support both legacy string format and new { name, picture } object
+      const userObj = typeof user === "string" ? { name: user, picture: "" } : user;
       if (!socket.rooms.has(docId)) socket.join(docId);
-      socket.data.userName = userName;
+      socket.data.user = userObj;
       socket.data.docId = docId;
       const usersInRoom = getUsersInRoom(io, docId);
       io.to(docId).emit("users", usersInRoom);
     });
 
-    socket.on("disconnectUser", (userName, docId) => {
-      const usersInRoom = getUsersInRoom(io, docId).filter((u) => u !== userName);
+    socket.on("disconnectUser", (user, docId) => {
+      const name = typeof user === "string" ? user : user?.name;
+      const usersInRoom = getUsersInRoom(io, docId).filter((u) => u.name !== name);
       io.to(docId).emit("users", usersInRoom);
     });
 
     socket.on("disconnect", () => {
-      const { userName, docId } = socket.data;
-      if (userName && docId) {
-        const usersInRoom = getUsersInRoom(io, docId).filter((u) => u !== userName);
+      const { user, docId } = socket.data;
+      if (user && docId) {
+        const usersInRoom = getUsersInRoom(io, docId).filter((u) => u.name !== user.name);
         io.to(docId).emit("users", usersInRoom);
 
         if (usersInRoom.length === 0) {
@@ -128,7 +131,7 @@ function getUsersInRoom(io, room) {
   const sockets = io.sockets.adapter.rooms.get(room);
   if (!sockets) return [];
   return Array.from(sockets)
-    .map((id) => io.sockets.sockets.get(id)?.data?.userName)
+    .map((id) => io.sockets.sockets.get(id)?.data?.user)
     .filter(Boolean);
 }
 

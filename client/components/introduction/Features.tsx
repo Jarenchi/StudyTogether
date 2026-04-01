@@ -1,60 +1,53 @@
 import { BookCopy, CalendarCheck, PieChart, UsersIcon } from "lucide-react";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+
+const features = [
+  {
+    icon: UsersIcon,
+    title: "與他人一起學習",
+    description: "加入或建立讀書會，投入充滿活力的學習社群。與志同道合的人建立聯繫，分享知識，參與協同學習體驗。",
+  },
+  {
+    icon: CalendarCheck,
+    title: "舉辦學習活動",
+    description: "組織實體和線上學習活動。主辦或參與各種學習事件，支援地圖定位與視訊會議。",
+  },
+  {
+    icon: BookCopy,
+    title: "即時協作文件",
+    description: "透過 CRDT 技術實現無衝突的即時共同編輯。多人同時編輯同一份文件，自動同步，無需手動合併。",
+  },
+  {
+    icon: PieChart,
+    title: "學習分析儀表板",
+    description: "追蹤個人學習歷程，透過圖表分析了解學習進度。設定每週目標，監控出勤率，獲得學習洞察。",
+  },
+];
 
 const Features = () => {
   return (
-    <div className="flex flex-wrap gap-6 mt-7 items-center justify-center px-4">
-      <Card className="w-full sm:max-w-md">
-        <CardHeader className="flex-col items-center">
-          <div className="bg-primary rounded-full w-24 h-24 flex items-center justify-center mb-4">
-            <UsersIcon size={40} color="white" />
+    <section className="py-16">
+      <div className="text-center mb-12">
+        <h2 className="font-display font-bold text-3xl mb-3">核心功能</h2>
+        <p className="text-muted-foreground max-w-xl mx-auto">從協作編輯到視訊會議，StudyTogether 提供完整的學習工具。</p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        {features.map(({ icon: Icon, title, description }) => (
+          <div
+            key={title}
+            className="group flex gap-4 p-6 rounded-xl border border-border bg-card hover:shadow-md hover:-translate-y-0.5 transition-all duration-200"
+          >
+            <div className="shrink-0 w-11 h-11 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+              <Icon className="h-5 w-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-display font-semibold text-base mb-1">{title}</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">{description}</p>
+            </div>
           </div>
-          <p className="text-2xl my-6 font-bold">與他人一起學習</p>
-        </CardHeader>
-        <CardContent>
-          <p>透過加入或建立讀書會，投入一個充滿活力的學習社群。與志同道合的人建立聯繫，分享知識，參與協同學習體驗。</p>
-        </CardContent>
-      </Card>
-      <Card className="w-full sm:max-w-md">
-        <CardHeader className="flex-col items-center">
-          <div className="bg-primary rounded-full w-24 h-24 flex items-center justify-center mb-4">
-            <CalendarCheck size={40} color="white" />
-          </div>
-          <p className="text-2xl my-6 font-bold">舉辦學習活動</p>
-        </CardHeader>
-        <CardContent>
-          <p>
-            超越虛擬領域，組織實體和線上學習活動。從我們的平台賦予您主辦和參與各種學習活動的能力，讓大家可以互相交流。
-          </p>
-        </CardContent>
-      </Card>
-      <Card className="w-full sm:max-w-md">
-        <CardHeader className="flex-col items-center">
-          <div className="bg-primary rounded-full w-24 h-24 flex items-center justify-center mb-4">
-            <BookCopy size={40} color="white" />
-          </div>
-          <p className="text-2xl my-6 font-bold">互動學習功能</p>
-        </CardHeader>
-        <CardContent>
-          <p>
-            透過直播、即時共同編輯文件和高效的成員管理工具，體驗豐富的教育環境。我們的平台提供多樣化的學習功能，滿足您獨特的學習喜好。
-          </p>
-        </CardContent>
-      </Card>
-      <Card className="w-full sm:max-w-md">
-        <CardHeader className="flex-col items-center">
-          <div className="bg-primary rounded-full w-24 h-24 flex items-center justify-center mb-4">
-            <PieChart size={40} color="white" />
-          </div>
-          <p className="text-2xl my-6 font-bold">學習分析</p>
-        </CardHeader>
-        <CardContent>
-          <p>
-            輕鬆追蹤個人學習歷程，透過圖表分析瞭解學習進度。監控學習時間，評估進展，獲得寶貴洞察，提升您的學習體驗。
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+        ))}
+      </div>
+    </section>
   );
 };
 

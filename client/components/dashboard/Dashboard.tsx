@@ -1,92 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { CheckCircleIcon, ExclamationIcon } from "@heroicons/react/solid";
-import { MinusIcon, PlusIcon } from "lucide-react";
+import { MinusIcon, PlusIcon, CheckCircle2, AlertCircle } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import nookies from "nookies";
 import {
-  Callout,
-  Card,
-  Color,
   BarChart,
-  Flex,
-  Grid,
-  Metric,
-  Tab,
-  TabGroup,
-  TabList,
-  TabPanel,
-  TabPanels,
-  Text,
-  Title,
-  Tracker,
-  Button,
-} from "@tremor/react";
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  Cell,
+} from "recharts";
 import getCurrentWeekDates from "@/utils/getCurrentWeekDate";
-import Achievements from "./Achievements";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Tracker } from "@tremor/react";
 
-// const data = {
-//   _id: "6578396bb6c0a264c0aaa140",
-//   userId: "6572728d76f107fea7a7e1a3",
-//   targetTime: 0,
-//   logs: [
-//     {
-//       date: "2023-12-01",
-//       minutes: 233,
-//       _id: "657833c078bbd47b8edd88eb",
-//     },
-//     {
-//       date: "2023-12-02",
-//       minutes: 200,
-//       _id: "657833c078bbd47b8edd88ed",
-//     },
-//     {
-//       date: "2023-12-04",
-//       minutes: 301,
-//       _id: "657833c078bbd47b8edd88f1",
-//     },
-//     {
-//       date: "2023-12-05",
-//       minutes: 61,
-//       _id: "657833c078bbd47b8edd88f3",
-//     },
-//     {
-//       date: "2023-12-06",
-//       minutes: 313,
-//       _id: "657833c078bbd47b8edd88f5",
-//     },
-//     {
-//       date: "2023-12-07",
-//       minutes: 2,
-//       _id: "657833c078bbd47b8edd88f7",
-//     },
-//     {
-//       date: "2023-12-08",
-//       minutes: 46,
-//       _id: "657833c078bbd47b8edd88f9",
-//     },
-//     {
-//       date: "2023-12-09",
-//       minutes: 278,
-//       _id: "657833c078bbd47b8edd88fb",
-//     },
-//     {
-//       date: "2023-12-10",
-//       minutes: 41,
-//       _id: "657833c078bbd47b8edd88fd",
-//     },
-//     {
-//       date: "2023-12-11",
-//       minutes: 221,
-//       _id: "657833c078bbd47b8edd88ff",
-//     },
-//     {
-//       date: "2023-12-12",
-//       minutes: 364,
-//       _id: "657833c078bbd47b8edd8901",
-//     },
-//   ],
-//   __v: 0,
-// };
 interface Log {
   date: string;
   minutes: number;
@@ -101,202 +34,216 @@ interface DashboardData {
   __v: number;
 }
 
-interface AttendanceItem {
-  color: Color;
-  tooltip: string;
-}
-
-const getAttendanceData = (dashboardData: DashboardData): AttendanceItem[] => {
-  const today: Date = new Date();
-  const thisMonth: number = today.getMonth() + 1;
-  const thisYear: number = today.getFullYear();
-  const attendanceData: AttendanceItem[] = [];
-
-  const lastDayOfMonth = new Date(thisYear, thisMonth, 0).getDate();
-
-  for (let day = 1; day <= lastDayOfMonth; day += 1) {
-    const currentDate = new Date(thisYear, thisMonth - 1, day);
-    const formattedDate = `${thisYear}/${(thisMonth < 10 ? "0" : "") + thisMonth}/${(day < 10 ? "0" : "") + day}`;
-
-    if (currentDate > today) {
-      attendanceData.push({
-        color: "gray",
-        tooltip: formattedDate,
-      });
-    } else {
-      const hasLog = dashboardData.logs.find((log) => new Date(log.date).getDate() === day);
-      if (hasLog) {
-        attendanceData.push({
-          color: "emerald",
-          tooltip: formattedDate,
-        });
-      } else {
-        attendanceData.push({
-          color: "rose",
-          tooltip: formattedDate,
-        });
-      }
-    }
-  }
-
-  return attendanceData;
-};
-const valueFormatter = (number: number) => {
-  const hours = Math.floor(number / 60);
-  const minutes = number % 60;
-  return `${hours}h ${minutes}min`;
-};
 interface DashboardProps {
   data: DashboardData;
+  userId: string;
 }
-const Dashboard: React.FC<DashboardProps> = ({ data }) => {
-  const [targetTime, setTargetTime] = useState(data.targetTime);
-  const attendanceData: AttendanceItem[] = getAttendanceData(data);
-  function getTotalTime() {
-    const totalMinutes = data.logs.reduce((total, log) => total + log.minutes, 0);
-    const totalHours = Math.floor(totalMinutes / 60);
-    const remainingMinutes = totalMinutes % 60;
-    return `${totalHours} h ${remainingMinutes} min`;
-  }
 
-  function getThisWeekData() {
-    const today = new Date();
-    const currentDay = today.getDay();
-    const startOfWeek = new Date(today);
-    const endOfWeek = new Date(today);
+// ── helpers ──────────────────────────────────────────────────────────────────
 
-    startOfWeek.setDate(today.getDate() - ((currentDay + 6) % 7)); // Set to the first day (Monday) of the current week
-    endOfWeek.setDate(today.getDate() + (6 - currentDay)); // Set time to end of day
+function formatTime(minutes: number) {
+  const h = Math.floor(minutes / 60);
+  const m = minutes % 60;
+  return h > 0 ? `${h}h ${m}min` : `${m}min`;
+}
 
-    const daysOfWeek = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
-
-    const thisWeekLogs = daysOfWeek.map((day, index) => {
-      const logForDay = data.logs.find((log) => {
-        const logDate = new Date(log.date);
-        logDate.setHours(0, 0, 0, 0);
-        return (
-          logDate.getTime() ===
-          new Date(startOfWeek.getFullYear(), startOfWeek.getMonth(), startOfWeek.getDate() + index).getTime()
-        );
-      });
-
-      return {
-        name: day,
-        date: new Date(
-          startOfWeek.getFullYear(),
-          startOfWeek.getMonth(),
-          startOfWeek.getDate() + index,
-        ).toLocaleDateString(),
-        minutes: logForDay ? logForDay.minutes : 0,
-      };
-    });
-
-    const thisWeekTotalTime = thisWeekLogs.reduce((total, log) => total + log.minutes, 0);
-
-    return { thisWeekLogs, thisWeekTotalTime };
-  }
-  const { thisWeekLogs, thisWeekTotalTime } = getThisWeekData();
-  // TODO:customTooltip
-
-  const totalTime = getTotalTime();
-  const totalDays = attendanceData.length;
-  const attendedDays = attendanceData.filter((item) => item.color === "emerald").length;
-  const thisWeekDates = getCurrentWeekDates();
+function getAttendanceData(logs: Log[]) {
   const today = new Date();
-  const currentYear = today.getFullYear();
-  const currentMonth = today.toLocaleString("default", { month: "long" });
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+  const lastDay = new Date(year, month, 0).getDate();
+
+  return Array.from({ length: lastDay }, (_, i) => {
+    const day = i + 1;
+    const formattedDate = `${year}/${String(month).padStart(2, "0")}/${String(day).padStart(2, "0")}`;
+    const future = new Date(year, month - 1, day) > today;
+    const hasLog = logs.some((log) => new Date(log.date).getDate() === day);
+    return {
+      color: future ? ("gray" as const) : hasLog ? ("emerald" as const) : ("rose" as const),
+      tooltip: formattedDate,
+    };
+  });
+}
+
+function getThisWeekData(logs: Log[]) {
+  const today = new Date();
+  const currentDay = today.getDay();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - ((currentDay + 6) % 7));
+
+  const days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+  return days.map((name, i) => {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + i);
+    date.setHours(0, 0, 0, 0);
+    const log = logs.find((l) => {
+      const d = new Date(l.date);
+      d.setHours(0, 0, 0, 0);
+      return d.getTime() === date.getTime();
+    });
+    return { name, minutes: log?.minutes ?? 0 };
+  });
+}
+
+// ── custom tooltip ────────────────────────────────────────────────────────────
+
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (!active || !payload?.length) return null;
   return (
-    <main>
-      <TabGroup className="mt-6">
-        <TabList>
-          <Tab>Overview</Tab>
-          <Tab>Achievements</Tab>
-        </TabList>
-        <TabPanels>
-          <TabPanel>
-            <Grid numItemsMd={2} numItemsLg={3} className="mt-6 gap-6">
-              <Card className="max-w-md">
-                {thisWeekTotalTime >= targetTime ? (
-                  <Callout
-                    title="Congratulations! You have reached the target hours this week!"
-                    icon={CheckCircleIcon}
-                    color="teal"
-                  />
-                ) : (
-                  <Callout
-                    title="You did not reach the target hours this week. Please keep working hard!"
-                    icon={ExclamationIcon}
-                    color="rose"
-                  />
-                )}
-                <Text className="mt-4">This Week Usage Time</Text>
-                <Metric>{thisWeekTotalTime} mins</Metric>
-                <div className="flex flex-col">
-                  <div className="flex items-center justify-center space-x-2 mt-4">
-                    <button
-                      type="button"
-                      className="font-bold p-2 rounded-full border"
-                      onClick={() => setTargetTime((prev) => Math.max(prev - 30, 0))}
-                    >
-                      <MinusIcon size={15} />
-                      <span className="sr-only">Decrease</span>
-                    </button>
-                    <div className="flex-1 text-center">
-                      <div className="text-5xl font-bold tracking-tighter">{targetTime}</div>
-                      <div className="text-[0.70rem] uppercase text-muted-foreground">Mins/Week</div>
-                    </div>
-                    <button
-                      type="button"
-                      className="font-bold p-2 rounded-full border"
-                      onClick={() => setTargetTime((prev) => prev + 30)}
-                    >
-                      <PlusIcon size={15} />
-                      <span className="sr-only">Decrease</span>
-                    </button>
-                  </div>
-                  <Button className="mt-4 font-bold">Set Goal</Button>
-                </div>
-              </Card>
-              <Card className="max-w-md">
-                <Title>Total Time</Title>
-                <p className="text-center text-6xl my-16">{totalTime}</p>
-              </Card>
-              <Card className="max-w-md">
-                <Title>Attendance</Title>
-                <Text>
-                  {currentYear} {currentMonth}
-                </Text>
-                <Flex justifyContent="end" className="mt-4">
-                  <Text>
-                    {`${((attendedDays / totalDays) * 100).toFixed(2)}%`} ({attendedDays} / {totalDays})
-                  </Text>
-                </Flex>
-                <Tracker data={attendanceData} className="mt-2" />
-              </Card>
-            </Grid>
-            <div className="mt-6">
-              <Card>
-                <Title>Week 2 ({thisWeekDates})</Title>
-                <BarChart
-                  className="mt-6"
-                  data={thisWeekLogs}
-                  index="name"
-                  categories={["minutes"]}
-                  colors={["blue"]}
-                  valueFormatter={valueFormatter}
-                  yAxisWidth={60}
-                />
-              </Card>
-            </div>
-          </TabPanel>
-          <TabPanel>
-            <div className="mt-6">
-              <Achievements />
-            </div>
-          </TabPanel>
-        </TabPanels>
-      </TabGroup>
-    </main>
+    <div className="bg-popover border border-border rounded-lg shadow-md px-3 py-2 text-sm">
+      <p className="font-semibold mb-0.5">{label}</p>
+      <p className="text-primary">{formatTime(payload[0].value)}</p>
+    </div>
   );
 };
+
+// ── component ─────────────────────────────────────────────────────────────────
+
+const Dashboard = ({ data, userId }: DashboardProps) => {
+  const [targetTime, setTargetTime] = useState(data.targetTime);
+  const queryClient = useQueryClient();
+
+  const weekData = getThisWeekData(data.logs);
+  const weekTotal = weekData.reduce((sum, d) => sum + d.minutes, 0);
+  const totalMinutes = data.logs.reduce((sum, l) => sum + l.minutes, 0);
+  const attendance = getAttendanceData(data.logs);
+  const attendedDays = attendance.filter((d) => d.color === "emerald").length;
+  const attendanceRate = ((attendedDays / attendance.length) * 100).toFixed(1);
+  const thisWeekDates = getCurrentWeekDates();
+  const today = new Date();
+  const monthLabel = today.toLocaleString("default", { month: "long", year: "numeric" });
+  const reachedGoal = weekTotal >= targetTime;
+
+  const mutation = useMutation({
+    mutationFn: (newTarget: number) =>
+      axios.patch(
+        `${process.env.NEXT_PUBLIC_API_URL}/user/${userId}/usages/${data._id}/target`,
+        { targetTime: newTarget },
+        { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
+      ),
+    // Optimistic update: immediately reflect the new target in the UI
+    onMutate: async (newTarget) => {
+      await queryClient.cancelQueries({ queryKey: ["usages", userId] });
+      const previous = queryClient.getQueryData(["usages", userId]);
+      queryClient.setQueryData(["usages", userId], (old: any) => ({ ...old, targetTime: newTarget }));
+      return { previous };
+    },
+    onError: (_err, _newTarget, context) => {
+      // Rollback on failure
+      queryClient.setQueryData(["usages", userId], context?.previous);
+      setTargetTime(data.targetTime);
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ["usages", userId] });
+    },
+  });
+
+  return (
+    <div className="space-y-6 mt-4 animate-fade-in">
+      {/* Stats row */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {/* Weekly goal */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">本週學習目標</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className={`flex items-center gap-2 mb-3 text-sm font-medium ${reachedGoal ? "text-emerald-600" : "text-rose-500"}`}>
+              {reachedGoal ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
+              {reachedGoal ? "本週目標達成！" : `還差 ${formatTime(targetTime - weekTotal)}`}
+            </div>
+            <p className="text-3xl font-display font-bold mb-4">{formatTime(weekTotal)}</p>
+            <div className="flex items-center justify-center gap-3">
+              <button
+                type="button"
+                className="p-1.5 rounded-full border hover:bg-muted transition-colors"
+                onClick={() => setTargetTime((p) => Math.max(p - 30, 0))}
+              >
+                <MinusIcon className="h-3.5 w-3.5" />
+              </button>
+              <div className="text-center">
+                <div className="text-2xl font-bold">{targetTime}</div>
+                <div className="text-xs text-muted-foreground">mins/week</div>
+              </div>
+              <button
+                type="button"
+                className="p-1.5 rounded-full border hover:bg-muted transition-colors"
+                onClick={() => setTargetTime((p) => p + 30)}
+              >
+                <PlusIcon className="h-3.5 w-3.5" />
+              </button>
+            </div>
+            <Button
+              className="w-full mt-3"
+              size="sm"
+              onClick={() => mutation.mutate(targetTime)}
+              disabled={mutation.isPending}
+            >
+              {mutation.isPending ? "儲存中..." : "設定目標"}
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Total time */}
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">累積學習時間</CardTitle>
+          </CardHeader>
+          <CardContent className="flex items-center justify-center h-[calc(100%-4rem)]">
+            <p className="text-4xl font-display font-bold text-primary">{formatTime(totalMinutes)}</p>
+          </CardContent>
+        </Card>
+
+        {/* Attendance */}
+        <Card className="md:col-span-2 lg:col-span-1">
+          <CardHeader className="pb-2">
+            <div className="flex justify-between items-start">
+              <CardTitle className="text-sm font-medium text-muted-foreground">出勤紀錄</CardTitle>
+              <span className="text-xs text-muted-foreground">{monthLabel}</span>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex justify-end text-sm text-muted-foreground mb-2">
+              {attendanceRate}% ({attendedDays}/{attendance.length} 天)
+            </div>
+            <Tracker data={attendance} />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Weekly bar chart */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-base">本週學習時間 ({thisWeekDates})</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={weekData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" className="stroke-border" vertical={false} />
+              <XAxis dataKey="name" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
+              <YAxis
+                tickFormatter={formatTime}
+                tick={{ fontSize: 11 }}
+                axisLine={false}
+                tickLine={false}
+                width={56}
+              />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="minutes" radius={[6, 6, 0, 0]} maxBarSize={48}>
+                {weekData.map((entry, i) => (
+                  <Cell
+                    // eslint-disable-next-line react/no-array-index-key
+                    key={i}
+                    fill={entry.minutes > 0 ? "hsl(var(--primary))" : "hsl(var(--muted))"}
+                  />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
 export default Dashboard;

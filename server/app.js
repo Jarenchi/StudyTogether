@@ -1,3 +1,4 @@
+require("dotenv").config();
 const mongoose = require("mongoose");
 const express = require("express");
 const app = express();
@@ -23,7 +24,6 @@ const http = require("http");
 //       )
 //     : http.createServer(app);
 const server = http.createServer(app);
-require("dotenv").config();
 const { getLatLonForPlace } = require("./controllers/geocode");
 
 app.use(cors());
@@ -32,7 +32,7 @@ const userRouter = require("./routes/user");
 const clubRouter = require("./routes/clubs");
 const sendMail = require("./nodemailer");
 
-const port = 5000;
+const port = 5001;
 let connectStatus = false;
 
 async function connectMongoDB() {
