@@ -42,11 +42,7 @@ export function Sidebar({ id, name, isOpen, onClose }: SidebarProps) {
         }`}
       >
         <div className="flex items-center justify-between px-4 mb-2">
-          <Link
-            href={`/myclubs/${id}`}
-            className="text-lg font-semibold tracking-tight truncate"
-            onClick={onClose}
-          >
+          <Link href={`/myclubs/${id}`} className="text-lg font-semibold tracking-tight truncate" onClick={onClose}>
             {name}
           </Link>
           <button type="button" onClick={onClose} aria-label="Close sidebar">

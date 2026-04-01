@@ -5,13 +5,7 @@ import axios from "axios";
 import { useCallback, useEffect, useState } from "react";
 import { AlignLeft } from "lucide-react";
 
-export default function ClubLayout({
-  children,
-  params,
-}: {
-  children: React.ReactNode;
-  params: { club: string };
-}) {
+export default function ClubLayout({ children, params }: { children: React.ReactNode; params: { club: string } }) {
   const [clubName, setClubName] = useState<string | null>(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
@@ -21,9 +15,7 @@ export default function ClubLayout({
       setClubName(storedClubName);
     } else {
       const fetchClubName = async () => {
-        const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/clubs/${params.club}/name`,
-        );
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${params.club}/name`);
         setClubName(response.data.name);
       };
       fetchClubName();
@@ -36,7 +28,7 @@ export default function ClubLayout({
 
   // Close the drawer on Escape key
   useEffect(() => {
-    if (!sidebarOpen) return;
+    if (!sidebarOpen) return undefined;
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") setSidebarOpen(false);
     };
@@ -50,19 +42,10 @@ export default function ClubLayout({
     <section className="flex">
       {/* Backdrop overlay (mobile only, when sidebar is open) */}
       {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-20 bg-black/50 md:hidden"
-          onClick={handleClose}
-          aria-hidden="true"
-        />
+        <div className="fixed inset-0 z-20 bg-black/50 md:hidden" onClick={handleClose} aria-hidden="true" />
       )}
 
-      <Sidebar
-        id={params.club}
-        name={clubName ?? ""}
-        isOpen={sidebarOpen}
-        onClose={handleClose}
-      />
+      <Sidebar id={params.club} name={clubName ?? ""} isOpen={sidebarOpen} onClose={handleClose} />
 
       <div className="flex-1 min-w-0">
         {/* Mobile hamburger — inside content flow, below the Header */}

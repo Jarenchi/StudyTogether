@@ -226,7 +226,12 @@ const QuillEditor = () => {
       </div>
       <div className="flex justify-center items-start flex-col lg:flex-row gap-4 px-4">
         <div className="w-full lg:flex-1">
-          <ReactQuill ref={quillCallback} modules={quillModules} preserveWhitespace className="h-[calc(100vh_-_14rem)] w-full" />
+          <ReactQuill
+            ref={quillCallback}
+            modules={quillModules}
+            preserveWhitespace
+            className="h-[calc(100vh_-_14rem)] w-full"
+          />
         </div>
         <div className="lg:h-[calc(100vh_-_14rem)] lg:ml-3 lg:w-48">
           <p className="text-lg mb-2">Online Users:</p>
