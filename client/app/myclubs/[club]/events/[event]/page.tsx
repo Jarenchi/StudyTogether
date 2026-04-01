@@ -13,6 +13,7 @@ import EventDescription from "@/components/events/event/EventDescription";
 import { Event } from "@/types/eventType";
 import JoinEventForm from "@/components/events/event/JoinEventForm";
 import EventMap from "@/components/events/event/EventMap";
+import EditEventButton from "@/components/events/EditEventButton";
 
 const Page = () => {
   const [open, setOpen] = useState(false);
@@ -125,16 +126,15 @@ const Page = () => {
   );
   const CancelParticipationButton = <Button onClick={cancelEventParticipationHandler}>Cancel Participation</Button>;
   return (
-    <div className="mx-auto mt-2">
-      <h1 className="text-4xl my-3 text-center">{data?.title}</h1>
+    <div className="max-w-2xl mx-auto py-6 space-y-4 animate-fade-in">
+      <div className="flex items-start justify-between gap-3">
+        <h1 className="text-3xl font-bold leading-tight">{data?.title}</h1>
+        {!iSNotCreator && <EditEventButton event={data!} />}
+      </div>
       <EventInformation data={data!} />
-      <div className="my-2">
-        <EventDescription description={data?.description!} />
-      </div>
-      <div className="my-2">
-        <EventMap place={data?.location!} />
-      </div>
-      <div className="mb-3">
+      <EventDescription description={data?.description!} />
+      <EventMap place={data?.location!} />
+      <div>
         {iSNotCreator && !isJoined && (data?.type !== "hybrid" ? JoinEventButton : JoinEventSection)}
         {isJoined && CancelParticipationButton}
       </div>

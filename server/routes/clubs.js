@@ -28,6 +28,7 @@ const { getEventById } = require("../controllers/events/getEventById");
 const { joinOnlineEvent } = require("../controllers/events/joinOnlineEvent");
 const { joinPhysicalEvent } = require("../controllers/events/joinPhysicalEvent");
 const { cancelEventParticipation } = require("../controllers/events/cancelEventParticipation");
+const { updateEvent } = require("../controllers/events/updateEvent");
 
 const router = express.Router();
 router.post("/", verifyAccessToken, checkFormData, uploadImage, clubCreate);
@@ -54,5 +55,6 @@ router.get("/:clubId/events/:eventId", getEventById);
 router.put("/:clubId/events/:eventId/join-online", verifyAccessToken, joinOnlineEvent);
 router.put("/:clubId/events/:eventId/join-offline", verifyAccessToken, joinPhysicalEvent);
 router.put("/:clubId/events/:eventId/cancel", verifyAccessToken, cancelEventParticipation);
+router.put("/:clubId/events/:eventId", verifyAccessToken, updateEvent);
 
 module.exports = router;

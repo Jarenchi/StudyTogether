@@ -90,6 +90,7 @@ export const DocsColumns: ColumnDef<Doc>[] = [
   {
     accessorKey: "status",
     header: "Status",
+    size: 100,
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       const map: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
@@ -98,7 +99,7 @@ export const DocsColumns: ColumnDef<Doc>[] = [
         finished:   { label: "完成",   variant: "default" },
       };
       const { label, variant } = map[status] ?? { label: status, variant: "outline" };
-      return <Badge variant={variant}>{label}</Badge>;
+      return <Badge variant={variant} className="whitespace-nowrap">{label}</Badge>;
     },
   },
   {

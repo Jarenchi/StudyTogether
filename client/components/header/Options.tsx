@@ -1,5 +1,4 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button, buttonVariants } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,7 +7,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { cn } from "@/lib/utils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import nookies, { destroyCookie } from "nookies";
@@ -31,24 +29,22 @@ const Options = () => {
   return (
     <div>
       <DropdownMenu>
-        <DropdownMenuTrigger>
-          <Avatar>
-            <AvatarImage src={nookies.get().user_image} />
-            <AvatarFallback>{nookies.get().user_name}</AvatarFallback>
-          </Avatar>
+        <DropdownMenuTrigger asChild>
+          <button className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+            <Avatar>
+              <AvatarImage src={nookies.get().user_image} />
+              <AvatarFallback>{nookies.get().user_name}</AvatarFallback>
+            </Avatar>
+          </button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent>
+        <DropdownMenuContent align="end">
           <DropdownMenuLabel className="text-center">My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />
-          <DropdownMenuItem>
-            <Link href="/my/dashboard" className={cn(buttonVariants({ variant: "ghost" }), "justify-start")}>
-              Dashboard
-            </Link>
+          <DropdownMenuItem asChild>
+            <Link href="/my/dashboard">Dashboard</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem>
-            <Button variant="ghost" type="button" onClick={logoutHandler}>
-              Log out
-            </Button>
+          <DropdownMenuItem onClick={logoutHandler}>
+            Log out
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
