@@ -1,41 +1,31 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Club } from "@/types/clubType";
-import { CalendarDays, File, Users } from "lucide-react";
+import { CalendarDays, FileText, Users } from "lucide-react";
 
 interface ClubInformationProps {
   data: Club;
 }
 
+const stats = (data: Club) => [
+  { label: "成員", value: data.members.length, icon: Users },
+  { label: "活動", value: data.events.length, icon: CalendarDays },
+  { label: "文件", value: data.docs.length, icon: FileText },
+];
+
 const ClubInformation: React.FC<ClubInformationProps> = ({ data }) => {
   return (
-    <div className="flex flex-wrap gap-2 w-5/6">
-      <Card className="flex-1">
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Members</CardTitle>
-            <Users size={48} color="#2563eb" />
-          </div>
-        </CardHeader>
-        <CardContent className="text-4xl">{data?.members.length}</CardContent>
-      </Card>
-      <Card className="flex-1">
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Events</CardTitle>
-            <CalendarDays size={48} color="#2563eb" />
-          </div>
-        </CardHeader>
-        <CardContent className="text-4xl">{data?.events.length}</CardContent>
-      </Card>
-      <Card className="flex-1">
-        <CardHeader>
-          <div className="flex justify-between items-center">
-            <CardTitle>Documents</CardTitle>
-            <File size={48} color="#2563eb" />
-          </div>
-        </CardHeader>
-        <CardContent className="text-4xl">{data?.docs.length}</CardContent>
-      </Card>
+    <div className="grid grid-cols-3 gap-3 w-full">
+      {stats(data).map(({ label, value, icon: Icon }) => (
+        <Card key={label}>
+          <CardContent className="flex flex-col items-center justify-center py-4 gap-1">
+            <div className="p-2 rounded-lg bg-primary/10 mb-1">
+              <Icon className="h-5 w-5 text-primary" />
+            </div>
+            <span className="font-display font-bold text-2xl">{value}</span>
+            <span className="text-xs text-muted-foreground">{label}</span>
+          </CardContent>
+        </Card>
+      ))}
     </div>
   );
 };

@@ -19,6 +19,7 @@ interface ClubDescriptionProps {
   owner: Owner;
   club: string;
 }
+
 const FormSchema = z.object({
   description: z.string(),
 });
@@ -38,67 +39,65 @@ const ClubDescription: React.FC<ClubDescriptionProps> = ({ description, owner, c
       axios.put(
         `${process.env.NEXT_PUBLIC_API_URL}/clubs/${club}`,
         { description: values.description },
-        {
-          headers: { Authorization: `Bearer ${nookies.get().access_token}` },
-        },
+        { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
       ),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["club", club] });
       setEdit(false);
-    },
-    onError: (error: any) => {
-      if (error?.response?.status === 404) {
-        alert("Club not found");
-      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
-        alert("請稍後再試或和我們的技術團隊聯絡");
-      } else {
-        alert(error);
-      }
     },
   });
 
   async function descriptionUpdateHandler(values: z.infer<typeof FormSchema>) {
     await mutation.mutateAsync(values);
   }
+
   return (
-    <Card className="my-2 w-5/6">
-      <CardHeader className="relative">
-        <CardTitle className="lg:text-xl text-base"> Description</CardTitle>
-        {isAbleToEdit && (
-          <button type="button" onClick={() => setEdit(true)} className="absolute top-3 right-3">
-            <span className="sr-only">Edit</span>
-            <Pencil size={20} color="#2563eb" />
+    <Card className="w-full">
+      <CardHeader className="relative pb-2">
+        <CardTitle className="text-base font-semibold text-muted-foreground uppercase tracking-wide">
+          About
+        </CardTitle>
+        {isAbleToEdit && !edit && (
+          <button
+            type="button"
+            onClick={() => setEdit(true)}
+            className="absolute top-4 right-4 p-1.5 rounded-md hover:bg-muted transition-colors"
+          >
+            <span className="sr-only">Edit description</span>
+            <Pencil className="h-4 w-4 text-muted-foreground" />
           </button>
         )}
       </CardHeader>
-      <CardContent className="max-w-5xl w-[64rem]">
+      <CardContent>
         {edit ? (
-          <div>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(descriptionUpdateHandler)} className="w-2/3 space-y-6">
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Textarea {...field} className="w-[60rem] h-8" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <div className="mt-2">
-                  <Button type="submit" className="mr-2">
-                    Submit
-                  </Button>
-                  <Button onClick={() => setEdit(false)}>Cancel</Button>
-                </div>
-              </form>
-            </Form>
-          </div>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(descriptionUpdateHandler)} className="space-y-3">
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <Textarea {...field} className="w-full min-h-[80px] resize-y" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <div className="flex gap-2">
+                <Button type="submit" size="sm" disabled={mutation.isPending}>
+                  {mutation.isPending ? "儲存中..." : "儲存"}
+                </Button>
+                <Button type="button" size="sm" variant="outline" onClick={() => setEdit(false)}>
+                  取消
+                </Button>
+              </div>
+            </form>
+          </Form>
         ) : (
-          <pre className="font-sans break-words whitespace-pre-wrap md:text-base text-sm">{description}</pre>
+          <p className="text-sm leading-relaxed text-foreground/80 whitespace-pre-wrap break-words">
+            {description || <span className="text-muted-foreground italic">尚未填寫說明</span>}
+          </p>
         )}
       </CardContent>
     </Card>

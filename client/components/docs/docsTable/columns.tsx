@@ -5,6 +5,7 @@ import { MoreHorizontal, ArrowUpDown } from "lucide-react";
 import Link from "next/link";
 import nookies from "nookies";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -89,6 +90,16 @@ export const DocsColumns: ColumnDef<Doc>[] = [
   {
     accessorKey: "status",
     header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status") as string;
+      const map: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
+        pending:    { label: "待處理", variant: "outline" },
+        processing: { label: "進行中", variant: "secondary" },
+        finished:   { label: "完成",   variant: "default" },
+      };
+      const { label, variant } = map[status] ?? { label: status, variant: "outline" };
+      return <Badge variant={variant}>{label}</Badge>;
+    },
   },
   {
     id: "actions",
