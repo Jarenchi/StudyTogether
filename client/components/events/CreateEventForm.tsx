@@ -18,8 +18,8 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Switch } from "@/components/ui/switch";
 import { toast } from "@/components/ui/use-toast";
-import { Textarea } from "../ui/textarea";
 import { handleApiError } from "@/utils/handleApiError";
+import { Textarea } from "../ui/textarea";
 
 const eventFormSchema = z.object({
   title: z.string().min(2, {

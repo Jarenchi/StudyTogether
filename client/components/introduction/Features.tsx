@@ -28,7 +28,9 @@ const Features = () => {
     <section className="py-16">
       <div className="text-center mb-12">
         <h2 className="font-display font-bold text-3xl mb-3">核心功能</h2>
-        <p className="text-muted-foreground max-w-xl mx-auto">從協作編輯到視訊會議，StudyTogether 提供完整的學習工具。</p>
+        <p className="text-muted-foreground max-w-xl mx-auto">
+          從協作編輯到視訊會議，StudyTogether 提供完整的學習工具。
+        </p>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">

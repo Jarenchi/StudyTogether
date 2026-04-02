@@ -15,16 +15,18 @@ const Page = () => {
     queryKey: ["docs", params.club],
   });
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="space-y-3">
         <Skeleton className="h-10 w-full rounded-xl" />
         <Skeleton className="h-64 w-full rounded-xl" />
       </div>
     );
+  }
 
-  if (isError)
+  if (isError) {
     return <ErrorState title="無法載入文件列表" description="請確認網路連線後再試。" onRetry={() => refetch()} />;
+  }
 
   return <DocsTable columns={DocsColumns} data={data} />;
 };

@@ -28,7 +28,7 @@ const Page = () => {
     },
   });
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="max-w-7xl mx-auto my-4 px-4 space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -39,14 +39,16 @@ const Page = () => {
         <Skeleton className="h-72 rounded-xl" />
       </div>
     );
+  }
 
-  if (isError || !data)
+  if (isError || !data) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
         <p className="text-lg font-semibold mb-2">無法載入學習紀錄</p>
         <p className="text-sm">請重新整理頁面。</p>
       </div>
     );
+  }
 
   return (
     <div className="max-w-7xl mx-auto my-4 px-4">

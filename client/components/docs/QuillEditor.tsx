@@ -197,21 +197,23 @@ const QuillEditor = () => {
     if (event.key === "Enter") handleTitleBlur();
   }
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="flex flex-col gap-3 px-4 mt-4">
         <div className="h-8 w-64 bg-muted animate-pulse rounded-md" />
         <div className="h-[calc(100vh_-_14rem)] bg-muted animate-pulse rounded-xl" />
       </div>
     );
+  }
 
-  if (isError)
+  if (isError) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
         <p className="text-lg font-semibold mb-2">無法載入文件</p>
         <p className="text-sm">請重新整理頁面，或確認您的存取權限。</p>
       </div>
     );
+  }
 
   return (
     <div className="flex flex-col">

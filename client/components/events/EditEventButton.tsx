@@ -108,7 +108,9 @@ const EditEventButton: React.FC<EditEventButtonProps> = ({ event }) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>標題</FormLabel>
-                  <FormControl><Input {...field} /></FormControl>
+                  <FormControl>
+                    <Input {...field} />
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -124,7 +126,10 @@ const EditEventButton: React.FC<EditEventButtonProps> = ({ event }) => {
                       <FormControl>
                         <Button
                           variant="outline"
-                          className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}
+                          className={cn(
+                            "w-[240px] pl-3 text-left font-normal",
+                            !field.value && "text-muted-foreground",
+                          )}
                         >
                           {field.value ? format(field.value, "PPP") : <span>選擇日期</span>}
                           <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
@@ -146,7 +151,9 @@ const EditEventButton: React.FC<EditEventButtonProps> = ({ event }) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>開始時間</FormLabel>
-                    <FormControl><Input type="time" {...field} /></FormControl>
+                    <FormControl>
+                      <Input type="time" {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -157,7 +164,9 @@ const EditEventButton: React.FC<EditEventButtonProps> = ({ event }) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>結束時間</FormLabel>
-                    <FormControl><Input type="time" {...field} /></FormControl>
+                    <FormControl>
+                      <Input type="time" {...field} />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -184,7 +193,9 @@ const EditEventButton: React.FC<EditEventButtonProps> = ({ event }) => {
                   <FormLabel>類型</FormLabel>
                   <Select onValueChange={field.onChange} defaultValue={field.value}>
                     <FormControl>
-                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="online">線上</SelectItem>
@@ -204,7 +215,9 @@ const EditEventButton: React.FC<EditEventButtonProps> = ({ event }) => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>地點</FormLabel>
-                      <FormControl><Input {...field} /></FormControl>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -215,7 +228,9 @@ const EditEventButton: React.FC<EditEventButtonProps> = ({ event }) => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>實體名額上限</FormLabel>
-                      <FormControl><Input type="number" min={0} {...field} /></FormControl>
+                      <FormControl>
+                        <Input type="number" min={0} {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}

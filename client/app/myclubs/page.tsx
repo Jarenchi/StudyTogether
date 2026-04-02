@@ -32,19 +32,24 @@ const Page = () => {
     },
   });
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="max-w-5xl px-4 py-6 space-y-8">
         <Skeleton className="h-7 w-24" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
+          {[1, 2, 3].map((i) => (
+            <Skeleton key={i} className="h-24 rounded-xl" />
+          ))}
         </div>
         <Skeleton className="h-7 w-24" />
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          {[1, 2].map((i) => <Skeleton key={i} className="h-24 rounded-xl" />)}
+          {[1, 2].map((i) => (
+            <Skeleton key={i} className="h-24 rounded-xl" />
+          ))}
         </div>
       </div>
     );
+  }
 
   if (isError) return null;
 
@@ -55,7 +60,9 @@ const Page = () => {
         <div className="flex items-center gap-2 mb-4">
           <BookOpen className="h-5 w-5 text-primary" />
           <h2 className="font-display font-bold text-xl">我的讀書會</h2>
-          <Badge variant="secondary" className="ml-1">{data?.clubs?.length ?? 0}</Badge>
+          <Badge variant="secondary" className="ml-1">
+            {data?.clubs?.length ?? 0}
+          </Badge>
         </div>
         {data?.clubs?.length ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -89,7 +96,9 @@ const Page = () => {
         <div className="flex items-center gap-2 mb-4">
           <CalendarDays className="h-5 w-5 text-primary" />
           <h2 className="font-display font-bold text-xl">我的活動</h2>
-          <Badge variant="secondary" className="ml-1">{data?.events?.length ?? 0}</Badge>
+          <Badge variant="secondary" className="ml-1">
+            {data?.events?.length ?? 0}
+          </Badge>
         </div>
         {data?.events?.length ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

@@ -59,9 +59,7 @@ export default function ClubLayout({ children, params }: { children: React.React
             <AlignLeft className="h-5 w-5" />
           </button>
         </div>
-        <div className="px-4 py-5 max-w-5xl">
-          {children}
-        </div>
+        <div className="px-4 py-5 max-w-5xl">{children}</div>
       </div>
     </section>
   );

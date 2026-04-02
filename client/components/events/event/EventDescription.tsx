@@ -9,7 +9,9 @@ const EventDescription: React.FC<EventDescriptionProps> = ({ description }) => {
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-semibold text-muted-foreground uppercase tracking-wide">活動說明</CardTitle>
+        <CardTitle className="text-base font-semibold text-muted-foreground uppercase tracking-wide">
+          活動說明
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <pre className="font-sans text-sm leading-relaxed break-words whitespace-pre-wrap">{description}</pre>

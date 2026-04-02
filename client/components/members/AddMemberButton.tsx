@@ -7,18 +7,12 @@ import axios from "axios";
 import nookies from "nookies";
 import { useParams, useRouter } from "next/navigation";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { Button } from "../ui/button";
 import { handleApiError } from "@/utils/handleApiError";
+import { Button } from "../ui/button";
 
 const FormSchema = z.object({
   userId: z.string().min(2, { message: "UserId must be at least 2 characters." }),
@@ -76,7 +70,9 @@ const AddMemberButton = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={mutation.isPending}>新增</Button>
+            <Button type="submit" disabled={mutation.isPending}>
+              新增
+            </Button>
           </form>
         </Form>
       </DialogContent>

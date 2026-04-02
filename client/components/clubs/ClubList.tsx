@@ -47,16 +47,11 @@ const ClubList = () => {
 
   if (isLoading) return <ClubListSkeleton />;
 
-  if (isError)
-    return (
-      <ErrorState
-        title="無法載入讀書會"
-        description="請確認網路連線後再試。"
-        onRetry={() => refetch()}
-      />
-    );
+  if (isError) {
+    return <ErrorState title="無法載入讀書會" description="請確認網路連線後再試。" onRetry={() => refetch()} />;
+  }
 
-  if (!data || data.length === 0)
+  if (!data || data.length === 0) {
     return (
       <EmptyState
         icon={Users}
@@ -64,6 +59,7 @@ const ClubList = () => {
         description={keyword ? "換個關鍵字試試，或建立一個新的讀書會。" : "成為第一個建立讀書會的人！"}
       />
     );
+  }
 
   const currentUserId = nookies.get().user_id;
 

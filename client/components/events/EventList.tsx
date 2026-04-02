@@ -20,18 +20,23 @@ const EventList = () => {
     queryKey: ["eventList", clubId],
   });
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {[1, 2, 3].map((i) => <Skeleton key={i} className="h-28 rounded-xl" />)}
+        {[1, 2, 3].map((i) => (
+          <Skeleton key={i} className="h-28 rounded-xl" />
+        ))}
       </div>
     );
+  }
 
-  if (isError)
+  if (isError) {
     return <ErrorState title="無法載入活動" description="請確認網路連線後再試。" onRetry={() => refetch()} />;
+  }
 
-  if (!data?.length)
+  if (!data?.length) {
     return <EmptyState icon={CalendarDays} title="尚無活動" description="建立第一個活動開始聚會吧！" />;
+  }
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

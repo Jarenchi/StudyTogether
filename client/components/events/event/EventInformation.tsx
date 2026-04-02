@@ -22,12 +22,16 @@ const EventInformation: React.FC<EventInformationProps> = ({ data }) => {
   return (
     <Card>
       <CardHeader className="pb-2">
-        <CardTitle className="text-base font-semibold text-muted-foreground uppercase tracking-wide">活動資訊</CardTitle>
+        <CardTitle className="text-base font-semibold text-muted-foreground uppercase tracking-wide">
+          活動資訊
+        </CardTitle>
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center gap-2 text-sm">
           <Clock className="h-4 w-4 text-muted-foreground shrink-0" />
-          <span>{formattedDate} {data.startTime}–{data.endTime}</span>
+          <span>
+            {formattedDate} {data.startTime}–{data.endTime}
+          </span>
         </div>
         <div className="flex items-center gap-2 text-sm">
           <Tag className="h-4 w-4 text-muted-foreground shrink-0" />
@@ -40,7 +44,9 @@ const EventInformation: React.FC<EventInformationProps> = ({ data }) => {
         {(data.type === "hybrid" || data.type === "offline") && (
           <div className="flex items-center gap-2 text-sm">
             <Users className="h-4 w-4 text-muted-foreground shrink-0" />
-            <span>實體 {data.physicalParticipants.length} / {data.maxPhysicalParticipants} 人</span>
+            <span>
+              實體 {data.physicalParticipants.length} / {data.maxPhysicalParticipants} 人
+            </span>
           </div>
         )}
         {data.location && (
@@ -59,7 +65,11 @@ const EventInformation: React.FC<EventInformationProps> = ({ data }) => {
         {data.type !== "offline" && (
           <div className="flex items-center gap-2 text-sm">
             <Video className="h-4 w-4 text-muted-foreground shrink-0" />
-            <Link href={`${data._id}/meeting`} target="_blank" className="text-primary hover:underline underline-offset-2">
+            <Link
+              href={`${data._id}/meeting`}
+              target="_blank"
+              className="text-primary hover:underline underline-offset-2"
+            >
               加入線上會議
             </Link>
           </div>

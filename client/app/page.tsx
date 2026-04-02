@@ -29,13 +29,11 @@ export default function Home() {
           </span>
 
           <h1 className="font-display font-extrabold text-5xl sm:text-6xl leading-tight tracking-tight">
-            Let&apos;s Study{" "}
-            <span className="text-primary">Together</span>
+            Let&apos;s Study <span className="text-primary">Together</span>
           </h1>
 
           <p className="text-muted-foreground text-lg max-w-xl leading-relaxed">
-            建立或加入讀書會，與志同道合的人一起學習。
-            即時協作文件、線上會議、活動管理，讓學習不再孤單。
+            建立或加入讀書會，與志同道合的人一起學習。 即時協作文件、線上會議、活動管理，讓學習不再孤單。
           </p>
 
           <div className="flex gap-3 flex-wrap justify-center">

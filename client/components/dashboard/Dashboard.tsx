@@ -5,16 +5,7 @@ import { MinusIcon, PlusIcon, CheckCircle2, AlertCircle } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import nookies from "nookies";
-import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell,
-} from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";
 import getCurrentWeekDates from "@/utils/getCurrentWeekDate";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -58,8 +49,16 @@ function getAttendanceData(logs: Log[]) {
     const formattedDate = `${year}/${String(month).padStart(2, "0")}/${String(day).padStart(2, "0")}`;
     const future = new Date(year, month - 1, day) > today;
     const hasLog = logs.some((log) => new Date(log.date).getDate() === day);
+    let color: "gray" | "emerald" | "rose";
+    if (future) {
+      color = "gray";
+    } else if (hasLog) {
+      color = "emerald";
+    } else {
+      color = "rose";
+    }
     return {
-      color: future ? ("gray" as const) : hasLog ? ("emerald" as const) : ("rose" as const),
+      color,
       tooltip: formattedDate,
     };
   });
@@ -148,7 +147,11 @@ const Dashboard = ({ data, userId }: DashboardProps) => {
             <CardTitle className="text-sm font-medium text-muted-foreground">本週學習目標</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`flex items-center gap-2 mb-3 text-sm font-medium ${reachedGoal ? "text-emerald-600" : "text-rose-500"}`}>
+            <div
+              className={`flex items-center gap-2 mb-3 text-sm font-medium ${
+                reachedGoal ? "text-emerald-600" : "text-rose-500"
+              }`}
+            >
               {reachedGoal ? <CheckCircle2 className="h-4 w-4" /> : <AlertCircle className="h-4 w-4" />}
               {reachedGoal ? "本週目標達成！" : `還差 ${formatTime(targetTime - weekTotal)}`}
             </div>
@@ -156,6 +159,7 @@ const Dashboard = ({ data, userId }: DashboardProps) => {
             <div className="flex items-center justify-center gap-3">
               <button
                 type="button"
+                aria-label="Decrease target"
                 className="p-1.5 rounded-full border hover:bg-muted transition-colors"
                 onClick={() => setTargetTime((p) => Math.max(p - 30, 0))}
               >
@@ -167,6 +171,7 @@ const Dashboard = ({ data, userId }: DashboardProps) => {
               </div>
               <button
                 type="button"
+                aria-label="Increase target"
                 className="p-1.5 rounded-full border hover:bg-muted transition-colors"
                 onClick={() => setTargetTime((p) => p + 30)}
               >
@@ -221,13 +226,7 @@ const Dashboard = ({ data, userId }: DashboardProps) => {
             <BarChart data={weekData} margin={{ top: 4, right: 8, left: 0, bottom: 0 }}>
               <CartesianGrid strokeDasharray="3 3" className="stroke-border" vertical={false} />
               <XAxis dataKey="name" tick={{ fontSize: 12 }} axisLine={false} tickLine={false} />
-              <YAxis
-                tickFormatter={formatTime}
-                tick={{ fontSize: 11 }}
-                axisLine={false}
-                tickLine={false}
-                width={56}
-              />
+              <YAxis tickFormatter={formatTime} tick={{ fontSize: 11 }} axisLine={false} tickLine={false} width={56} />
               <Tooltip content={<CustomTooltip />} />
               <Bar dataKey="minutes" radius={[6, 6, 0, 0]} maxBarSize={48}>
                 {weekData.map((entry, i) => (

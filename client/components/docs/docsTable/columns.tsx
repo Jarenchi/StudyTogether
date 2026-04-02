@@ -94,12 +94,16 @@ export const DocsColumns: ColumnDef<Doc>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status") as string;
       const map: Record<string, { label: string; variant: "default" | "secondary" | "outline" }> = {
-        pending:    { label: "待處理", variant: "outline" },
+        pending: { label: "待處理", variant: "outline" },
         processing: { label: "進行中", variant: "secondary" },
-        finished:   { label: "完成",   variant: "default" },
+        finished: { label: "完成", variant: "default" },
       };
       const { label, variant } = map[status] ?? { label: status, variant: "outline" };
-      return <Badge variant={variant} className="whitespace-nowrap">{label}</Badge>;
+      return (
+        <Badge variant={variant} className="whitespace-nowrap">
+          {label}
+        </Badge>
+      );
     },
   },
   {

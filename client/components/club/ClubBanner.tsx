@@ -37,9 +37,7 @@ const ClubBanner: React.FC<ClubBannerProps> = ({ data }) => {
         <div className="flex items-end gap-4 -mt-8 mb-3">
           <Avatar className="h-16 w-16 border-4 border-background shadow-md shrink-0">
             <AvatarImage src={data.picture} />
-            <AvatarFallback className="text-xl font-bold bg-muted">
-              {data.name.charAt(0).toUpperCase()}
-            </AvatarFallback>
+            <AvatarFallback className="text-xl font-bold bg-muted">{data.name.charAt(0).toUpperCase()}</AvatarFallback>
           </Avatar>
           <div className="pb-1 min-w-0">
             <h1 className="font-display font-bold text-xl sm:text-2xl leading-tight truncate">{data.name}</h1>

@@ -68,7 +68,10 @@ export function DocsTable<TData, TValue>({ columns, data }: DocsTableProps<TData
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id} className="bg-muted/50 hover:bg-muted/50">
                 {headerGroup.headers.map((header) => (
-                  <TableHead key={header.id} className="font-semibold text-xs uppercase tracking-wide text-muted-foreground">
+                  <TableHead
+                    key={header.id}
+                    className="font-semibold text-xs uppercase tracking-wide text-muted-foreground"
+                  >
                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                   </TableHead>
                 ))}
@@ -80,9 +83,7 @@ export function DocsTable<TData, TValue>({ columns, data }: DocsTableProps<TData
               table.getRowModel().rows.map((row) => (
                 <TableRow key={row.id} className="hover:bg-muted/30 transition-colors">
                   {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
+                    <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                   ))}
                 </TableRow>
               ))
@@ -107,7 +108,12 @@ export function DocsTable<TData, TValue>({ columns, data }: DocsTableProps<TData
             第 {start}–{end} 筆，共 {totalRows} 筆
           </p>
           <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => table.previousPage()}
+              disabled={!table.getCanPreviousPage()}
+            >
               上一頁
             </Button>
             <span className="flex items-center text-sm px-1">

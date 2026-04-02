@@ -5,9 +5,8 @@ import axios from "axios";
 import { useRouter, useParams } from "next/navigation";
 import { formattedTime } from "@/utils/formattedTime";
 import nookies from "nookies";
-import { Button } from "../ui/button";
-import { toast } from "@/components/ui/use-toast";
 import { handleApiError } from "@/utils/handleApiError";
+import { Button } from "../ui/button";
 
 const CreateDocButton = () => {
   const router = useRouter();

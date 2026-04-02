@@ -30,16 +30,18 @@ const Page = () => {
     queryKey: ["members", params.club],
   });
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="space-y-4">
         <Skeleton className="h-10 w-full rounded-xl" />
         <Skeleton className="h-64 w-full rounded-xl" />
       </div>
     );
+  }
 
-  if (isError)
+  if (isError) {
     return <ErrorState title="無法載入成員列表" description="請確認網路連線後再試。" onRetry={() => refetch()} />;
+  }
 
   return (
     <div className="space-y-4">

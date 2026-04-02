@@ -58,11 +58,9 @@ const Page = () => {
 
   const updateMutation = useMutation({
     mutationFn: async (values: z.infer<typeof settingsSchema>) =>
-      axios.put(
-        `${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}`,
-        values,
-        { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
-      ),
+      axios.put(`${process.env.NEXT_PUBLIC_API_URL}/clubs/${clubId}`, values, {
+        headers: { Authorization: `Bearer ${nookies.get().access_token}` },
+      }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["club", clubId] });
       toast({ title: "設定已更新" });
@@ -82,13 +80,14 @@ const Page = () => {
     }
   }
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="space-y-4">
         <Skeleton className="h-40 w-full rounded-xl" />
         <Skeleton className="h-32 w-full rounded-xl" />
       </div>
     );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -111,7 +110,9 @@ const Page = () => {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>讀書會名稱</FormLabel>
-                      <FormControl><Input {...field} /></FormControl>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -157,7 +158,9 @@ const Page = () => {
             </div>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="destructive" size="sm">離開</Button>
+                <Button variant="destructive" size="sm">
+                  離開
+                </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>

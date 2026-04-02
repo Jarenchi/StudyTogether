@@ -30,7 +30,10 @@ const Options = () => {
     <div>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <button className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+          <button
+            type="button"
+            className="rounded-full focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
             <Avatar>
               <AvatarImage src={nookies.get().user_image} />
               <AvatarFallback>{nookies.get().user_name}</AvatarFallback>
@@ -43,9 +46,7 @@ const Options = () => {
           <DropdownMenuItem asChild>
             <Link href="/my/dashboard">Dashboard</Link>
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={logoutHandler}>
-            Log out
-          </DropdownMenuItem>
+          <DropdownMenuItem onClick={logoutHandler}>Log out</DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
     </div>

@@ -43,9 +43,7 @@ const PresenceBar = ({ users }: PresenceBarProps) => {
             </div>
           )}
         </div>
-        <span className="text-xs text-muted-foreground">
-          {users.length} 人在線
-        </span>
+        <span className="text-xs text-muted-foreground">{users.length} 人在線</span>
       </div>
     </TooltipProvider>
   );

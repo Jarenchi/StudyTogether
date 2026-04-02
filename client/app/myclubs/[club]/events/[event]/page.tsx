@@ -60,7 +60,7 @@ const Page = () => {
     onError: (error: any) => handleApiError(error, router),
   });
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="max-w-2xl mx-auto py-6 space-y-4">
         <Skeleton className="h-10 w-3/4" />
@@ -68,9 +68,11 @@ const Page = () => {
         <Skeleton className="h-24 w-full rounded-xl" />
       </div>
     );
+  }
 
-  if (isError)
+  if (isError) {
     return <ErrorState title="無法載入活動" description="請確認網路連線後再試。" onRetry={() => refetch()} />;
+  }
 
   const isJoined =
     data?.onlineParticipants.some((p) => p.userId === nookies.get().user_id) ||

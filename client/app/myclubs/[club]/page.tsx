@@ -20,7 +20,7 @@ const Page = ({ params }: { params: { club: string } }) => {
     queryKey: ["club", params.club],
   });
 
-  if (isLoading)
+  if (isLoading) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-6 space-y-4">
         <Skeleton className="h-52 w-full rounded-xl" />
@@ -32,9 +32,11 @@ const Page = ({ params }: { params: { club: string } }) => {
         <Skeleton className="h-28 w-full rounded-xl" />
       </div>
     );
+  }
 
-  if (isError)
+  if (isError) {
     return <ErrorState title="無法載入社團資訊" description="請確認網路連線後再試。" onRetry={() => refetch()} />;
+  }
 
   if (!data) return null;
 

@@ -7,18 +7,12 @@ import axios from "axios";
 import nookies from "nookies";
 import { useRouter } from "next/navigation";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
-import { Button } from "../ui/button";
 import { handleApiError } from "@/utils/handleApiError";
+import { Button } from "../ui/button";
 
 const FormSchema = z.object({
   clubId: z.string().min(2, { message: "Club ID must be at least 2 characters." }),
@@ -55,9 +49,7 @@ const JoinClubButton = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button disabled={typeof window === "undefined" ? false : !nookies.get().user_id}>
-          加入讀書會
-        </Button>
+        <Button disabled={typeof window === "undefined" ? false : !nookies.get().user_id}>加入讀書會</Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
@@ -77,7 +69,9 @@ const JoinClubButton = () => {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={mutation.isPending}>加入</Button>
+            <Button type="submit" disabled={mutation.isPending}>
+              加入
+            </Button>
           </form>
         </Form>
       </DialogContent>

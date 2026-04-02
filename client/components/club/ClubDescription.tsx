@@ -54,9 +54,7 @@ const ClubDescription: React.FC<ClubDescriptionProps> = ({ description, owner, c
   return (
     <Card className="w-full">
       <CardHeader className="relative pb-2">
-        <CardTitle className="text-base font-semibold text-muted-foreground uppercase tracking-wide">
-          About
-        </CardTitle>
+        <CardTitle className="text-base font-semibold text-muted-foreground uppercase tracking-wide">About</CardTitle>
         {isAbleToEdit && !edit && (
           <button
             type="button"

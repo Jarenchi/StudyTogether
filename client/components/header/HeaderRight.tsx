@@ -19,21 +19,24 @@ const HeaderRight = () => {
     setMounted(true);
   }, [setUserId]);
 
+  let authUI;
+  if (!mounted) {
+    authUI = <div className="w-9 h-9 rounded-full bg-muted animate-pulse" />;
+  } else if (userId) {
+    authUI = <Options />;
+  } else {
+    authUI = (
+      <Button asChild size="sm">
+        <Link href="/login">Login</Link>
+      </Button>
+    );
+  }
+
   return (
     <div className="flex items-center">
       <ModeToggle />
-      <div className="ml-2">
-        {/* Fixed-size placeholder keeps layout stable during hydration */}
-        {!mounted ? (
-          <div className="w-9 h-9 rounded-full bg-muted animate-pulse" />
-        ) : userId ? (
-          <Options />
-        ) : (
-          <Button asChild size="sm">
-            <Link href="/login">Login</Link>
-          </Button>
-        )}
-      </div>
+      {/* Fixed-size placeholder keeps layout stable during hydration */}
+      <div className="ml-2">{authUI}</div>
     </div>
   );
 };
