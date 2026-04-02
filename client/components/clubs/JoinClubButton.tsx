@@ -10,7 +10,6 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -19,20 +18,17 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from "@/component
 import { Input } from "@/components/ui/input";
 import { toast } from "@/components/ui/use-toast";
 import { Button } from "../ui/button";
+import { handleApiError } from "@/utils/handleApiError";
 
 const FormSchema = z.object({
-  clubId: z.string().min(2, {
-    message: "UserId must be at least 2 characters.",
-  }),
+  clubId: z.string().min(2, { message: "Club ID must be at least 2 characters." }),
 });
 
 const JoinClubButton = () => {
   const router = useRouter();
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      clubId: "",
-    },
+    defaultValues: { clubId: "" },
   });
 
   const queryClient = useQueryClient();
@@ -44,66 +40,46 @@ const JoinClubButton = () => {
         { headers: { Authorization: `Bearer ${nookies.get().access_token}` } },
       ),
     onSuccess: () => {
-      toast({
-        title: "club joined",
-      });
+      toast({ title: "已成功加入讀書會" });
       router.push("/myclubs");
       queryClient.invalidateQueries({ queryKey: ["clublist"] });
     },
     onError: (error: any) => {
-      if (error?.response?.status === 403) {
-        alert("Account is expired, please Login again");
-        router.push("/login");
-      } else if (error?.response?.status === 404) {
-        toast({
-          title: "Club or user not found",
-        });
-      } else if (error?.response?.status === 400) {
-        toast({
-          title: "User is already in the club",
-        });
-      } else if (error?.response?.status >= 500 && error?.response?.status < 600) {
-        alert("請稍後再試或和我們的技術團隊聯絡");
-      } else {
-        alert(error);
-      }
+      const status = error?.response?.status;
+      if (status === 404) toast({ title: "找不到該讀書會", variant: "destructive" });
+      else if (status === 400) toast({ title: "您已在此讀書會中", variant: "destructive" });
+      else handleApiError(error, router);
     },
   });
-
-  async function onSubmit(values: z.infer<typeof FormSchema>) {
-    mutation.mutateAsync(values);
-  }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button disabled={typeof window === "undefined" ? false : !nookies.get().user_id}>Join Club</Button>
+        <Button disabled={typeof window === "undefined" ? false : !nookies.get().user_id}>
+          加入讀書會
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="mb-3">Enter club ID</DialogTitle>
-          <DialogDescription asChild>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="flex">
-                <FormField
-                  control={form.control}
-                  name="clubId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormControl>
-                        <Input type="text" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" className="ml-2">
-                  Join
-                </Button>
-              </form>
-            </Form>
-          </DialogDescription>
+          <DialogTitle className="mb-3">輸入讀書會 ID</DialogTitle>
         </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit((v) => mutation.mutate(v))} className="flex gap-2">
+            <FormField
+              control={form.control}
+              name="clubId"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormControl>
+                    <Input type="text" placeholder="Club ID" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <Button type="submit" disabled={mutation.isPending}>加入</Button>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

@@ -134,6 +134,9 @@ module.exports = {
         "tremor-title": ["1.125rem", { lineHeight: "1.75rem" }],
         "tremor-metric": ["1.875rem", { lineHeight: "2.25rem" }],
       },
+      fontFamily: {
+        display: ["var(--font-display)", "sans-serif"],
+      },
       keyframes: {
         "accordion-down": {
           from: { height: 0 },

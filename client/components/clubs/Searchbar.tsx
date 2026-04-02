@@ -1,41 +1,39 @@
 "use client";
 
-import { useCallback, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Button } from "../ui/button";
+import useDebounce from "@/hooks/useDebounce";
 
 const Searchbar = () => {
-  const searchInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const searchParams = useSearchParams()!;
-  const createQueryString = useCallback(
-    (name: string, value: string) => {
-      const params = new URLSearchParams(searchParams);
-      params.set(name, value);
+  const searchParams = useSearchParams();
+  const [inputValue, setInputValue] = useState(searchParams.get("keyword") ?? "");
+  const debouncedValue = useDebounce(inputValue, 300);
 
-      return params.toString();
-    },
-    [searchParams],
-  );
+  // Push URL change only when debounced value settles
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (debouncedValue) {
+      params.set("keyword", debouncedValue);
+    } else {
+      params.delete("keyword");
+    }
+    router.push(`/clubs?${params.toString()}`);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedValue]);
 
-  const handleSearch = () => {
-    if (searchInputRef.current?.value) {
-      router.push(`/clubs?${createQueryString("keyword", searchInputRef.current?.value)}`);
-    }
-  };
-  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
-  };
   return (
-    <div className="flex items-center gap-3">
-      <Input className="w-60" placeholder="search club..." type="text" ref={searchInputRef} onKeyDown={handleKeyDown} />
-      <Button onClick={handleSearch}>
-        <Search size={20} />
-      </Button>
+    <div className="relative">
+      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+      <Input
+        className="w-64 pl-9"
+        placeholder="搜尋讀書會..."
+        type="text"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+      />
     </div>
   );
 };

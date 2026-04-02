@@ -4,6 +4,7 @@ export interface Club {
   name: string;
   description: string;
   picture: string;
+  tags?: string[];
   members: string[];
   docs: string[];
   events: string[];

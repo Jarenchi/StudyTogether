@@ -11,6 +11,7 @@ const getAllUsages = require("../controllers/usage/getAllUsage");
 const getUsageByDate = require("../controllers/usage/getUsageByDate");
 const createUsage = require("../controllers/usage/createUsage");
 const updateUsageById = require("../controllers/usage/updateUsageById");
+const updateTargetTime = require("../controllers/usage/updateTargetTime");
 
 router.post("/signup", checkApplicationJson, validateSignUp, userSignUp);
 router.post("/signin", checkApplicationJson, userSignIn);
@@ -20,4 +21,5 @@ router.get("/:userId/usages/all", verifyAccessToken, getAllUsages);
 router.get("/:userId/usages", verifyAccessToken, getUsageByDate);
 router.post("/:userId/usages", verifyAccessToken, createUsage);
 router.put("/:userId/usages/:id", verifyAccessToken, updateUsageById);
+router.patch("/:userId/usages/:id/target", verifyAccessToken, updateTargetTime);
 module.exports = router;
