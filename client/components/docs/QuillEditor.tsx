@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useRef, useState, useEffect, useMemo, useCallback } from "react";
-import dynamic from "next/dynamic";
+import React, { useRef, useState, useEffect, Suspense, useCallback } from "react";
 import type ReactQuillType from "react-quill";
 import nookies from "nookies";
 import "react-quill/dist/quill.snow.css";
@@ -15,17 +14,11 @@ import { QuillBinding } from "y-quill";
 import { Input } from "../ui/input";
 import PresenceBar, { PresenceUser } from "./PresenceBar";
 
-/* eslint-disable @typescript-eslint/indent, prettier/prettier */
-type ReactQuillWithRef = React.ForwardRefExoticComponent<
-  import("react-quill").ReactQuillProps & React.RefAttributes<ReactQuillType>
->;
-/* eslint-enable @typescript-eslint/indent, prettier/prettier */
+// React.lazy properly forwards refs to the underlying class component,
+// unlike Next.js dynamic() whose LoadableComponent wrapper silently drops refs.
+const ReactQuill = React.lazy(() => import("react-quill"));
 
 const QuillEditor = () => {
-  const ReactQuill = useMemo(
-    () => dynamic(() => import("react-quill"), { ssr: false }) as unknown as ReactQuillWithRef,
-    [],
-  );
   const params = useParams();
   const router = useRouter();
   const targetClubId = params.club as string;
@@ -63,7 +56,7 @@ const QuillEditor = () => {
 
   // Yjs + Socket
   // pendingSyncRef / pendingInitContentRef: store server data that arrives before
-  // ReactQuill has finished its dynamic import and mounted
+  // ReactQuill has finished its lazy import and mounted
   const socketRef = useRef<Socket>();
   const ydocRef = useRef<Y.Doc | null>(null);
   if (!ydocRef.current) {
@@ -75,8 +68,8 @@ const QuillEditor = () => {
   const pendingInitContentRef = useRef<string | null>(null);
 
   // Callback ref — called by ReactQuill when it mounts/unmounts.
-  // This is the canonical place to create the QuillBinding because
-  // dynamic(() => import("react-quill")) can resolve after socket events fire.
+  // React.lazy resolves after socket events may already have fired, so pending
+  // state is buffered in refs and applied here once the editor is ready.
   const quillCallback = useCallback((instance: ReactQuillType | null) => {
     if (!instance) {
       bindingRef.current?.destroy();
@@ -97,9 +90,10 @@ const QuillEditor = () => {
       pendingSyncRef.current = null;
     }
 
-    // Initialize from DB HTML if ydoc was empty when this room was created
+    // Initialize from DB HTML if ydoc was empty when this room was created.
+    // react-quill bundles quill@1.3.7 — clipboard.convert takes a plain string (not {html:...})
     if (pendingInitContentRef.current) {
-      const delta = quill.clipboard.convert({ html: pendingInitContentRef.current });
+      const delta = (quill.clipboard.convert as (html: string) => any)(pendingInitContentRef.current);
       quill.setContents(delta);
       // setContents → QuillBinding → Y.Text update → ydoc "update" event → y-update sent to server
       pendingInitContentRef.current = null;
@@ -129,7 +123,7 @@ const QuillEditor = () => {
       const quill = quillInstanceRef.current;
       if (quill && bindingRef.current) {
         // Editor already mounted — initialize immediately
-        const delta = quill.clipboard.convert({ html });
+        const delta = (quill.clipboard.convert as (html: string) => any)(html);
         quill.setContents(delta);
       } else {
         // Editor not mounted yet — store for quillCallback to apply
@@ -250,12 +244,14 @@ const QuillEditor = () => {
 
       {/* Editor */}
       <div className="px-4">
-        <ReactQuill
-          ref={quillCallback}
-          modules={quillModules}
-          preserveWhitespace
-          className="h-[calc(100vh_-_14rem)] w-full"
-        />
+        <Suspense fallback={<div className="h-[calc(100vh_-_14rem)] bg-muted animate-pulse rounded-xl" />}>
+          <ReactQuill
+            ref={quillCallback}
+            modules={quillModules}
+            preserveWhitespace
+            className="h-[calc(100vh_-_14rem)] w-full"
+          />
+        </Suspense>
       </div>
     </div>
   );

@@ -3,11 +3,18 @@ const Y = require("yjs");
 const mongoose = require("mongoose");
 const Doc = require("./models/docModel");
 
-const ydocs = new Map(); // docId → { ydoc, saveTimer, loaded }
+const ydocs = new Map(); // docId → { ydoc, saveTimer, cleanupTimer, loaded }
 
 function getOrCreateRoom(docId) {
   if (!ydocs.has(docId)) {
-    ydocs.set(docId, { ydoc: new Y.Doc(), saveTimer: null, loaded: false });
+    ydocs.set(docId, { ydoc: new Y.Doc(), saveTimer: null, cleanupTimer: null, loaded: false });
+  } else {
+    // Cancel pending cleanup — a user is joining, keep the room alive
+    const room = ydocs.get(docId);
+    if (room.cleanupTimer) {
+      clearTimeout(room.cleanupTimer);
+      room.cleanupTimer = null;
+    }
   }
   return ydocs.get(docId);
 }
@@ -22,6 +29,22 @@ function scheduleSave(docId, ydoc) {
       .catch((err) => console.error(`[socket] DB save failed for ${docId}:`, err));
     room.saveTimer = null;
   }, 500);
+}
+
+// Returns unique users in a room (deduplicated by name).
+function getUsersInRoom(io, room, excludeSocketId = null) {
+  const sockets = io.sockets.adapter.rooms.get(room);
+  if (!sockets) return [];
+  const seen = new Set();
+  return Array.from(sockets)
+    .filter((id) => id !== excludeSocketId)
+    .map((id) => io.sockets.sockets.get(id)?.data?.user)
+    .filter(Boolean)
+    .filter((user) => {
+      if (seen.has(user.name)) return false;
+      seen.add(user.name);
+      return true;
+    });
 }
 
 function setupQuillSocket(server) {
@@ -96,21 +119,25 @@ function setupQuillSocket(server) {
       io.to(docId).emit("users", usersInRoom);
     });
 
+    // Fired by client cleanup when navigating away — socket is still connected at this point.
+    // Exclude this socket.id so we can see if the user has other active sockets.
     socket.on("disconnectUser", (user, docId) => {
-      const name = typeof user === "string" ? user : user?.name;
-      const usersInRoom = getUsersInRoom(io, docId).filter((u) => u.name !== name);
+      const usersInRoom = getUsersInRoom(io, docId, socket.id);
       io.to(docId).emit("users", usersInRoom);
     });
 
     socket.on("disconnect", () => {
       const { user, docId } = socket.data;
       if (user && docId) {
-        const usersInRoom = getUsersInRoom(io, docId).filter((u) => u.name !== user.name);
+        // Socket is already removed from rooms at this point, so getUsersInRoom
+        // naturally excludes it — no extra filtering needed.
+        const usersInRoom = getUsersInRoom(io, docId);
         io.to(docId).emit("users", usersInRoom);
 
         if (usersInRoom.length === 0) {
           const room = ydocs.get(docId);
           if (room) {
+            // Cancel debounced save and persist immediately
             if (room.saveTimer) {
               clearTimeout(room.saveTimer);
               room.saveTimer = null;
@@ -118,21 +145,21 @@ function setupQuillSocket(server) {
             const stateBytes = Buffer.from(Y.encodeStateAsUpdate(room.ydoc));
             Doc.findByIdAndUpdate(docId, { yjsState: stateBytes })
               .catch((err) => console.error(`[socket] Final save failed for ${docId}:`, err));
-            room.ydoc.destroy();
-            ydocs.delete(docId);
+
+            // Delay in-memory cleanup so a rapid reconnect (e.g. page refresh) reuses
+            // the already-loaded state instead of racing against the async DB save.
+            room.cleanupTimer = setTimeout(() => {
+              const r = ydocs.get(docId);
+              if (r) {
+                r.ydoc.destroy();
+                ydocs.delete(docId);
+              }
+            }, 30000); // 30 seconds
           }
         }
       }
     });
   });
-}
-
-function getUsersInRoom(io, room) {
-  const sockets = io.sockets.adapter.rooms.get(room);
-  if (!sockets) return [];
-  return Array.from(sockets)
-    .map((id) => io.sockets.sockets.get(id)?.data?.user)
-    .filter(Boolean);
 }
 
 module.exports = { setupQuillSocket };
