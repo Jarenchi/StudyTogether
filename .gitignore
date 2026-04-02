@@ -1,5 +1,6 @@
 # Superpowers plugin temp files
 .superpowers/
+.playwright-mcp/
 
 # Dependencies
 node_modules/
